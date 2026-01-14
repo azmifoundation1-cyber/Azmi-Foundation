@@ -168,9 +168,9 @@ export default function Home() {
       </section>
 
       {/* Stats Section with Ultra-Responsive Grid and 3D Cards */}
-      <section className="py-12 sm:py-24 relative z-20 overflow-hidden bg-white/50 backdrop-blur-3xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-px bg-transparent sm:bg-primary/10 border-none sm:border border-primary/10 shadow-none sm:shadow-[0_50px_100px_rgba(0,0,0,0.1)]">
+      <section className="py-8 sm:py-24 relative z-20 overflow-hidden bg-white/50 backdrop-blur-3xl">
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-px bg-transparent sm:bg-primary/10 border-none sm:border border-primary/10 shadow-none sm:shadow-[0_50px_100px_rgba(0,0,0,0.1)] overflow-hidden">
             <StatCard icon={Users} count="4,300+" label="Individuals Fed" index={0} />
             <StatCard icon={Globe} count="Ahmedabad" label="Heart of Impact" index={1} />
             <StatCard icon={Heart} count="Unity" label="Interfaith Harmony" index={2} />
@@ -246,13 +246,19 @@ function StatCard({ icon: Icon, count, label, index }: { icon: any, count: strin
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
       whileHover={{ scale: 1.05, z: 50, rotateY: index % 2 === 0 ? 5 : -5 }}
-      className="bg-white p-8 sm:p-20 text-center hover:bg-black group transition-all duration-700 cursor-pointer border-none perspective-1000 transform-gpu shadow-xl sm:shadow-none"
+      className="bg-white p-6 sm:p-12 lg:p-16 text-center hover:bg-black group transition-all duration-700 cursor-pointer border-none perspective-1000 transform-gpu shadow-xl sm:shadow-none min-h-[280px] sm:min-h-[400px] flex flex-col justify-center"
     >
-      <div className="w-14 h-14 sm:w-20 sm:h-20 border-[3px] border-primary/5 flex items-center justify-center mx-auto mb-10 group-hover:border-accent/30 group-hover:bg-accent/5 group-hover:rotate-[360deg] transition-all duration-1000 transform-gpu">
-        <Icon className="w-6 h-6 sm:w-10 sm:h-10 text-primary group-hover:text-accent transition-colors duration-700" />
+      <div className="w-12 h-12 sm:w-16 sm:h-16 border-[2px] border-primary/5 flex items-center justify-center mx-auto mb-6 sm:mb-10 group-hover:border-accent/30 group-hover:bg-accent/5 group-hover:rotate-[360deg] transition-all duration-1000 transform-gpu shrink-0">
+        <Icon className="w-5 h-5 sm:w-8 sm:h-8 text-primary group-hover:text-accent transition-colors duration-700" />
       </div>
-      <h3 className="text-5xl sm:text-7xl font-black text-primary group-hover:text-white mb-4 tracking-tighter transition-all duration-500 transform-gpu group-hover:scale-110">{count}</h3>
-      <p className="text-primary/40 group-hover:text-accent/60 font-black uppercase tracking-[0.4em] text-[8px] sm:text-[10px] transition-colors duration-500">{label}</p>
+      <div className="space-y-2 sm:space-y-4">
+        <h3 className="text-3xl sm:text-5xl lg:text-6xl font-black text-primary group-hover:text-white tracking-tighter transition-all duration-500 transform-gpu group-hover:scale-105 break-words px-2">
+          {count}
+        </h3>
+        <p className="text-primary/40 group-hover:text-accent/60 font-black uppercase tracking-[0.2em] sm:tracking-[0.4em] text-[7px] sm:text-[9px] transition-colors duration-500 leading-tight px-2">
+          {label}
+        </p>
+      </div>
     </motion.div>
   );
 }
