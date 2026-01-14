@@ -3,65 +3,77 @@ import { type Campaign } from "@shared/schema";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ArrowRight, DollarSign, Users } from "lucide-react";
+import { ArrowRight, Target } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function CampaignCard({ campaign }: { campaign: Campaign }) {
   const percent = Math.min(100, Math.round((Number(campaign.currentAmount) / Number(campaign.targetAmount)) * 100));
 
   return (
-    <Card className="group overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full bg-white">
-      {/* Unsplash image with descriptive query */}
-      <div className="relative h-56 overflow-hidden">
-        <img 
-          src={campaign.imageUrl || `https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80`} 
-          alt={campaign.title}
-          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
-        <div className="absolute bottom-4 left-4 right-4">
-          <span className="inline-block px-3 py-1 bg-secondary/90 text-white text-xs font-bold uppercase tracking-wider rounded-full mb-2 backdrop-blur-sm">
-            Active Campaign
-          </span>
-        </div>
-      </div>
-
-      <CardHeader className="pt-6 pb-2 px-6">
-        <h3 className="text-xl font-bold font-serif text-primary line-clamp-2 group-hover:text-secondary transition-colors">
-          {campaign.title}
-        </h3>
-      </CardHeader>
-
-      <CardContent className="px-6 py-2 flex-grow">
-        <p className="text-gray-600 text-sm line-clamp-3 mb-6">
-          {campaign.description}
-        </p>
-        
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm font-medium">
-            <span className="text-secondary">{percent}% Funded</span>
-            <span className="text-gray-500">Goal: ${Number(campaign.targetAmount).toLocaleString()}</span>
-          </div>
-          <Progress value={percent} className="h-2.5 bg-gray-100" />
-          <div className="flex justify-between items-center pt-1">
-             <div className="flex items-center gap-1 text-primary font-bold">
-                <DollarSign className="w-4 h-4 text-secondary" />
-                {Number(campaign.currentAmount).toLocaleString()}
-             </div>
-             <div className="flex items-center gap-1 text-xs text-gray-500">
-                <Users className="w-3 h-3" />
-                <span>124 Donors</span>
-             </div>
+    <motion.div
+      whileHover={{ y: -10 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="h-full"
+    >
+      <Card className="group overflow-hidden border-none metallic-card flex flex-col h-full bg-white rounded-none shadow-2xl">
+        <div className="relative h-72 overflow-hidden">
+          <motion.img 
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.8 }}
+            src={campaign.imageUrl || `https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80`} 
+            alt={campaign.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent opacity-80" />
+          <div className="absolute top-6 right-6 px-4 py-1 bg-accent text-white text-[10px] font-black uppercase tracking-[0.3em] shadow-xl gold-edge">
+            Mission Active
           </div>
         </div>
-      </CardContent>
 
-      <CardFooter className="px-6 pb-6 pt-4 border-t border-gray-50">
-        <Link href="/donate" className="w-full">
-          <Button className="w-full bg-primary hover:bg-primary/90 text-white font-medium group-hover:bg-secondary transition-colors duration-300">
-            Donate Now <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
-        </Link>
-      </CardFooter>
-    </Card>
+        <CardHeader className="pt-8 pb-2 px-8">
+          <h3 className="text-3xl font-black text-primary uppercase tracking-tighter leading-[0.9] group-hover:metallic-text transition-all duration-500">
+            {campaign.title}
+          </h3>
+        </CardHeader>
+
+        <CardContent className="px-8 py-4 flex-grow space-y-8">
+          <p className="text-primary/60 text-sm font-medium leading-relaxed tracking-tight line-clamp-3">
+            {campaign.description}
+          </p>
+          
+          <div className="space-y-4 pt-4 border-t border-primary/5">
+            <div className="flex justify-between items-end">
+              <div className="space-y-1">
+                <span className="text-[8px] font-black uppercase tracking-[0.4em] text-primary/30">Impact Progress</span>
+                <div className="text-3xl font-black text-primary tracking-tighter">{percent}%</div>
+              </div>
+              <Target className="w-5 h-5 text-accent opacity-20" />
+            </div>
+            <Progress value={percent} className="h-1 bg-primary/5" />
+            <div className="flex justify-between items-center">
+               <div className="flex flex-col">
+                  <span className="text-[8px] font-black uppercase tracking-widest text-primary/30">Raised</span>
+                  <span className="text-xl font-black text-primary tracking-tighter">₹{Number(campaign.currentAmount).toLocaleString()}</span>
+               </div>
+               <div className="flex flex-col text-right">
+                  <span className="text-[8px] font-black uppercase tracking-widest text-primary/30">Goal</span>
+                  <span className="text-xl font-black text-primary/20 tracking-tighter">₹{Number(campaign.targetAmount).toLocaleString()}</span>
+               </div>
+            </div>
+          </div>
+        </CardContent>
+
+        <CardFooter className="px-8 pb-8 pt-4">
+          <Link href={`/donate?campaignId=${campaign.id}`} className="w-full">
+            <Button className="w-full bg-primary hover:bg-primary/95 text-white font-black uppercase tracking-[0.4em] text-[10px] rounded-none py-8 shadow-xl gold-edge transition-all duration-500 overflow-hidden group/btn relative">
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                Initiate Support <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-2 transition-transform" />
+              </span>
+              <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500" />
+            </Button>
+          </Link>
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 }
