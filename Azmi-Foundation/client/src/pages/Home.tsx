@@ -127,7 +127,7 @@ export default function Home() {
               transition={{ delay: 1.5 }}
               className="text-sm sm:text-xl md:text-3xl text-primary/70 leading-relaxed max-w-4xl mx-auto font-medium tracking-tight px-4 sm:px-0"
             >
-              Pioneering the global evolution of interfaith synergy through <span className="text-primary font-black italic">revolutionary compassion</span> and sustainable infrastructure.
+              Nestled in the vibrant heart of Ahmedabad, pioneering the global evolution of interfaith harmony through <span className="text-primary font-black italic">revolutionary compassion</span>.
             </motion.p>
 
             <motion.div 
@@ -171,10 +171,10 @@ export default function Home() {
       <section className="py-20 sm:py-40 relative z-20 overflow-hidden bg-white/50 backdrop-blur-3xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-primary/10 border border-primary/10 shadow-[0_50px_100px_rgba(0,0,0,0.1)]">
-            <StatCard icon={Users} count="15K+" label="Global Lives" index={0} />
-            <StatCard icon={Globe} count="45+" label="Nations Served" index={1} />
-            <StatCard icon={Heart} count="2.3K+" label="Champions" index={2} />
-            <StatCard icon={Award} count="12Y" label="Excellence" index={3} />
+            <StatCard icon={Users} count="4,300+" label="Individuals Fed" index={0} />
+            <StatCard icon={Globe} count="Ahmedabad" label="Heart of Impact" index={1} />
+            <StatCard icon={Heart} count="Unity" label="Interfaith Harmony" index={2} />
+            <StatCard icon={Award} count="Est. 2018" label="Foundation Legacy" index={3} />
           </div>
         </div>
       </section>
