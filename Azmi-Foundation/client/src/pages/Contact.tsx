@@ -13,13 +13,13 @@ export default function Contact() {
       <div className="bg-primary py-32 sm:py-48 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1920&q=80')] bg-cover bg-center mix-blend-overlay scale-110 animate-pulse" />
         <div className="absolute inset-0 bg-gradient-to-b from-primary/95 via-primary/80 to-primary/95" />
-        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
+        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center py-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
           >
-            <h1 className="text-6xl sm:text-9xl font-black tracking-tighter text-white uppercase leading-[0.8] mb-8 drop-shadow-2xl">
+            <h1 className="text-4xl sm:text-7xl lg:text-9xl font-black tracking-tighter text-white uppercase leading-[0.85] mb-8 drop-shadow-2xl">
               Connect <br /> <span className="text-white/30 italic">With Us</span>
             </h1>
             <p className="text-lg sm:text-2xl text-white/70 max-w-3xl mx-auto font-medium tracking-tight uppercase">

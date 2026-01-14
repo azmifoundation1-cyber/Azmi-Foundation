@@ -86,10 +86,27 @@ export function Navbar() {
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex items-center md:hidden">
+          <div className="flex items-center md:hidden gap-4">
+            {user ? (
+              <Link href="/dashboard">
+                <Button variant="ghost" className="h-8 w-8 rounded-full overflow-hidden border border-primary/20">
+                  {user.profileImageUrl ? (
+                    <img src={user.profileImageUrl} alt="User" className="h-full w-full object-cover" />
+                  ) : (
+                    <User className="h-4 w-4 text-primary" />
+                  )}
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/donate">
+                <Button size="sm" className="bg-primary text-white text-[10px] uppercase font-black tracking-widest px-3 h-8 rounded-none gold-edge">
+                  Donate
+                </Button>
+              </Link>
+            )}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-secondary"
+              className="inline-flex items-center justify-center p-2 rounded-md text-primary hover:bg-primary/5 transition-colors"
             >
               {isOpen ? <X className="block h-6 w-6" /> : <Menu className="block h-6 w-6" />}
             </button>

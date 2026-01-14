@@ -102,7 +102,7 @@ export default function Home() {
               <motion.div animate={{ scale: [1, 1.5, 1] }} transition={{ duration: 2, repeat: Infinity }}><Zap className="w-3 h-3 sm:w-4 sm:h-4 text-accent" /></motion.div>
             </motion.div>
             
-            <h1 className="text-5xl sm:text-8xl md:text-[14rem] font-black tracking-tighter metallic-text leading-[0.75] sm:leading-[0.8] drop-shadow-[0_35px_35px_rgba(0,0,0,0.25)] perspective-1000">
+            <h1 className="text-4xl sm:text-7xl md:text-8xl lg:text-[10rem] xl:text-[12rem] font-black tracking-tighter metallic-text leading-[0.8] drop-shadow-[0_35px_35px_rgba(0,0,0,0.25)] perspective-1000">
               <motion.span 
                 initial={{ x: -150, opacity: 0, rotateY: -45 }}
                 animate={{ x: 0, opacity: 1, rotateY: 0 }}
@@ -168,9 +168,9 @@ export default function Home() {
       </section>
 
       {/* Stats Section with Ultra-Responsive Grid and 3D Cards */}
-      <section className="py-20 sm:py-40 relative z-20 overflow-hidden bg-white/50 backdrop-blur-3xl">
+      <section className="py-12 sm:py-24 relative z-20 overflow-hidden bg-white/50 backdrop-blur-3xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-primary/10 border border-primary/10 shadow-[0_50px_100px_rgba(0,0,0,0.1)]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-px bg-transparent sm:bg-primary/10 border-none sm:border border-primary/10 shadow-none sm:shadow-[0_50px_100px_rgba(0,0,0,0.1)]">
             <StatCard icon={Users} count="4,300+" label="Individuals Fed" index={0} />
             <StatCard icon={Globe} count="Ahmedabad" label="Heart of Impact" index={1} />
             <StatCard icon={Heart} count="Unity" label="Interfaith Harmony" index={2} />
@@ -246,7 +246,7 @@ function StatCard({ icon: Icon, count, label, index }: { icon: any, count: strin
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
       whileHover={{ scale: 1.05, z: 50, rotateY: index % 2 === 0 ? 5 : -5 }}
-      className="bg-white p-12 sm:p-20 text-center hover:bg-black group transition-all duration-700 cursor-pointer border-none perspective-1000 transform-gpu"
+      className="bg-white p-8 sm:p-20 text-center hover:bg-black group transition-all duration-700 cursor-pointer border-none perspective-1000 transform-gpu shadow-xl sm:shadow-none"
     >
       <div className="w-14 h-14 sm:w-20 sm:h-20 border-[3px] border-primary/5 flex items-center justify-center mx-auto mb-10 group-hover:border-accent/30 group-hover:bg-accent/5 group-hover:rotate-[360deg] transition-all duration-1000 transform-gpu">
         <Icon className="w-6 h-6 sm:w-10 sm:h-10 text-primary group-hover:text-accent transition-colors duration-700" />
