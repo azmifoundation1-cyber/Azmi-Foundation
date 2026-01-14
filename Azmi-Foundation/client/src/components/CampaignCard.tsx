@@ -11,65 +11,79 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
 
   return (
     <motion.div
-      whileHover={{ y: -10 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="h-full"
+      whileHover={{ y: -20, rotateY: 5, rotateX: 5 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="h-full perspective-1000"
     >
-      <Card className="group overflow-hidden border-none metallic-card flex flex-col h-full bg-white rounded-none shadow-2xl">
-        <div className="relative h-72 overflow-hidden">
+      <Card className="group overflow-hidden border-none metallic-card flex flex-col h-full bg-white rounded-none shadow-[0_30px_60px_rgba(0,0,0,0.1)] hover:shadow-[0_50px_100px_rgba(0,0,0,0.2)] transform-gpu transition-all duration-700">
+        <div className="relative h-64 sm:h-80 overflow-hidden">
           <motion.img 
-            whileHover={{ scale: 1.1 }}
-            transition={{ duration: 0.8 }}
+            whileHover={{ scale: 1.15 }}
+            transition={{ duration: 1.2 }}
             src={campaign.imageUrl || `https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80`} 
             alt={campaign.title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent opacity-80" />
-          <div className="absolute top-6 right-6 px-4 py-1 bg-accent text-white text-[10px] font-black uppercase tracking-[0.3em] shadow-xl gold-edge">
-            Mission Active
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/40 to-transparent opacity-90" />
+          <motion.div 
+            initial={{ x: 50, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            className="absolute top-6 right-6 px-6 py-2 bg-accent text-white text-[8px] sm:text-[10px] font-black uppercase tracking-[0.4em] shadow-2xl gold-edge"
+          >
+            ACTIVE STRATEGY
+          </motion.div>
         </div>
 
-        <CardHeader className="pt-8 pb-2 px-8">
-          <h3 className="text-3xl font-black text-primary uppercase tracking-tighter leading-[0.9] group-hover:metallic-text transition-all duration-500">
+        <CardHeader className="pt-10 pb-4 px-8 sm:px-12">
+          <h3 className="text-3xl sm:text-4xl font-black text-primary uppercase tracking-tighter leading-[0.85] group-hover:metallic-text transition-all duration-700">
             {campaign.title}
           </h3>
         </CardHeader>
 
-        <CardContent className="px-8 py-4 flex-grow space-y-8">
-          <p className="text-primary/60 text-sm font-medium leading-relaxed tracking-tight line-clamp-3">
+        <CardContent className="px-8 sm:px-12 py-6 flex-grow space-y-10">
+          <p className="text-primary/70 text-xs sm:text-sm font-medium leading-relaxed tracking-tight line-clamp-3 uppercase opacity-80">
             {campaign.description}
           </p>
           
-          <div className="space-y-4 pt-4 border-t border-primary/5">
+          <div className="space-y-6 pt-6 border-t border-primary/10">
             <div className="flex justify-between items-end">
-              <div className="space-y-1">
-                <span className="text-[8px] font-black uppercase tracking-[0.4em] text-primary/30">Impact Progress</span>
-                <div className="text-3xl font-black text-primary tracking-tighter">{percent}%</div>
+              <div className="space-y-2">
+                <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-[0.5em] text-primary/40">Evolution Index</span>
+                <div className="text-4xl sm:text-5xl font-black text-primary tracking-tighter italic">{percent}%</div>
               </div>
-              <Target className="w-5 h-5 text-accent opacity-20" />
+              <motion.div animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }}>
+                <Target className="w-6 h-6 sm:w-8 sm:h-8 text-accent opacity-30" />
+              </motion.div>
             </div>
-            <Progress value={percent} className="h-1 bg-primary/5" />
-            <div className="flex justify-between items-center">
-               <div className="flex flex-col">
-                  <span className="text-[8px] font-black uppercase tracking-widest text-primary/30">Raised</span>
-                  <span className="text-xl font-black text-primary tracking-tighter">₹{Number(campaign.currentAmount).toLocaleString()}</span>
+            <div className="h-1.5 w-full bg-primary/5 overflow-hidden">
+               <motion.div 
+                 initial={{ width: 0 }}
+                 whileInView={{ width: `${percent}%` }}
+                 transition={{ duration: 2, ease: "circOut" }}
+                 className="h-full bg-accent shadow-[0_0_15px_rgba(212,175,55,0.5)]"
+               />
+            </div>
+            <div className="grid grid-cols-2 gap-8 items-center">
+               <div className="flex flex-col gap-1">
+                  <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-[0.5em] text-primary/40">Acquisition</span>
+                  <span className="text-xl sm:text-2xl font-black text-primary tracking-tighter leading-none">₹{Number(campaign.currentAmount).toLocaleString()}</span>
                </div>
-               <div className="flex flex-col text-right">
-                  <span className="text-[8px] font-black uppercase tracking-widest text-primary/30">Goal</span>
-                  <span className="text-xl font-black text-primary/20 tracking-tighter">₹{Number(campaign.targetAmount).toLocaleString()}</span>
+               <div className="flex flex-col text-right gap-1">
+                  <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-[0.5em] text-primary/40">Requirement</span>
+                  <span className="text-xl sm:text-2xl font-black text-primary/20 tracking-tighter leading-none">₹{Number(campaign.targetAmount).toLocaleString()}</span>
                </div>
             </div>
           </div>
         </CardContent>
 
-        <CardFooter className="px-8 pb-8 pt-4">
+        <CardFooter className="px-8 sm:px-12 pb-10 sm:pb-14 pt-6">
           <Link href={`/donate?campaignId=${campaign.id}`} className="w-full">
-            <Button className="w-full bg-primary hover:bg-primary/95 text-white font-black uppercase tracking-[0.4em] text-[10px] rounded-none py-8 shadow-xl gold-edge transition-all duration-500 overflow-hidden group/btn relative">
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                Initiate Support <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-2 transition-transform" />
+            <Button className="w-full bg-primary hover:bg-black text-white font-black uppercase tracking-[0.5em] text-[8px] sm:text-[10px] rounded-none py-10 sm:py-12 shadow-2xl gold-edge transition-all duration-700 overflow-hidden group/btn relative transform-gpu hover:scale-[1.02]">
+              <span className="relative z-10 flex items-center justify-center gap-4">
+                Execute Donation <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover/btn:translate-x-4 transition-transform duration-500" />
               </span>
-              <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-r from-accent/0 via-accent/20 to-accent/0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
             </Button>
           </Link>
         </CardFooter>
