@@ -1,0 +1,33 @@
+Create the world's best, most attractive, unique, and professional NGO website for "AZMI FOUNDATION" – a non-profit organization focused on [insert brief mission, e.g., education, healthcare, and community empowerment in India]. Build the entire full-stack website from scratch on Replit.com using modern technologies like HTML5, CSS3 (with Tailwind CSS or Bootstrap for responsive design), JavaScript (with React.js for frontend), Node.js with Express.js for backend, MongoDB for database (via MongoDB Atlas integration), and necessary APIs/libraries for advanced features. Ensure the website is fully responsive, mobile-friendly, SEO-optimized, secure (with HTTPS, user authentication via JWT), fast-loading (under 2 seconds), accessible (WCAG compliant), and visually stunning with high-quality images, animations (using Framer Motion or CSS transitions), a clean modern UI/UX design inspired by top NGOs like UNICEF or WWF (e.g., hero sections with parallax scrolling, interactive maps for impact stories, dark/light mode toggle).
+Key pages and features to implement:
+
+Home Page: Engaging landing page with hero banner showcasing AZMI FOUNDATION's mission, impactful stats (e.g., counters for beneficiaries helped), featured programs, testimonials carousel, call-to-action buttons for donations/volunteering, and footer with social links, contact info, and privacy policy.
+About Us: Detailed page on history, mission, vision, team members (with bios and photos), achievements, and partners.
+Programs/Projects: Section with cards or grid layout for ongoing initiatives, each with descriptions, images, progress trackers, and crowdfunding links.
+Registration Pages:
+Member Registration: Form for users to sign up as members (fields: name, email, phone, address, ID proof upload, password). Auto-email/SMS verification on signup.
+Volunteer Registration: Similar form with additional fields like skills, availability, motivation. Background check integration if possible.
+Intern Registration: Form with resume upload, education details, duration preferences.
+
+Donation Page: Secure donation form with options for one-time/recurring donations. Integrate multiple payment gateways (Stripe, PayPal, Razorpay for India, Google Pay, PhonePe). Real-time payment processing, auto-generate 80G tax exemption certificate (custom PDF template with donor details, amount, date, NGO seal), and send donation invoice/receipt via email and SMS (using Twilio for SMS, SendGrid or Nodemailer for email).
+Crowdfunding Page: Dedicated platform for campaigns (e.g., fundraisers for specific projects). Users can create/view campaigns with goal trackers, progress bars, donor lists, shareable links. Integrate payments as above, with auto-updates and notifications.
+User Dashboard: After login (email/password or Google OAuth), personalized dashboard for members/volunteers/interns to view status, update profiles, download certificates/ID cards, track contributions.
+Certificate and ID Card Generation:
+Auto-generate customizable PDF certificates for members, volunteers, interns (e.g., using pdf-lib or jsPDF library) upon approval, with NGO logo, signatures, QR code for verification.
+Generate and verify digital ID cards (PDF or image) with photo, details, barcode/QR for authenticity check.
+Admin panel to verify/approve registrations (manual review of uploads), trigger generations, and send via email/SMS.
+
+Verification System: Secure admin backend to verify user documents (ID proofs, resumes). Users can upload docs during registration; implement file storage (e.g., via Multer or Cloudinary). Auto-email/SMS notifications on verification status.
+Contact/Newsletter: Form for inquiries, integrated with email/SMS. Newsletter signup with Mailchimp integration for campaigns.
+Blog/News: CMS-like section for posting updates, integrated with rich text editor (e.g., TinyMCE).
+Integrations:
+Email: Nodemailer/SendGrid for all automated mails (welcome, receipts, updates).
+SMS: Twilio API for OTP verifications, notifications, receipts.
+Payments: Multi-gateway support with webhooks for transaction confirmations.
+Analytics: Google Analytics integration.
+Security: Rate limiting, CAPTCHA on forms, input validation to prevent SQL injection/XSS.
+
+
+Deployment: Host the site on Replit (use Replit's webview for preview), with environment variables for API keys/secrets. Provide full code structure: separate folders for frontend (public), backend (server), database models. Include setup instructions in README.md, like installing dependencies (npm install), running the app (node server.js), and connecting to MongoDB.
+Make the design unique: Use a color scheme of [e.g., blue and green for trust and growth], custom icons (Font Awesome), high-res NGO-themed images (royalty-free from Unsplash), and interactive elements like donation sliders or volunteer matching quizzes.
+Output the complete code as a Replit-ready project, with step-by-step comments in code for easy customization. Ensure it's scalable for high traffic and complies with Indian NGO regulations (e.g., FCRA for foreign donations if applicable).
