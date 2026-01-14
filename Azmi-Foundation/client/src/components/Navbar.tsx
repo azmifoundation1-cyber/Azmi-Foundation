@@ -20,6 +20,7 @@ export function Navbar() {
     { href: "/about", label: "About Us" },
     { href: "/programs", label: "Programs" },
     { href: "/campaigns", label: "Campaigns" },
+    { href: "/contact", label: "Contact" },
     { href: "/get-involved", label: "Get Involved" },
   ];
 

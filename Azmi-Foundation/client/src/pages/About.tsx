@@ -128,12 +128,17 @@ export default function About() {
               </div>
               <div className="p-12 sm:p-16 flex flex-col justify-center space-y-6">
                 <div>
-                  <h3 className="text-4xl font-black text-primary tracking-tighter uppercase leading-none">Shahbaaz Azmi</h3>
-                  <p className="text-accent font-black uppercase tracking-[0.3em] text-[10px] mt-2">Managing Director & Trustee</p>
+                  <h3 className="text-4xl font-black text-primary tracking-tighter uppercase leading-none">Leadership</h3>
+                  <p className="text-accent font-black uppercase tracking-[0.3em] text-[10px] mt-2">Managing Trustees & Directors</p>
                 </div>
-                <p className="text-primary/70 text-sm font-bold uppercase tracking-widest leading-relaxed">
-                  Leading the movement since age 18, Shahbaaz Azmi has been the driving force behind the foundation's evolution into a global model of interfaith compassion.
-                </p>
+                <div className="space-y-4">
+                  <p className="text-primary/70 text-sm font-bold uppercase tracking-widest leading-relaxed">
+                    DR AZHAR AZMI • ZEBA AZMI • ZAKIYA AZMI • DR SHAHBAAZ AZMI
+                  </p>
+                  <p className="text-primary/50 text-[10px] font-bold uppercase tracking-widest leading-relaxed italic">
+                    Leading the movement with visionary leadership and unwavering commitment to interfaith compassion.
+                  </p>
+                </div>
                 <div className="flex items-center gap-4 text-primary/40 text-[10px] font-black uppercase tracking-widest pt-4">
                   <MapPin className="w-4 h-4" /> Gomtipur, Ahmedabad
                 </div>

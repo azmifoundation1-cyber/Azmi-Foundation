@@ -245,8 +245,8 @@ function StatCard({ icon: Icon, count, label, index }: { icon: any, count: strin
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      whileHover={{ scale: 1.02, z: 50 }}
-      className="bg-white p-12 sm:p-20 text-center hover:bg-black group transition-all duration-700 cursor-pointer border-none perspective-1000"
+      whileHover={{ scale: 1.05, z: 50, rotateY: index % 2 === 0 ? 5 : -5 }}
+      className="bg-white p-12 sm:p-20 text-center hover:bg-black group transition-all duration-700 cursor-pointer border-none perspective-1000 transform-gpu"
     >
       <div className="w-14 h-14 sm:w-20 sm:h-20 border-[3px] border-primary/5 flex items-center justify-center mx-auto mb-10 group-hover:border-accent/30 group-hover:bg-accent/5 group-hover:rotate-[360deg] transition-all duration-1000 transform-gpu">
         <Icon className="w-6 h-6 sm:w-10 sm:h-10 text-primary group-hover:text-accent transition-colors duration-700" />

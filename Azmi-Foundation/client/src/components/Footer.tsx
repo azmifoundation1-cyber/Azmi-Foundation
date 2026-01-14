@@ -18,10 +18,10 @@ export function Footer() {
               Promoting interfaith harmony and sustainable development through unity and compassion.
             </p>
             <div className="flex space-x-4 pt-4">
-              <SocialIcon Icon={Facebook} />
-              <SocialIcon Icon={Twitter} />
-              <SocialIcon Icon={Instagram} />
-              <SocialIcon Icon={Linkedin} />
+              <SocialIcon Icon={Facebook} href="https://facebook.com/azmifoundation" />
+              <SocialIcon Icon={Twitter} href="#" />
+              <SocialIcon Icon={Instagram} href="https://instagram.com/azmi_foundation" />
+              <SocialIcon Icon={Linkedin} href="https://linkedin.com/company/azmi-foundation" />
             </div>
           </div>
 
@@ -42,15 +42,15 @@ export function Footer() {
             <ul className="space-y-6 text-xs font-bold uppercase tracking-widest text-gray-400">
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-white/50 shrink-0" />
-                <span>123 NGO Street, Civil Lines,<br />New Delhi, India 110001</span>
+                <span>Gomtipur Bridge East-End,<br />Opp. Kamdar Maidan, Gomtipur,<br />Ahmedabad – 380021</span>
               </li>
               <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-white/50 shrink-0" />
-                <span>+91 98765 43210</span>
+                <Instagram className="w-4 h-4 text-white/50 shrink-0" />
+                <span>@azmi_foundation</span>
               </li>
               <li className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-white/50 shrink-0" />
-                <span>hello@azmifoundation.org</span>
+                <Facebook className="w-4 h-4 text-white/50 shrink-0" />
+                <span>facebook.com/azmifoundation</span>
               </li>
             </ul>
           </div>
@@ -78,9 +78,9 @@ export function Footer() {
   );
 }
 
-function SocialIcon({ Icon }: { Icon: any }) {
+function SocialIcon({ Icon, href }: { Icon: any, href: string }) {
   return (
-    <a href="#" className="w-10 h-10 border border-white/10 flex items-center justify-center text-gray-400 hover:border-white hover:text-white transition-all duration-500">
+    <a href={href} target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-white/10 flex items-center justify-center text-gray-400 hover:border-white hover:text-white transition-all duration-500">
       <Icon className="w-4 h-4" />
     </a>
   );
