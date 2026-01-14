@@ -14,50 +14,62 @@ export default function Home() {
   const featuredCampaigns = campaigns?.slice(0, 3) || [];
 
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col font-sans overflow-x-hidden">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative h-[85vh] flex items-center justify-center overflow-hidden">
-        {/* Unsplash image: diverse group of children smiling hope education */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1920&q=80" 
-            alt="Hero Background" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-transparent" />
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Animation */}
+        <div className="absolute inset-0 z-0 bg-[#C0C0C0]">
+          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_50%,_#FFFFFF_0%,_transparent_70%)] animate-pulse" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/5 to-black/20" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="max-w-2xl text-white space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000">
-            <h1 className="text-5xl md:text-7xl font-bold font-serif leading-tight">
-              Giving Hope <br />
-              <span className="text-secondary">Building Futures</span>
+        {/* Floating Symbols Overlays */}
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-5">
+           <div className="absolute top-1/4 left-1/4 text-[20rem] animate-bounce duration-[10s]">ॐ</div>
+           <div className="absolute top-1/4 right-1/4 text-[20rem] animate-pulse">☪</div>
+           <div className="absolute bottom-1/4 left-1/3 text-[20rem] animate-bounce duration-[8s]">✝</div>
+           <div className="absolute bottom-1/4 right-1/3 text-[20rem] animate-pulse">☬</div>
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="space-y-12"
+          >
+            <div className="inline-block px-4 py-1 border border-primary/20 rounded-full text-primary/60 text-xs font-bold tracking-[0.3em] uppercase mb-4">
+              Interfaith Harmony • Unity • Compassion
+            </div>
+            <h1 className="text-6xl md:text-9xl font-black tracking-tighter metallic-text leading-[0.9]">
+              AZMI <br />
+              <span className="text-primary/90">FOUNDATION</span>
             </h1>
-            <p className="text-lg md:text-xl text-gray-200 leading-relaxed max-w-xl">
-              Azmi Foundation is dedicated to empowering underserved communities through education, healthcare, and sustainable development initiatives.
+            <p className="text-xl md:text-2xl text-primary/70 leading-relaxed max-w-3xl mx-auto font-light tracking-wide">
+              Empowering communities through the universal language of love and sustainable development.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-6 pt-8 justify-center">
               <Link href="/donate">
-                <Button size="lg" className="bg-secondary hover:bg-secondary/90 text-white px-8 py-6 text-lg rounded-full shadow-lg shadow-secondary/30 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-12 py-8 text-xl rounded-none shadow-2xl transition-all duration-500 uppercase tracking-[0.2em] font-black gold-edge">
                   Donate Now
                 </Button>
               </Link>
               <Link href="/about">
-                <Button variant="outline" size="lg" className="border-2 border-white text-primary hover:bg-white hover:text-primary px-8 py-6 text-lg rounded-full bg-white/10 backdrop-blur-sm transition-all duration-300">
+                <Button variant="outline" size="lg" className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-12 py-8 text-xl rounded-none bg-transparent transition-all duration-500 uppercase tracking-[0.2em] font-black">
                   Our Mission
                 </Button>
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white relative -mt-16 z-20">
+      <section className="py-24 relative z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
             <StatCard icon={Users} count="15,000+" label="Lives Impacted" />
             <StatCard icon={Globe} count="45+" label="Communities Served" />
             <StatCard icon={Heart} count="2,300+" label="Volunteers" />
@@ -189,12 +201,12 @@ export default function Home() {
 
 function StatCard({ icon: Icon, count, label }: { icon: any, count: string, label: string }) {
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 text-center hover:-translate-y-2 transition-transform duration-300">
-      <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-        <Icon className="w-8 h-8 text-secondary" />
+    <div className="metallic-card p-12 text-center hover:-translate-y-4 duration-500 group">
+      <div className="w-20 h-20 bg-primary/5 rounded-none flex items-center justify-center mx-auto mb-6 group-hover:bg-primary group-hover:text-white transition-all duration-500 gold-edge">
+        <Icon className="w-10 h-10 transition-colors" />
       </div>
-      <h3 className="text-4xl font-bold text-primary mb-2 font-serif">{count}</h3>
-      <p className="text-gray-500 font-medium uppercase tracking-wide text-sm">{label}</p>
+      <h3 className="text-5xl font-black text-primary mb-2 tracking-tighter">{count}</h3>
+      <p className="text-primary/50 font-bold uppercase tracking-[0.2em] text-xs">{label}</p>
     </div>
   );
 }

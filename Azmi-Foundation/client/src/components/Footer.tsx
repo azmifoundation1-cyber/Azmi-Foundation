@@ -5,20 +5,19 @@ import { Input } from "./ui/input";
 
 export function Footer() {
   return (
-    <footer className="bg-primary text-primary-foreground pt-16 pb-8">
+    <footer className="bg-primary text-primary-foreground pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-16">
           
           {/* Brand */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="Azmi Foundation" className="h-10 w-auto brightness-0 invert" />
+              <img src="/logo.png" alt="Azmi Foundation" className="h-14 w-auto brightness-0 invert" />
             </div>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Empowering communities through education, healthcare, and sustainable development. 
-              Together, we can build a better tomorrow for everyone.
+            <p className="text-gray-400 text-sm leading-relaxed font-light tracking-wide uppercase">
+              Promoting interfaith harmony and sustainable development through unity and compassion.
             </p>
-            <div className="flex space-x-4 pt-2">
+            <div className="flex space-x-4 pt-4">
               <SocialIcon Icon={Facebook} />
               <SocialIcon Icon={Twitter} />
               <SocialIcon Icon={Instagram} />
@@ -28,30 +27,29 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-bold font-serif mb-6 text-white">Quick Links</h3>
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li><Link href="/about" className="hover:text-secondary transition-colors">About Us</Link></li>
-              <li><Link href="/programs" className="hover:text-secondary transition-colors">Our Programs</Link></li>
-              <li><Link href="/campaigns" className="hover:text-secondary transition-colors">Active Campaigns</Link></li>
-              <li><Link href="/get-involved" className="hover:text-secondary transition-colors">Volunteer</Link></li>
-              <li><Link href="/privacy" className="hover:text-secondary transition-colors">Privacy Policy</Link></li>
+            <h3 className="text-xs font-black uppercase tracking-[0.3em] mb-8 text-white/50">Navigation</h3>
+            <ul className="space-y-4 text-xs font-bold uppercase tracking-widest text-gray-400">
+              <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
+              <li><Link href="/programs" className="hover:text-white transition-colors">Our Programs</Link></li>
+              <li><Link href="/campaigns" className="hover:text-white transition-colors">Active Campaigns</Link></li>
+              <li><Link href="/get-involved" className="hover:text-white transition-colors">Volunteer</Link></li>
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <h3 className="text-lg font-bold font-serif mb-6 text-white">Contact Us</h3>
-            <ul className="space-y-4 text-sm text-gray-400">
+            <h3 className="text-xs font-black uppercase tracking-[0.3em] mb-8 text-white/50">Contact</h3>
+            <ul className="space-y-6 text-xs font-bold uppercase tracking-widest text-gray-400">
               <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-secondary shrink-0" />
+                <MapPin className="w-4 h-4 text-white/50 shrink-0" />
                 <span>123 NGO Street, Civil Lines,<br />New Delhi, India 110001</span>
               </li>
               <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-secondary shrink-0" />
+                <Phone className="w-4 h-4 text-white/50 shrink-0" />
                 <span>+91 98765 43210</span>
               </li>
               <li className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-secondary shrink-0" />
+                <Mail className="w-4 h-4 text-white/50 shrink-0" />
                 <span>hello@azmifoundation.org</span>
               </li>
             </ul>
@@ -59,23 +57,20 @@ export function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h3 className="text-lg font-bold font-serif mb-6 text-white">Stay Updated</h3>
-            <p className="text-gray-400 text-sm mb-4">
-              Subscribe to our newsletter for the latest updates and impact stories.
-            </p>
-            <form className="space-y-2" onSubmit={(e) => e.preventDefault()}>
+            <h3 className="text-xs font-black uppercase tracking-[0.3em] mb-8 text-white/50">Subscribe</h3>
+            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
               <Input 
-                placeholder="Enter your email" 
-                className="bg-primary-foreground/10 border-primary-foreground/20 text-white placeholder:text-gray-500 focus:border-secondary" 
+                placeholder="EMAIL ADDRESS" 
+                className="bg-white/5 border-white/10 rounded-none text-white placeholder:text-gray-600 focus:border-white/30 font-bold tracking-widest text-[10px]" 
               />
-              <Button className="w-full bg-secondary hover:bg-secondary/90 text-white">
-                Subscribe
+              <Button className="w-full bg-white text-primary hover:bg-gray-200 rounded-none font-black tracking-widest uppercase text-xs py-6">
+                JOIN US
               </Button>
             </form>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-500">
+        <div className="border-t border-white/5 pt-12 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-white/20">
           <p>&copy; {new Date().getFullYear()} Azmi Foundation. All rights reserved.</p>
         </div>
       </div>
@@ -85,8 +80,8 @@ export function Footer() {
 
 function SocialIcon({ Icon }: { Icon: any }) {
   return (
-    <a href="#" className="w-10 h-10 rounded-full bg-primary-foreground/5 flex items-center justify-center text-gray-400 hover:bg-secondary hover:text-white transition-all duration-300">
-      <Icon className="w-5 h-5" />
+    <a href="#" className="w-10 h-10 border border-white/10 flex items-center justify-center text-gray-400 hover:border-white hover:text-white transition-all duration-500">
+      <Icon className="w-4 h-4" />
     </a>
   );
 }

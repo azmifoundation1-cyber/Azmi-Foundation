@@ -26,12 +26,12 @@ export function Navbar() {
   const isActive = (path: string) => location === path;
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm transition-all duration-300">
+    <nav className="sticky top-0 z-50 w-full glass-nav transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
-              <img src="/logo.png" alt="Azmi Foundation" className="h-12 w-auto" />
+              <img src="/logo.png" alt="Azmi Foundation" className="h-14 w-auto drop-shadow-md" />
             </Link>
           </div>
 
@@ -39,12 +39,12 @@ export function Navbar() {
           <div className="hidden md:flex items-center space-x-8">
             {links.map((link) => (
               <Link key={link.href} href={link.href} className={`
-                text-sm font-medium transition-colors duration-200 cursor-pointer relative py-2
-                ${isActive(link.href) ? 'text-secondary' : 'text-gray-600 hover:text-secondary'}
+                text-sm font-bold tracking-widest uppercase transition-colors duration-200 cursor-pointer relative py-2
+                ${isActive(link.href) ? 'text-primary' : 'text-primary/70 hover:text-primary'}
               `}>
                 {link.label}
                 {isActive(link.href) && (
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-secondary rounded-full" />
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full" />
                 )}
               </Link>
             ))}
@@ -52,33 +52,33 @@ export function Navbar() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full overflow-hidden border border-gray-200">
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full overflow-hidden border border-primary/20 hover:border-accent transition-colors">
                      {user.profileImageUrl ? (
                        <img src={user.profileImageUrl} alt={user.firstName || 'User'} className="h-full w-full object-cover" />
                      ) : (
-                       <User className="h-5 w-5 text-gray-500" />
+                       <User className="h-5 w-5 text-primary" />
                      )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuContent align="end" className="w-48 glass-nav">
                    <Link href="/dashboard">
-                     <DropdownMenuItem className="cursor-pointer">Dashboard</DropdownMenuItem>
+                     <DropdownMenuItem className="cursor-pointer font-bold uppercase tracking-wider">Dashboard</DropdownMenuItem>
                    </Link>
-                   <DropdownMenuItem onClick={() => logout()} className="cursor-pointer text-red-500">
+                   <DropdownMenuItem onClick={() => logout()} className="cursor-pointer text-red-600 font-bold uppercase tracking-wider">
                      Logout
                    </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <a href="/api/login">
-                <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white transition-all">
+                <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white transition-all font-bold uppercase tracking-widest">
                   Sign In
                 </Button>
               </a>
             )}
 
             <Link href="/donate">
-              <Button className="bg-secondary hover:bg-secondary/90 text-white font-semibold shadow-lg shadow-secondary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 rounded-full px-6">
+              <Button className="bg-primary hover:bg-primary/90 text-white font-bold tracking-widest uppercase shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 rounded-none px-6 gold-edge">
                 Donate Now
               </Button>
             </Link>

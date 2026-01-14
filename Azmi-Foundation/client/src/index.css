@@ -5,30 +5,30 @@
 @tailwind utilities;
 
 :root {
-  /* Deep Blue & Teal Theme */
-  --primary: 222 47% 11%;      /* Deep Navy Blue */
-  --primary-foreground: 210 40% 98%;
+  /* Metallic Silver & Charcoal Theme */
+  --primary: 0 0% 7%;           /* Deep Charcoal #111111 */
+  --primary-foreground: 0 0% 98%;
 
-  --secondary: 175 84% 32%;    /* Vibrant Teal/Green */
-  --secondary-foreground: 210 40% 98%;
+  --secondary: 0 0% 75%;        /* Metallic Silver #C0C0C0 */
+  --secondary-foreground: 0 0% 7%;
 
-  --accent: 210 40% 96%;       /* Light Blue/Gray */
-  --accent-foreground: 222 47% 11%;
+  --accent: 45 65% 53%;         /* Warm Gold #D4AF37 */
+  --accent-foreground: 0 0% 100%;
 
-  --background: 0 0% 100%;
-  --foreground: 222 47% 11%;
+  --background: 0 0% 95%;       /* Soft Steel Background */
+  --foreground: 0 0% 7%;
 
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+  --muted: 0 0% 90%;
+  --muted-foreground: 0 0% 40%;
 
   --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
+  --card-foreground: 0 0% 7%;
 
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 175 84% 32%;
+  --border: 0 0% 85%;
+  --input: 0 0% 85%;
+  --ring: 0 0% 75%;
 
-  --radius: 0.75rem;
+  --radius: 0.5rem;
 }
 
 @layer base {
@@ -36,13 +36,36 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply antialiased;
+    background: radial-gradient(circle at center, #E0E0E0 0%, #C0C0C0 100%);
+    background-attachment: fixed;
     font-family: 'Inter', sans-serif;
+    color: #111111;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
-    @apply font-bold tracking-tight text-primary;
+    font-family: 'Inter', sans-serif;
+    @apply font-bold tracking-tight text-primary uppercase;
   }
+}
+
+.glass-nav {
+  @apply bg-white/30 backdrop-blur-md border-b border-white/20 shadow-lg;
+}
+
+.metallic-card {
+  background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+  @apply border border-white/50 shadow-xl rounded-xl transition-all duration-500;
+}
+
+.metallic-text {
+  background: linear-gradient(to bottom, #111111 0%, #333333 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-edge {
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(212, 175, 55, 0.3);
 }
 
 /* Custom Scrollbar */
