@@ -256,25 +256,3 @@ function StatCard({ icon: Icon, count, label, index }: { icon: any, count: strin
     </motion.div>
   );
 }
-
-      <Footer />
-    </div>
-  );
-}
-
-function StatCard({ icon: Icon, count, label, index }: { icon: any, count: string, label: string, index: number }) {
-  return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ delay: index * 0.1 }}
-      className="bg-white p-16 text-center hover:bg-primary group transition-all duration-700 cursor-default"
-    >
-      <div className="w-12 h-12 border border-primary/10 flex items-center justify-center mx-auto mb-8 group-hover:border-white/20 group-hover:bg-white/10 transition-all duration-500">
-        <Icon className="w-5 h-5 group-hover:text-white group-hover:rotate-[360deg] transition-all duration-700" />
-      </div>
-      <h3 className="text-6xl font-black text-primary group-hover:text-white mb-2 tracking-tighter transition-colors duration-500">{count}</h3>
-      <p className="text-primary/40 group-hover:text-white/40 font-black uppercase tracking-[0.3em] text-[10px] transition-colors duration-500">{label}</p>
-    </motion.div>
-  );
-}
