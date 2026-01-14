@@ -27,7 +27,7 @@ export default function Home() {
   const featuredCampaigns = campaigns?.slice(0, 3) || [];
 
   return (
-    <div ref={containerRef} className="min-h-screen flex flex-col font-sans overflow-x-hidden bg-background">
+    <div ref={containerRef} className="min-h-screen flex flex-col font-sans overflow-x-hidden bg-background relative">
       <Navbar />
 
       {/* Advanced Hero Section */}
