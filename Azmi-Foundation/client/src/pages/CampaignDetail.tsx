@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import {
   Heart, Share2, Users, CheckCircle, ShieldCheck,
-  ChevronRight, Loader2, ArrowLeft, QrCode, Copy, Check
+  ChevronRight, Loader2, ArrowLeft, Copy, Check
 } from "lucide-react";
 import type { Campaign, Donation } from "@shared/schema";
 import { useState } from "react";
@@ -161,7 +161,7 @@ export default function CampaignDetail() {
 
   const percent = Math.min(100, Math.round((Number(campaign.currentAmount) / Number(campaign.targetAmount)) * 100));
   const story = CAMPAIGN_STORIES[id] || CAMPAIGN_STORIES[1];
-  const upiId = "azmifoundation@axisbank";
+  const upiId = "8320218861@okbizaxis";
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
@@ -471,20 +471,12 @@ export default function CampaignDetail() {
                 <div className="border-t border-gray-100 pt-5 space-y-4">
                   <p className="text-xs text-gray-400 font-black uppercase tracking-widest text-center">Or Donate using</p>
                   <div className="flex flex-col items-center space-y-3">
-                    <div className="w-36 h-36 bg-gray-50 border-2 border-gray-100 flex items-center justify-center relative overflow-hidden p-2">
+                    <div className="w-40 h-40 bg-white border-2 border-gray-100 flex items-center justify-center overflow-hidden p-1">
                       <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${upiId}&pn=AZMI+FOUNDATION&am=${amount}&cu=INR`}
-                        alt="UPI QR Code"
+                        src="/azmi-qr.png"
+                        alt="UPI QR Code — Azmi Foundation"
                         className="w-full h-full object-contain"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                          (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                        }}
                       />
-                      <div className="hidden flex-col items-center justify-center gap-2 absolute inset-0 bg-gray-50">
-                        <QrCode className="w-10 h-10 text-gray-300" />
-                        <p className="text-[8px] text-gray-400 font-bold text-center px-2">QR loads when online</p>
-                      </div>
                     </div>
                     <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest text-center">
                       Scan & donate with any UPI app
