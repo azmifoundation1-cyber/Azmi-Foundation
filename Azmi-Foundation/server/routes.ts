@@ -135,6 +135,18 @@ async function seedDatabase() {
     });
   }
 
+  // Seed the Shahbaaz campaign if not already present
+  const shahbaazExists = campaigns.some(c => c.title.includes("Shahbaaz"));
+  if (!shahbaazExists) {
+    await storage.createCampaign({
+      title: "Help Dr. Shahbaaz Feed 2000+ Needy People Everyday For Free",
+      description: "Dr. Shahbaaz Azmi is managing both his father's critical medical condition and feeding over 2000+ hungry people every single day from the streets of Ahmedabad. Your donation keeps this mission alive.",
+      targetAmount: "500000",
+      imageUrl: "/shahbaaz-thumb.jpg",
+      status: "active"
+    });
+  }
+
   const programs = await storage.getPrograms();
   if (programs.length === 0) {
     await storage.createProgram({

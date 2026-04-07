@@ -27,6 +27,7 @@ const CAMPAIGN_STORIES: Record<number, {
   story: string[];
   images: string[];
   youtubeId?: string;
+  localVideo?: string;
 }> = {
   1: {
     story: [
@@ -40,7 +41,6 @@ const CAMPAIGN_STORIES: Record<number, {
       "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
       "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"
     ],
-    youtubeId: "kVy8R1O2aXM"
   },
   2: {
     story: [
@@ -54,8 +54,21 @@ const CAMPAIGN_STORIES: Record<number, {
       "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&q=80",
       "https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800&q=80"
     ],
-    youtubeId: "kVy8R1O2aXM"
-  }
+  },
+  3: {
+    localVideo: "/shahbaaz-video.mp4",
+    story: [
+      "For over 18 years, Dr. Azhar Azmi dedicated his life to serving the poor and the forgotten. Through the Azmi Foundation, he fed more than 2 lakh people for free, often using his own clinic income and personal savings. Long before charity became organized, helping the hungry was already his daily habit — if he saw someone sitting hungry or sleeping on the road, he would stop, sit with them, and ensure they were fed. Serving people was not an activity for him — it was his way of life.",
+      "Today, the man who spent his life saving others is fighting for his own. He is battling heart failure, kidney failure, and a brain haemorrhage and is currently admitted in critical condition. He cannot stand, sit, eat, or drink without assistance. Once a pillar of strength for thousands, he is now completely dependent on medical support. Watching this decline has been devastating for his family, especially his son.",
+      "Dr. Shahbaaz Azmi cannot let his father's dream die. He cannot turn away from the people who wait every day, hoping someone will come with food. But today, he cannot do this alone. Every single day, Dr. Shahbaaz personally visits the streets of Ahmedabad — Gomtipur, Kalupur, Jamalpur — distributing freshly prepared meals to over 2,000 needy individuals. He manages his father's critical medical expenses alongside this daily mission, stretching every rupee to its limit.",
+      "He needs your support to save his father and keep this mission alive. By helping him now, you are helping feed hungry souls and protect a legacy built on humanity. Every contribution — big or small — directly funds daily meals and medical care. Together, we can ensure that neither the hungry go unfed nor a life dedicated to service goes unprotected."
+    ],
+    images: [
+      "/shahbaaz-thumb.jpg",
+      "https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?w=800&q=80",
+      "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"
+    ],
+  },
 };
 
 export default function CampaignDetail() {
@@ -225,9 +238,26 @@ export default function CampaignDetail() {
               </h2>
 
               {story.story.map((para, i) => (
-                <div key={i}>
+                <div key={i} className="space-y-6">
                   <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{para}</p>
-                  {i === 1 && story.youtubeId && (
+
+                  {/* Show local video after 1st paragraph */}
+                  {i === 0 && story.localVideo && (
+                    <div className="my-4 rounded-none overflow-hidden bg-black">
+                      <video
+                        src={story.localVideo}
+                        controls
+                        poster={story.images[0]}
+                        className="w-full max-h-[480px] object-contain"
+                        preload="metadata"
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  )}
+
+                  {/* Show YouTube embed after 1st paragraph (if no local video) */}
+                  {i === 1 && story.youtubeId && !story.localVideo && (
                     <div className="my-8 aspect-video rounded-none overflow-hidden bg-black">
                       <iframe
                         src={`https://www.youtube.com/embed/${story.youtubeId}`}
@@ -238,11 +268,13 @@ export default function CampaignDetail() {
                       />
                     </div>
                   )}
-                  {story.images[i] && i > 0 && (
-                    <div className="my-6 overflow-hidden aspect-video rounded-none">
+
+                  {/* Images between paragraphs (skip first image — used as hero/poster) */}
+                  {story.images[i + 1] && i >= 1 && (
+                    <div className="overflow-hidden aspect-video rounded-none">
                       <img
-                        src={story.images[i]}
-                        alt={`Campaign image ${i + 1}`}
+                        src={story.images[i + 1]}
+                        alt={`Campaign image ${i + 2}`}
                         className="w-full h-full object-cover"
                       />
                     </div>
