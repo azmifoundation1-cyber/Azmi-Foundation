@@ -65,9 +65,12 @@ const CAMPAIGN_STORIES: Record<number, {
       "Dr. Shahbaaz cannot let his father's dream die. He cannot turn away from the people who wait every day, hoping someone will come with food. But today, he cannot do this alone. He needs support to save his father and keep this mission alive. By helping him now, you are helping feed hungry souls and protect a legacy built on humanity."
     ],
     images: [
-      "/shahbaaz-thumb.jpg",
-      "https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?w=800&q=80",
-      "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"
+      "/shahbaaz-thumb.jpg",   // [0] — video poster
+      "/azmi-img3.jpg",        // [1] — (index offset placeholder)
+      "/azmi-img3.jpg",        // [2] — shown after paragraph 2 (elderly woman being fed)
+      "/azmi-img4.jpg",        // [3] — shown after paragraph 3 (large crowd distribution)
+      "/azmi-img1.jpg",        // [4] — shown after paragraph 4 (food tray handout)
+      "/azmi-img2.jpg",        // [5] — shown after paragraph 5 (women sharing a meal)
     ],
   },
 };
