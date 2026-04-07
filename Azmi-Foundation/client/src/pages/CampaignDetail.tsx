@@ -86,6 +86,7 @@ export default function CampaignDetail() {
   const [donating, setDonating] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const upiId = "8320218861@okbizaxis";
 
   const { data: campaign, isLoading } = useQuery<Campaign>({
     queryKey: ["/api/campaigns", id],
@@ -125,6 +126,12 @@ export default function CampaignDetail() {
     }
   });
 
+  const handleDonate = () => {
+    const upiLink = `tez://upi/pay?pa=${upiId}&pn=AZMI%20FOUNDATION&am=${amount}&cu=INR&tn=Donation%20to%20Azmi%20Foundation`;
+    window.location.href = upiLink;
+    donateMutation.mutate();
+  };
+
   const handleCopy = () => {
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
@@ -161,7 +168,6 @@ export default function CampaignDetail() {
 
   const percent = Math.min(100, Math.round((Number(campaign.currentAmount) / Number(campaign.targetAmount)) * 100));
   const story = CAMPAIGN_STORIES[id] || CAMPAIGN_STORIES[1];
-  const upiId = "8320218861@okbizaxis";
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
@@ -452,7 +458,7 @@ export default function CampaignDetail() {
 
                   {/* Donate Button */}
                   <Button
-                    onClick={() => donateMutation.mutate()}
+                    onClick={handleDonate}
                     disabled={donateMutation.isPending || !amount || Number(amount) < 1}
                     className="w-full bg-primary hover:bg-black text-white font-black uppercase tracking-[0.3em] text-sm rounded-none py-6 gold-edge transition-all duration-500 relative overflow-hidden group"
                   >
