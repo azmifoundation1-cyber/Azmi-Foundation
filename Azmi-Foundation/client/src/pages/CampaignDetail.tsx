@@ -127,7 +127,7 @@ export default function CampaignDetail() {
   });
 
   const handleDonate = () => {
-    const upiLink = `tez://upi/pay?pa=${upiId}&pn=AZMI%20FOUNDATION&am=${amount}&cu=INR&tn=Donation%20to%20Azmi%20Foundation`;
+    const upiLink = `upi://pay?pa=8320218861@okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&aid=uGICAgKDh34mqRg&ver=01&mode=01&tr=BCR2DN7T3H22XBD5&am=${amount}&cu=INR`;
     window.location.href = upiLink;
     donateMutation.mutate();
   };
