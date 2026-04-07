@@ -8,9 +8,11 @@ import Home from "@/pages/Home";
 import About from "@/pages/About";
 import Programs from "@/pages/Programs";
 import Campaigns from "@/pages/Campaigns";
+import CampaignDetail from "@/pages/CampaignDetail";
 import Donate from "@/pages/Donate";
 import GetInvolved from "@/pages/GetInvolved";
 import Dashboard from "@/pages/Dashboard";
+import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -20,9 +22,11 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/programs" component={Programs} />
       <Route path="/campaigns" component={Campaigns} />
+      <Route path="/campaigns/:id" component={CampaignDetail} />
       <Route path="/donate" component={Donate} />
       <Route path="/get-involved" component={GetInvolved} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/contact" component={Contact} />
       <Route component={NotFound} />
     </Switch>
   );

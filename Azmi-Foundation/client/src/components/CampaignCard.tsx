@@ -77,11 +77,16 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
           </div>
         </CardContent>
 
-        <CardFooter className="px-8 sm:px-12 pb-10 sm:pb-14 pt-6">
-          <Link href={`/donate?campaignId=${campaign.id}`} className="w-full">
+        <CardFooter className="px-8 sm:px-12 pb-10 sm:pb-14 pt-6 flex flex-col gap-3">
+          <Link href={`/campaigns/${campaign.id}`} className="w-full">
+            <Button variant="outline" className="w-full border-2 border-primary/20 text-primary hover:border-primary font-black uppercase tracking-[0.4em] text-[8px] sm:text-[10px] rounded-none py-8 sm:py-10 transition-all duration-500">
+              View Full Story
+            </Button>
+          </Link>
+          <Link href={`/campaigns/${campaign.id}`} className="w-full">
             <Button className="w-full bg-primary hover:bg-black text-white font-black uppercase tracking-[0.5em] text-[8px] sm:text-[10px] rounded-none py-10 sm:py-12 shadow-2xl gold-edge transition-all duration-700 overflow-hidden group/btn relative transform-gpu hover:scale-[1.02]">
               <span className="relative z-10 flex items-center justify-center gap-4">
-                Execute Donation <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover/btn:translate-x-4 transition-transform duration-500" />
+                Donate Now <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover/btn:translate-x-4 transition-transform duration-500" />
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-accent/0 via-accent/20 to-accent/0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
             </Button>

@@ -66,6 +66,11 @@ export async function registerRoutes(
     res.json(donations);
   });
 
+  app.get("/api/donations/campaign/:campaignId", async (req, res) => {
+    const donations = await storage.getDonationsByCampaign(Number(req.params.campaignId));
+    res.json(donations);
+  });
+
   // === Programs ===
   app.get(api.programs.list.path, async (req, res) => {
     const programs = await storage.getPrograms();

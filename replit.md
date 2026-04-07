@@ -39,6 +39,17 @@ Preferred communication style: Simple, everyday language.
 - **Programs**: NGO initiatives and events
 - **Registrations**: Member/volunteer/intern applications linked to users
 
+### Pages
+- `/` — Home with hero, stats, featured campaigns
+- `/about` — Foundation history, mission, vision, leadership (DR AZHAR AZMI, ZEBA AZMI, ZAKIYA AZMI, DR SHAHBAAZ AZMI)
+- `/campaigns` — Campaign listing grid
+- `/campaigns/:id` — **Milaap-style campaign detail page** with story, YouTube embed, donation widget, UPI QR, supporters list, Code of Practice, bank transfer info, WhatsApp share
+- `/contact` — Official address, bank details (Axis Bank 80G), social media links
+- `/programs` — Program listing
+- `/donate` — Donation form
+- `/get-involved` — Volunteer/member/intern registration
+- `/dashboard` — Authenticated user dashboard
+
 ### Project Structure
 ```
 ├── client/           # React frontend
