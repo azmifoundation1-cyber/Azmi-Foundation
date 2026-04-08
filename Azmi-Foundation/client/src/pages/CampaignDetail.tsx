@@ -127,14 +127,10 @@ export default function CampaignDetail() {
     }
   });
 
-  const openUpiApp = (scheme: string) => {
-    const base = `pa=8320218861@okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&tr=BCR2DN7T3H22XBD5&am=${amount}&cu=INR`;
-    const link = `${scheme}${base}`;
-    const anchor = document.createElement("a");
-    anchor.href = link;
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
+  const buildUpiLink = (scheme: string) =>
+    `${scheme}pa=8320218861@okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&tr=BCR2DN7T3H22XBD5&am=${amount}&cu=INR`;
+
+  const logDonation = () => {
     setShowUpiPicker(false);
     donateMutation.mutate();
   };
@@ -576,82 +572,50 @@ export default function CampaignDetail() {
 
             <div className="p-5 grid grid-cols-2 gap-3">
               {/* Google Pay */}
-              <button
-                onClick={() => openUpiApp("tez://upi/pay?")}
-                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#1A73E8] rounded-xl p-4 transition-all group"
+              <a
+                href={buildUpiLink("tez://upi/pay?")}
+                onClick={logDonation}
+                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#1A73E8] rounded-xl p-4 transition-all group no-underline"
               >
-                <img
-                  src="https://cdn.simpleicons.org/googlepay/1A73E8"
-                  alt="Google Pay"
-                  className="w-10 h-10 object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).replaceWith((() => {
-                      const d = document.createElement('div');
-                      d.className = 'w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-black';
-                      d.style.background = 'linear-gradient(135deg,#4285F4,#34A853,#FBBC04,#EA4335)';
-                      d.textContent = 'G';
-                      return d;
-                    })());
-                  }}
-                />
+                <img src="https://cdn.simpleicons.org/googlepay/1A73E8" alt="Google Pay" className="w-10 h-10 object-contain"
+                  onError={(e) => { const el = e.target as HTMLImageElement; el.src = ''; el.style.display='none'; const d = document.createElement('div'); d.className='w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-black'; d.style.background='linear-gradient(135deg,#4285F4,#34A853,#FBBC04,#EA4335)'; d.textContent='G Pay'; el.parentNode?.insertBefore(d,el); }} />
                 <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-[#1A73E8]">Google Pay</span>
-              </button>
+              </a>
 
               {/* PhonePe */}
-              <button
-                onClick={() => openUpiApp("phonepe://pay?")}
-                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#5F259F] rounded-xl p-4 transition-all group"
+              <a
+                href={buildUpiLink("phonepe://pay?")}
+                onClick={logDonation}
+                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#5F259F] rounded-xl p-4 transition-all group no-underline"
               >
-                <img
-                  src="https://cdn.simpleicons.org/phonepe/5F259F"
-                  alt="PhonePe"
-                  className="w-10 h-10 object-contain"
-                  onError={(e) => {
-                    const el = e.target as HTMLImageElement;
-                    el.style.display = 'none';
-                    const d = document.createElement('div');
-                    d.className = 'w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-sm';
-                    d.style.background = '#5F259F';
-                    d.textContent = 'Pe';
-                    el.parentNode?.insertBefore(d, el);
-                  }}
-                />
+                <img src="https://cdn.simpleicons.org/phonepe/5F259F" alt="PhonePe" className="w-10 h-10 object-contain"
+                  onError={(e) => { const el = e.target as HTMLImageElement; el.src=''; el.style.display='none'; const d=document.createElement('div'); d.className='w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-sm'; d.style.background='#5F259F'; d.textContent='Pe'; el.parentNode?.insertBefore(d,el); }} />
                 <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-[#5F259F]">PhonePe</span>
-              </button>
+              </a>
 
               {/* Paytm */}
-              <button
-                onClick={() => openUpiApp("paytmmp://pay?")}
-                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#002970] rounded-xl p-4 transition-all group"
+              <a
+                href={buildUpiLink("paytmmp://pay?")}
+                onClick={logDonation}
+                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#002970] rounded-xl p-4 transition-all group no-underline"
               >
-                <img
-                  src="https://cdn.simpleicons.org/paytm/002970"
-                  alt="Paytm"
-                  className="w-10 h-10 object-contain"
-                  onError={(e) => {
-                    const el = e.target as HTMLImageElement;
-                    el.style.display = 'none';
-                    const d = document.createElement('div');
-                    d.className = 'w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-xs';
-                    d.style.background = '#002970';
-                    d.textContent = 'Paytm';
-                    el.parentNode?.insertBefore(d, el);
-                  }}
-                />
+                <img src="https://cdn.simpleicons.org/paytm/002970" alt="Paytm" className="w-10 h-10 object-contain"
+                  onError={(e) => { const el = e.target as HTMLImageElement; el.src=''; el.style.display='none'; const d=document.createElement('div'); d.className='w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-xs'; d.style.background='#002970'; d.textContent='Paytm'; el.parentNode?.insertBefore(d,el); }} />
                 <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-[#002970]">Paytm</span>
-              </button>
+              </a>
 
               {/* BHIM UPI */}
-              <button
-                onClick={() => openUpiApp("upi://pay?")}
-                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#F26522] rounded-xl p-4 transition-all group"
+              <a
+                href={buildUpiLink("upi://pay?")}
+                onClick={logDonation}
+                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#F26522] rounded-xl p-4 transition-all group no-underline"
               >
                 <svg viewBox="0 0 40 40" className="w-10 h-10" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="20" cy="20" r="20" fill="#F26522"/>
                   <text x="50%" y="54%" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="11" fontWeight="900" fontFamily="Arial,sans-serif">BHIM</text>
                 </svg>
                 <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-[#F26522]">BHIM UPI</span>
-              </button>
+              </a>
             </div>
 
             <div className="px-5 pb-5">
