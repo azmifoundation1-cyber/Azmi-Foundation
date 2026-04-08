@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Heart, User } from "lucide-react";
+import { Menu, X, Heart, User, Shield } from "lucide-react";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -61,10 +61,17 @@ export function Navbar() {
                      )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 glass-nav">
+                <DropdownMenuContent align="end" className="w-52 glass-nav">
                    <Link href="/dashboard">
-                     <DropdownMenuItem className="cursor-pointer font-bold uppercase tracking-wider">Dashboard</DropdownMenuItem>
+                     <DropdownMenuItem className="cursor-pointer font-bold uppercase tracking-wider">My Dashboard</DropdownMenuItem>
                    </Link>
+                   {(user as any)?.role === "admin" && (
+                     <Link href="/admin">
+                       <DropdownMenuItem className="cursor-pointer font-bold uppercase tracking-wider text-purple-600 flex items-center gap-2">
+                         <Shield className="w-3.5 h-3.5" /> Admin Panel
+                       </DropdownMenuItem>
+                     </Link>
+                   )}
                    <DropdownMenuItem onClick={() => logout()} className="cursor-pointer text-red-600 font-bold uppercase tracking-wider">
                      Logout
                    </DropdownMenuItem>

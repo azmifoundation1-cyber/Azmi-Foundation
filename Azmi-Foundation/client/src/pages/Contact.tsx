@@ -1,10 +1,33 @@
+import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
-import { MapPin, Phone, Mail, Instagram, Facebook, Linkedin, Landmark, ShieldCheck } from "lucide-react";
+import { MapPin, Phone, Mail, Instagram, Facebook, Linkedin, Landmark, ShieldCheck, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { useMutation } from "@tanstack/react-query";
+
+const emptyForm = { name: "", email: "", phone: "", subject: "", message: "" };
 
 export default function Contact() {
+  const { toast } = useToast();
+  const [form, setForm] = useState(emptyForm);
+
+  const sendMessage = useMutation({
+    mutationFn: async (data: typeof emptyForm) => {
+      const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+      if (!res.ok) throw new Error("Failed to send");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Message sent!", description: "We'll get back to you shortly." });
+      setForm(emptyForm);
+    },
+    onError: () => toast({ title: "Failed to send message", variant: "destructive" }),
+  });
+
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background perspective-1000">
       <Navbar />
@@ -126,6 +149,50 @@ export default function Contact() {
               </div>
             </motion.div>
 
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-black text-primary uppercase tracking-tighter">Send Us a Message</h2>
+            <p className="text-gray-500 mt-3">We typically reply within 24 hours</p>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm border p-8 space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Full Name *</label>
+                <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Your name" />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Email *</label>
+                <Input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="you@email.com" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Phone</label>
+                <Input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="+91 9876543210" />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Subject *</label>
+                <Input value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} placeholder="How can we help?" />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Message *</label>
+              <Textarea rows={5} value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} placeholder="Share your thoughts, questions, or feedback..." />
+            </div>
+            <Button
+              className="w-full bg-primary hover:bg-primary/90 gap-2 py-6 text-base font-bold uppercase tracking-wider"
+              disabled={sendMessage.isPending || !form.name || !form.email || !form.subject || !form.message}
+              onClick={() => sendMessage.mutate(form)}
+            >
+              {sendMessage.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+              Send Message
+            </Button>
           </div>
         </div>
       </section>

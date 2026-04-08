@@ -15,6 +15,14 @@ import Dashboard from "@/pages/Dashboard";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminCampaigns from "@/pages/admin/AdminCampaigns";
+import AdminDonations from "@/pages/admin/AdminDonations";
+import AdminRegistrations from "@/pages/admin/AdminRegistrations";
+import AdminPrograms from "@/pages/admin/AdminPrograms";
+import AdminUsers from "@/pages/admin/AdminUsers";
+import AdminMessages from "@/pages/admin/AdminMessages";
+
 function Router() {
   return (
     <Switch>
@@ -27,6 +35,15 @@ function Router() {
       <Route path="/get-involved" component={GetInvolved} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/contact" component={Contact} />
+
+      <Route path="/admin" component={AdminDashboard} />
+      <Route path="/admin/campaigns" component={AdminCampaigns} />
+      <Route path="/admin/donations" component={AdminDonations} />
+      <Route path="/admin/registrations" component={AdminRegistrations} />
+      <Route path="/admin/programs" component={AdminPrograms} />
+      <Route path="/admin/users" component={AdminUsers} />
+      <Route path="/admin/messages" component={AdminMessages} />
+
       <Route component={NotFound} />
     </Switch>
   );
