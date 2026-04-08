@@ -128,7 +128,7 @@ export default function CampaignDetail() {
   });
 
   const openUpiApp = (scheme: string) => {
-    const base = `pa=8320218861@okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&tr=BCR2DN7T3H22XBD5&am=${amount}&cu=INR`;
+    const base = `pa=8320218861@okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&tr=BCR2DN7T3H22XBD5&cu=INR`;
     const link = `${scheme}${base}`;
     const anchor = document.createElement("a");
     anchor.href = link;
