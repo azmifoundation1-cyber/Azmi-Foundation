@@ -575,38 +575,82 @@ export default function CampaignDetail() {
             </div>
 
             <div className="p-5 grid grid-cols-2 gap-3">
+              {/* Google Pay */}
               <button
                 onClick={() => openUpiApp("tez://upi/pay?")}
-                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-primary rounded-xl p-4 transition-all group"
+                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#1A73E8] rounded-xl p-4 transition-all group"
               >
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/512px-Google_Pay_Logo.svg.png" alt="Google Pay" className="w-10 h-10 object-contain" />
-                <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-primary">Google Pay</span>
+                <img
+                  src="https://cdn.simpleicons.org/googlepay/1A73E8"
+                  alt="Google Pay"
+                  className="w-10 h-10 object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).replaceWith((() => {
+                      const d = document.createElement('div');
+                      d.className = 'w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-black';
+                      d.style.background = 'linear-gradient(135deg,#4285F4,#34A853,#FBBC04,#EA4335)';
+                      d.textContent = 'G';
+                      return d;
+                    })());
+                  }}
+                />
+                <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-[#1A73E8]">Google Pay</span>
               </button>
 
+              {/* PhonePe */}
               <button
                 onClick={() => openUpiApp("phonepe://pay?")}
-                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-primary rounded-xl p-4 transition-all group"
+                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#5F259F] rounded-xl p-4 transition-all group"
               >
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/PhonePe_Logo.png/480px-PhonePe_Logo.png" alt="PhonePe" className="w-10 h-10 object-contain" />
-                <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-primary">PhonePe</span>
+                <img
+                  src="https://cdn.simpleicons.org/phonepe/5F259F"
+                  alt="PhonePe"
+                  className="w-10 h-10 object-contain"
+                  onError={(e) => {
+                    const el = e.target as HTMLImageElement;
+                    el.style.display = 'none';
+                    const d = document.createElement('div');
+                    d.className = 'w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-sm';
+                    d.style.background = '#5F259F';
+                    d.textContent = 'Pe';
+                    el.parentNode?.insertBefore(d, el);
+                  }}
+                />
+                <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-[#5F259F]">PhonePe</span>
               </button>
 
+              {/* Paytm */}
               <button
                 onClick={() => openUpiApp("paytmmp://pay?")}
-                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-primary rounded-xl p-4 transition-all group"
+                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#002970] rounded-xl p-4 transition-all group"
               >
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Paytm_logo.png/480px-Paytm_logo.png" alt="Paytm" className="w-10 h-10 object-contain" />
-                <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-primary">Paytm</span>
+                <img
+                  src="https://cdn.simpleicons.org/paytm/002970"
+                  alt="Paytm"
+                  className="w-10 h-10 object-contain"
+                  onError={(e) => {
+                    const el = e.target as HTMLImageElement;
+                    el.style.display = 'none';
+                    const d = document.createElement('div');
+                    d.className = 'w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-xs';
+                    d.style.background = '#002970';
+                    d.textContent = 'Paytm';
+                    el.parentNode?.insertBefore(d, el);
+                  }}
+                />
+                <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-[#002970]">Paytm</span>
               </button>
 
+              {/* BHIM UPI */}
               <button
                 onClick={() => openUpiApp("upi://pay?")}
-                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-primary rounded-xl p-4 transition-all group"
+                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#F26522] rounded-xl p-4 transition-all group"
               >
-                <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo-vector.svg/320px-UPI-Logo-vector.svg.png" alt="UPI" className="w-8 h-8 object-contain" />
-                </div>
-                <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-primary">Other UPI</span>
+                <svg viewBox="0 0 40 40" className="w-10 h-10" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="20" cy="20" r="20" fill="#F26522"/>
+                  <text x="50%" y="54%" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="11" fontWeight="900" fontFamily="Arial,sans-serif">BHIM</text>
+                </svg>
+                <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-[#F26522]">BHIM UPI</span>
               </button>
             </div>
 
