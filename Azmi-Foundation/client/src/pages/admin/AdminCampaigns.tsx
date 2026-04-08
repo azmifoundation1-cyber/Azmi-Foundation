@@ -17,6 +17,7 @@ import type { Campaign } from "@shared/schema";
 const emptyForm = {
   title: "", description: "", story: "", category: "other" as const,
   targetAmount: "", imageUrl: "", videoUrl: "", status: "active" as const, featured: false,
+  upiId: "", upiName: "", bankAccountName: "", bankAccountNumber: "", bankIfsc: "", bankName: "",
 };
 
 export default function AdminCampaigns() {

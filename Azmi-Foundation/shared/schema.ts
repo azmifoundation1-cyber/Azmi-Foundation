@@ -22,6 +22,13 @@ export const campaigns = pgTable("campaigns", {
   featured: boolean("featured").default(false),
   endDate: timestamp("end_date"),
   createdBy: text("created_by").references(() => users.id),
+  // Campaign-specific payment account
+  upiId: text("upi_id"),
+  upiName: text("upi_name"),
+  bankAccountName: text("bank_account_name"),
+  bankAccountNumber: text("bank_account_number"),
+  bankIfsc: text("bank_ifsc"),
+  bankName: text("bank_name"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
