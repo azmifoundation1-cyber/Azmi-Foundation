@@ -3,11 +3,22 @@ import { type Campaign } from "@shared/schema";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ArrowRight, Target } from "lucide-react";
+import { ArrowRight, Target, HeartPulse, GraduationCap, Leaf, Users, AlertTriangle, Building2, Flame, Droplets } from "lucide-react";
 import { motion } from "framer-motion";
+
+const CATEGORY_CONFIG: Record<string, { label: string; Icon: React.ElementType; color: string }> = {
+  health:      { label: "Medical Emergency",   Icon: HeartPulse,    color: "bg-red-600" },
+  education:   { label: "Education",           Icon: GraduationCap, color: "bg-blue-700" },
+  environment: { label: "Environment",         Icon: Leaf,          color: "bg-green-700" },
+  community:   { label: "NGO Initiative",      Icon: Users,         color: "bg-[#b8922a]" },
+  emergency:   { label: "Very Serious Case",   Icon: Flame,         color: "bg-orange-700" },
+  other:       { label: "NGO Initiative",      Icon: Building2,     color: "bg-[#b8922a]" },
+};
 
 export function CampaignCard({ campaign }: { campaign: Campaign }) {
   const percent = Math.min(100, Math.round((Number(campaign.currentAmount) / Number(campaign.targetAmount)) * 100));
+  const cat = CATEGORY_CONFIG[campaign.category] ?? CATEGORY_CONFIG.other;
+  const { label, Icon, color } = cat;
 
   return (
     <motion.div
@@ -29,9 +40,10 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
           <motion.div 
             initial={{ x: 50, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
-            className="absolute top-6 right-6 px-6 py-2 bg-accent text-white text-[8px] sm:text-[10px] font-black uppercase tracking-[0.4em] shadow-2xl gold-edge"
+            className={`absolute top-6 right-6 flex items-center gap-2 px-4 py-2 ${color} text-white text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl`}
           >
-            ACTIVE STRATEGY
+            <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+            {label}
           </motion.div>
         </div>
 
