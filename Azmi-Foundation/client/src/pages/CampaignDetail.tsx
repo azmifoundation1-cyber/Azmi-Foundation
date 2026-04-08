@@ -127,14 +127,8 @@ export default function CampaignDetail() {
     }
   });
 
-  // %40 is required for @ in intent:// URLs (Chrome URL parser needs it encoded)
-  // Android decodes %40 back to @ before passing to the UPI app
-  const upiParams = `pa=8320218861%40okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&aid=uGICAgKDh34mqRg&ver=01&mode=01&tr=BCR2DN7T3H22XBD5&am=${amount}&cu=INR`;
-
-  const buildIntentLink = (pkg: string) =>
-    `intent://pay?${upiParams}#Intent;scheme=upi;package=${pkg};end`;
-
-  // upi:// uses raw @ because Android UPI framework handles it natively
+  // Standard UPI deep link — works on all Android browsers (Chrome, Samsung, Firefox)
+  // All UPI apps (GPay, PhonePe, Paytm, BHIM) handle the upi:// scheme natively
   const buildUpiLink = () =>
     `upi://pay?pa=8320218861@okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&aid=uGICAgKDh34mqRg&ver=01&mode=01&tr=BCR2DN7T3H22XBD5&am=${amount}&cu=INR`;
 
@@ -581,7 +575,7 @@ export default function CampaignDetail() {
             <div className="p-5 grid grid-cols-2 gap-3">
               {/* Google Pay */}
               <a
-                href={buildIntentLink("com.google.android.apps.nbu.paisa.user")}
+                href={buildUpiLink()}
                 onClick={logDonation}
                 className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#1A73E8] rounded-xl p-4 transition-all group no-underline"
               >
@@ -592,7 +586,7 @@ export default function CampaignDetail() {
 
               {/* PhonePe */}
               <a
-                href={buildIntentLink("com.phonepe.app")}
+                href={buildUpiLink()}
                 onClick={logDonation}
                 className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#5F259F] rounded-xl p-4 transition-all group no-underline"
               >
@@ -603,7 +597,7 @@ export default function CampaignDetail() {
 
               {/* Paytm */}
               <a
-                href={buildIntentLink("net.one97.paytm")}
+                href={buildUpiLink()}
                 onClick={logDonation}
                 className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#002970] rounded-xl p-4 transition-all group no-underline"
               >
