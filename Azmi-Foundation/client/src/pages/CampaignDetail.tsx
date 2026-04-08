@@ -127,7 +127,8 @@ export default function CampaignDetail() {
     }
   });
 
-  const upiParams = `pa=8320218861%40okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&am=${amount}&cu=INR&tn=Donation%20to%20Azmi%20Foundation`;
+  // Exact same params as the working QR code, with amount appended
+  const upiParams = `pa=8320218861@okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&aid=uGICAgKDh34mqRg&ver=01&mode=01&tr=BCR2DN7T3H22XBD5&am=${amount}&cu=INR`;
 
   const buildIntentLink = (pkg: string) =>
     `intent://pay?${upiParams}#Intent;scheme=upi;package=${pkg};end`;
