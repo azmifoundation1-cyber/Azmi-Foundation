@@ -127,8 +127,13 @@ export default function CampaignDetail() {
     }
   });
 
-  const buildUpiLink = (scheme: string) =>
-    `${scheme}pa=8320218861@okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&tr=BCR2DN7T3H22XBD5&am=${amount}&cu=INR`;
+  const upiParams = `pa=8320218861%40okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&am=${amount}&cu=INR&tn=Donation%20to%20Azmi%20Foundation`;
+
+  const buildIntentLink = (pkg: string) =>
+    `intent://pay?${upiParams}#Intent;scheme=upi;package=${pkg};end`;
+
+  const buildUpiLink = () =>
+    `upi://pay?${upiParams}`;
 
   const logDonation = () => {
     setShowUpiPicker(false);
@@ -573,7 +578,7 @@ export default function CampaignDetail() {
             <div className="p-5 grid grid-cols-2 gap-3">
               {/* Google Pay */}
               <a
-                href={buildUpiLink("tez://upi/pay?")}
+                href={buildIntentLink("com.google.android.apps.nbu.paisa.user")}
                 onClick={logDonation}
                 className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#1A73E8] rounded-xl p-4 transition-all group no-underline"
               >
@@ -584,7 +589,7 @@ export default function CampaignDetail() {
 
               {/* PhonePe */}
               <a
-                href={buildUpiLink("phonepe://pay?")}
+                href={buildIntentLink("com.phonepe.app")}
                 onClick={logDonation}
                 className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#5F259F] rounded-xl p-4 transition-all group no-underline"
               >
@@ -595,7 +600,7 @@ export default function CampaignDetail() {
 
               {/* Paytm */}
               <a
-                href={buildUpiLink("paytmmp://pay?")}
+                href={buildIntentLink("net.one97.paytm")}
                 onClick={logDonation}
                 className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#002970] rounded-xl p-4 transition-all group no-underline"
               >
@@ -606,7 +611,7 @@ export default function CampaignDetail() {
 
               {/* BHIM UPI */}
               <a
-                href={buildUpiLink("upi://pay?")}
+                href={buildUpiLink()}
                 onClick={logDonation}
                 className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-[#F26522] rounded-xl p-4 transition-all group no-underline"
               >
