@@ -127,14 +127,16 @@ export default function CampaignDetail() {
     }
   });
 
-  // Exact same params as the working QR code, with amount appended
-  const upiParams = `pa=8320218861@okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&aid=uGICAgKDh34mqRg&ver=01&mode=01&tr=BCR2DN7T3H22XBD5&am=${amount}&cu=INR`;
+  // %40 is required for @ in intent:// URLs (Chrome URL parser needs it encoded)
+  // Android decodes %40 back to @ before passing to the UPI app
+  const upiParams = `pa=8320218861%40okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&aid=uGICAgKDh34mqRg&ver=01&mode=01&tr=BCR2DN7T3H22XBD5&am=${amount}&cu=INR`;
 
   const buildIntentLink = (pkg: string) =>
     `intent://pay?${upiParams}#Intent;scheme=upi;package=${pkg};end`;
 
+  // upi:// uses raw @ because Android UPI framework handles it natively
   const buildUpiLink = () =>
-    `upi://pay?${upiParams}`;
+    `upi://pay?pa=8320218861@okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&aid=uGICAgKDh34mqRg&ver=01&mode=01&tr=BCR2DN7T3H22XBD5&am=${amount}&cu=INR`;
 
   const logDonation = () => {
     setShowUpiPicker(false);
