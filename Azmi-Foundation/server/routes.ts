@@ -7,8 +7,8 @@ import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integra
 import Razorpay from "razorpay";
 import crypto from "crypto";
 
-const RAZORPAY_KEY_ID = (process.env.RAZORPAY_KEY_ID || "").replace(/[^a-zA-Z0-9_]/g, "");
-const RAZORPAY_KEY_SECRET = (process.env.RAZORPAY_KEY_SECRET || "").replace(/[^a-zA-Z0-9_]/g, "");
+const RAZORPAY_KEY_ID = (process.env.RAZORPAY_KEY_ID || "").trim();
+const RAZORPAY_KEY_SECRET = (process.env.RAZORPAY_KEY_SECRET || "").trim();
 
 const razorpay = new Razorpay({
   key_id: RAZORPAY_KEY_ID,
