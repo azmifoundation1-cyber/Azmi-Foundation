@@ -35,6 +35,6 @@ localPort = 5000
 externalPort = 80
 
 [deployment]
-deploymentTarget = "autoscale"
+deploymentTarget = "vm"
 run = ["sh", "-c", "cd Azmi-Foundation && npm run start"]
 build = ["sh", "-c", "cd Azmi-Foundation && npm install && npm run build"]
