@@ -8,7 +8,7 @@ import {
   contactMessages, type ContactMessage, type InsertContactMessage,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sum, count, sql } from "drizzle-orm";
+import { eq, and, desc, sum, count, sql } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -142,7 +142,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getDonationsByCampaign(campaignId: number): Promise<Donation[]> {
-    return await db.select().from(donations).where(eq(donations.campaignId, campaignId)).orderBy(desc(donations.createdAt));
+    return await db.select().from(donations)
+      .where(and(eq(donations.campaignId, campaignId), eq(donations.status, "completed")))
+      .orderBy(desc(donations.createdAt));
   }
 
   async getDonationsByUser(userId: string): Promise<Donation[]> {

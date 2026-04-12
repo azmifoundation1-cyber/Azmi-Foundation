@@ -12,6 +12,7 @@ import { Heart, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { useQueryClient } from "@tanstack/react-query";
 
 declare global {
   interface Window {
@@ -29,6 +30,7 @@ const donationFormSchema = z.object({
 export default function Donate() {
   const [donating, setDonating] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [location] = useLocation();
   const params = new URLSearchParams(location.split("?")[1] || "");
   const campaignId = params.get("campaignId") ? Number(params.get("campaignId")) : null;
@@ -100,9 +102,16 @@ export default function Donate() {
             });
             if (!verifyRes.ok) throw new Error("Verification failed");
             toast({ title: "Donation Successful!", description: "Thank you for your generous support." });
+            if (campaignId) {
+              queryClient.invalidateQueries({ queryKey: ["/api/donations/campaign", campaignId] });
+              queryClient.invalidateQueries({ queryKey: ["/api/campaigns", campaignId] });
+            }
+            queryClient.invalidateQueries({ queryKey: ["/api/campaigns/featured"] });
+            setDonating(false);
             form.reset();
           } catch {
             toast({ title: "Payment recorded", description: "Thank you! Our team will confirm shortly.", variant: "destructive" });
+            setDonating(false);
           }
         },
         modal: { ondismiss: () => setDonating(false) },

@@ -168,9 +168,13 @@ export default function CampaignDetail() {
             if (!verifyRes.ok) throw new Error("Verification failed");
             toast({ title: "Donation Successful!", description: "Thank you for your generous support." });
             queryClient.invalidateQueries({ queryKey: ["/api/donations/campaign", id] });
+            queryClient.invalidateQueries({ queryKey: ["/api/campaigns", id] });
+            queryClient.invalidateQueries({ queryKey: ["/api/campaigns/featured"] });
+            setDonating(false);
             setDonorName(""); setDonorEmail(""); setAmount("1000");
           } catch {
             toast({ title: "Payment recorded but verification pending.", description: "Our team will confirm your donation soon.", variant: "destructive" });
+            setDonating(false);
           }
         },
         modal: {
