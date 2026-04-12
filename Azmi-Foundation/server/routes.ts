@@ -7,9 +7,12 @@ import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integra
 import Razorpay from "razorpay";
 import crypto from "crypto";
 
+const RAZORPAY_KEY_ID = (process.env.RAZORPAY_KEY_ID || "").replace(/[^a-zA-Z0-9_]/g, "");
+const RAZORPAY_KEY_SECRET = (process.env.RAZORPAY_KEY_SECRET || "").replace(/[^a-zA-Z0-9_]/g, "");
+
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
+  key_id: RAZORPAY_KEY_ID,
+  key_secret: RAZORPAY_KEY_SECRET,
 });
 
 // Admin middleware
@@ -119,7 +122,7 @@ export async function registerRoutes(
         }).parse(req.body);
 
       const expectedSig = crypto
-        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+        .createHmac("sha256", RAZORPAY_KEY_SECRET)
         .update(`${razorpay_order_id}|${razorpay_payment_id}`)
         .digest("hex");
 
@@ -151,7 +154,7 @@ export async function registerRoutes(
 
   // --- Razorpay: Key (public) ---
   app.get("/api/razorpay/key", (_req, res) => {
-    res.json({ key: process.env.RAZORPAY_KEY_ID });
+    res.json({ key: RAZORPAY_KEY_ID });
   });
 
   // --- Donation creation (legacy fallback) ---
