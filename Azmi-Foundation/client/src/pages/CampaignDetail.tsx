@@ -601,69 +601,6 @@ export default function CampaignDetail() {
         </div>
       </div>
 
-      {/* UPI App Picker Modal */}
-      {showUpiPicker && (
-        <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
-          onClick={() => setShowUpiPicker(false)}
-        >
-          <div
-            className="bg-white w-full max-w-sm mx-4 mb-4 sm:mb-0 rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="bg-primary px-6 py-4 flex items-center justify-between">
-              <div>
-                <p className="text-white font-black uppercase tracking-widest text-sm">Pay ₹{Number(amount).toLocaleString("en-IN")}</p>
-                <p className="text-white/60 text-xs mt-0.5">Choose your UPI app</p>
-              </div>
-              <button onClick={() => setShowUpiPicker(false)} className="text-white/60 hover:text-white text-2xl leading-none">&times;</button>
-            </div>
-
-            <div className="p-5 grid grid-cols-2 gap-3">
-              <button
-                onClick={() => openUpiApp("tez://upi/pay?")}
-                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-primary rounded-xl p-4 transition-all group"
-              >
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/512px-Google_Pay_Logo.svg.png" alt="Google Pay" className="w-10 h-10 object-contain" />
-                <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-primary">Google Pay</span>
-              </button>
-
-              <button
-                onClick={() => openUpiApp("phonepe://pay?")}
-                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-primary rounded-xl p-4 transition-all group"
-              >
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/PhonePe_Logo.png/480px-PhonePe_Logo.png" alt="PhonePe" className="w-10 h-10 object-contain" />
-                <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-primary">PhonePe</span>
-              </button>
-
-              <button
-                onClick={() => openUpiApp("paytmmp://pay?")}
-                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-primary rounded-xl p-4 transition-all group"
-              >
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Paytm_logo.png/480px-Paytm_logo.png" alt="Paytm" className="w-10 h-10 object-contain" />
-                <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-primary">Paytm</span>
-              </button>
-
-              <button
-                onClick={() => openUpiApp("upi://pay?")}
-                className="flex flex-col items-center gap-2 border-2 border-gray-100 hover:border-primary rounded-xl p-4 transition-all group"
-              >
-                <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo-vector.svg/320px-UPI-Logo-vector.svg.png" alt="UPI" className="w-8 h-8 object-contain" />
-                </div>
-                <span className="text-xs font-black text-gray-700 uppercase tracking-wide group-hover:text-primary">Other UPI</span>
-              </button>
-            </div>
-
-            <div className="px-5 pb-5">
-              <p className="text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                UPI ID: {upiId}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
       <Footer />
     </div>
   );
