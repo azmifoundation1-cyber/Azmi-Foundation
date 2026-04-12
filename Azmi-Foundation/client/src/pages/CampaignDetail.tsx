@@ -13,6 +13,12 @@ import type { Campaign, Donation } from "@shared/schema";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
 const PRESET_AMOUNTS = [500, 1000, 2000, 5000];
 
 const PAYMENT_ICONS = [
@@ -84,7 +90,6 @@ export default function CampaignDetail() {
   const [isAnon, setIsAnon] = useState(false);
   const [copied, setCopied] = useState(false);
   const [donating, setDonating] = useState(false);
-  const [showUpiPicker, setShowUpiPicker] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const upiId = "8320218861@okbizaxis";
@@ -101,46 +106,82 @@ export default function CampaignDetail() {
     enabled: !!id,
   });
 
-  const donateMutation = useMutation({
-    mutationFn: async () => {
-      const res = await fetch("/api/donations", {
+  const handleDonate = async () => {
+    const amt = Number(amount);
+    if (!amt || amt < 1) return;
+    setDonating(true);
+    try {
+      // Load Razorpay script if not already loaded
+      if (!window.Razorpay) {
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://checkout.razorpay.com/v1/checkout.js";
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error("Failed to load Razorpay"));
+          document.body.appendChild(script);
+        });
+      }
+
+      // Fetch Razorpay key
+      const keyRes = await fetch("/api/razorpay/key");
+      const { key } = await keyRes.json();
+
+      // Create order
+      const orderRes = await fetch("/api/razorpay/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount,
-          donorName: isAnon ? "Anonymous" : (donorName || "Anonymous"),
-          donorEmail: donorEmail || null,
-          campaignId: id,
-          isAnonymous: isAnon,
-        }),
+        body: JSON.stringify({ amount: amt }),
       });
-      if (!res.ok) throw new Error("Donation failed");
-      return res.json();
-    },
-    onSuccess: () => {
-      toast({ title: "Donation recorded!", description: "Thank you for your support." });
-      queryClient.invalidateQueries({ queryKey: ["/api/donations/campaign", id] });
-      setDonorName(""); setDonorEmail(""); setAmount("1000");
-    },
-    onError: () => {
-      toast({ title: "Error", description: "Could not record donation.", variant: "destructive" });
+      if (!orderRes.ok) throw new Error("Order creation failed");
+      const { orderId, amount: orderAmount, currency } = await orderRes.json();
+
+      // Open Razorpay checkout
+      const rzp = new window.Razorpay({
+        key,
+        amount: orderAmount,
+        currency,
+        order_id: orderId,
+        name: "AZMI Foundation",
+        description: campaign?.title || "Donation",
+        image: "/azmi-logo.png",
+        prefill: {
+          name: isAnon ? "" : donorName,
+          email: isAnon ? "" : donorEmail,
+        },
+        theme: { color: "#1a1a2e" },
+        handler: async (response: any) => {
+          try {
+            const verifyRes = await fetch("/api/razorpay/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                campaignId: id,
+                amount: String(amt),
+                donorName: isAnon ? "Anonymous" : (donorName || "Anonymous"),
+                donorEmail: donorEmail || null,
+                isAnonymous: isAnon,
+              }),
+            });
+            if (!verifyRes.ok) throw new Error("Verification failed");
+            toast({ title: "Donation Successful!", description: "Thank you for your generous support." });
+            queryClient.invalidateQueries({ queryKey: ["/api/donations/campaign", id] });
+            setDonorName(""); setDonorEmail(""); setAmount("1000");
+          } catch {
+            toast({ title: "Payment recorded but verification pending.", description: "Our team will confirm your donation soon.", variant: "destructive" });
+          }
+        },
+        modal: {
+          ondismiss: () => setDonating(false),
+        },
+      });
+      rzp.open();
+    } catch (err) {
+      toast({ title: "Payment Error", description: "Could not initiate payment. Please try again.", variant: "destructive" });
+      setDonating(false);
     }
-  });
-
-  const openUpiApp = (scheme: string) => {
-    const base = `pa=8320218861@okbizaxis&pn=AZMI%20FOUNDATION&mc=8398&tr=BCR2DN7T3H22XBD5&cu=INR`;
-    const link = `${scheme}${base}`;
-    const anchor = document.createElement("a");
-    anchor.href = link;
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
-    setShowUpiPicker(false);
-    donateMutation.mutate();
-  };
-
-  const handleDonate = () => {
-    setShowUpiPicker(true);
   };
 
   const handleCopy = () => {
@@ -470,10 +511,10 @@ export default function CampaignDetail() {
                   {/* Donate Button */}
                   <Button
                     onClick={handleDonate}
-                    disabled={donateMutation.isPending || !amount || Number(amount) < 1}
+                    disabled={donating || !amount || Number(amount) < 1}
                     className="w-full bg-primary hover:bg-black text-white font-black uppercase tracking-[0.3em] text-sm rounded-none py-6 gold-edge transition-all duration-500 relative overflow-hidden group"
                   >
-                    {donateMutation.isPending ? (
+                    {donating ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                       <span className="flex items-center justify-center gap-2">

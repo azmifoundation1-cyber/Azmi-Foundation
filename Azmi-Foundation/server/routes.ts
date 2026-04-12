@@ -4,6 +4,13 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID!,
+  key_secret: process.env.RAZORPAY_KEY_SECRET!,
+});
 
 // Admin middleware
 async function isAdmin(req: Request, res: Response, next: NextFunction) {
@@ -80,11 +87,77 @@ export async function registerRoutes(
   // AUTHENTICATED USER ROUTES
   // ==============================
 
-  // --- Donation creation ---
+  // --- Razorpay: Create Order ---
+  app.post("/api/razorpay/order", async (req, res) => {
+    try {
+      const { amount } = z.object({ amount: z.number().min(1) }).parse(req.body);
+      const order = await razorpay.orders.create({
+        amount: Math.round(amount * 100), // paise
+        currency: "INR",
+        receipt: `receipt_${Date.now()}`,
+      });
+      res.json({ orderId: order.id, amount: order.amount, currency: order.currency });
+    } catch (err) {
+      console.error("Razorpay order error:", err);
+      res.status(500).json({ message: "Could not create payment order" });
+    }
+  });
+
+  // --- Razorpay: Verify Payment & Record Donation ---
+  app.post("/api/razorpay/verify", async (req, res) => {
+    try {
+      const { razorpay_order_id, razorpay_payment_id, razorpay_signature, campaignId, amount, donorName, donorEmail, isAnonymous } =
+        z.object({
+          razorpay_order_id: z.string(),
+          razorpay_payment_id: z.string(),
+          razorpay_signature: z.string(),
+          campaignId: z.number(),
+          amount: z.string(),
+          donorName: z.string().optional(),
+          donorEmail: z.string().optional().nullable(),
+          isAnonymous: z.boolean().optional(),
+        }).parse(req.body);
+
+      const expectedSig = crypto
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+        .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+        .digest("hex");
+
+      if (expectedSig !== razorpay_signature) {
+        return res.status(400).json({ message: "Payment verification failed" });
+      }
+
+      const user = req.user as any;
+      const userId = user?.claims?.sub || user?.id || null;
+
+      const donation = await storage.createDonation({
+        campaignId,
+        amount,
+        donorName: isAnonymous ? "Anonymous" : (donorName || "Anonymous"),
+        donorEmail: donorEmail || null,
+        isAnonymous: isAnonymous ?? false,
+        paymentId: razorpay_payment_id,
+        status: "completed",
+        userId,
+      });
+
+      res.status(201).json(donation);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      console.error("Razorpay verify error:", err);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // --- Razorpay: Key (public) ---
+  app.get("/api/razorpay/key", (_req, res) => {
+    res.json({ key: process.env.RAZORPAY_KEY_ID });
+  });
+
+  // --- Donation creation (legacy fallback) ---
   app.post(api.donations.create.path, async (req, res) => {
     try {
       const input = api.donations.create.input.parse(req.body);
-      // Attach userId if logged in
       const user = req.user as any;
       const userId = user?.claims?.sub || user?.id || null;
       const donation = await storage.createDonation({ ...input, userId });
