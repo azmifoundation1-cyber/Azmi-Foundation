@@ -6,6 +6,29 @@ import { z } from "zod";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const uploadsDir = path.join(__dirname, "../uploads");
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, uploadsDir),
+    filename: (_req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`);
+    },
+  }),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) cb(null, true);
+    else cb(new Error("Only image files are allowed"));
+  },
+});
 
 const RAZORPAY_KEY_ID = (process.env.RAZORPAY_KEY_ID || "").trim();
 const RAZORPAY_KEY_SECRET = (process.env.RAZORPAY_KEY_SECRET || "").trim();
@@ -185,6 +208,48 @@ export async function registerRoutes(
     const userId = user?.claims?.sub || user?.id;
     const registrations = await storage.getRegistrationsByUser(userId);
     res.json(registrations);
+  });
+
+  // --- My campaigns (submitted by user) ---
+  app.get("/api/my/campaigns", isAuthenticated, async (req, res) => {
+    const user = req.user as any;
+    const userId = user?.claims?.sub || user?.id;
+    const allCampaigns = await storage.getCampaigns();
+    res.json(allCampaigns.filter((c: any) => c.createdBy === userId));
+  });
+
+  // --- User: Submit campaign proposal ---
+  app.post("/api/user/campaigns", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const userId = user?.claims?.sub || user?.id;
+      const input = z.object({
+        title: z.string().min(5),
+        description: z.string().min(10),
+        story: z.string().optional(),
+        category: z.enum(["health", "education", "environment", "community", "emergency", "other"]),
+        targetAmount: z.string(),
+        imageUrl: z.string().optional(),
+        videoUrl: z.string().optional(),
+      }).parse(req.body);
+      const campaign = await storage.createCampaign({
+        ...input,
+        status: "paused",
+        featured: false,
+        createdBy: userId,
+      });
+      res.status(201).json(campaign);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // --- File Upload ---
+  app.post("/api/upload", upload.single("file"), (req, res) => {
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+    const url = `/uploads/${req.file.filename}`;
+    res.json({ url });
   });
 
   // --- Submit Registration ---

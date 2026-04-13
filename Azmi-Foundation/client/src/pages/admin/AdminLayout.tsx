@@ -29,6 +29,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return null;
   }
 
+  if ((user as any).role !== "admin") {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center gap-4 bg-gray-50">
+        <Shield className="w-16 h-16 text-red-400" />
+        <h1 className="text-2xl font-bold text-gray-800">Access Denied</h1>
+        <p className="text-gray-500 text-center max-w-sm">
+          You need admin privileges to access this page. Contact your administrator.
+        </p>
+        <a href="/dashboard" className="mt-2 px-6 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+          Go to Dashboard
+        </a>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
       {/* Sidebar */}

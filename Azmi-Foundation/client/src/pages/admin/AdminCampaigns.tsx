@@ -1,16 +1,15 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AdminLayout from "./AdminLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, Star, Loader2, RefreshCw, AlertCircle } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, Loader2, RefreshCw, AlertCircle, CheckCircle, Upload, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Campaign } from "@shared/schema";
 
@@ -19,6 +18,15 @@ const emptyForm = {
   targetAmount: "", imageUrl: "", videoUrl: "", status: "active" as const, featured: false,
   upiId: "", upiName: "", bankAccountName: "", bankAccountNumber: "", bankIfsc: "", bankName: "",
 };
+
+async function uploadFile(file: File): Promise<string> {
+  const fd = new FormData();
+  fd.append("file", file);
+  const res = await fetch("/api/upload", { method: "POST", body: fd });
+  if (!res.ok) throw new Error("Upload failed");
+  const data = await res.json();
+  return data.url;
+}
 
 export default function AdminCampaigns() {
   const qc = useQueryClient();
@@ -29,6 +37,9 @@ export default function AdminCampaigns() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [updateDialog, setUpdateDialog] = useState<number | null>(null);
   const [updateForm, setUpdateForm] = useState({ title: "", content: "" });
+  const [uploading, setUploading] = useState(false);
+  const [useUrlInput, setUseUrlInput] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: campaigns, isLoading } = useQuery<Campaign[]>({
     queryKey: ["/api/campaigns"],
@@ -56,27 +67,52 @@ export default function AdminCampaigns() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/campaigns"] }); setDeleteId(null); toast({ title: "Campaign deleted" }); },
   });
 
+  const approveMutation = useMutation({
+    mutationFn: (id: number) => fetch(`/api/admin/campaigns/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "active" }),
+    }).then(r => r.json()),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/campaigns"] }); toast({ title: "Campaign approved & published!" }); },
+    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
   const addUpdateMutation = useMutation({
     mutationFn: async ({ campaignId, data }: any) => {
       const res = await fetch(`/api/admin/campaigns/${campaignId}/updates`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
       if (!res.ok) throw new Error(await res.text());
       return res.json();
     },
-    onSuccess: () => {
-      setUpdateDialog(null);
-      setUpdateForm({ title: "", content: "" });
-      toast({ title: "Update posted" });
-    },
+    onSuccess: () => { setUpdateDialog(null); setUpdateForm({ title: "", content: "" }); toast({ title: "Update posted" }); },
   });
 
-  function openCreate() { setEditItem(null); setForm(emptyForm); setDialogOpen(true); }
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadFile(file);
+      setForm(f => ({ ...f, imageUrl: url }));
+      toast({ title: "Image uploaded successfully" });
+    } catch {
+      toast({ title: "Upload failed", variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function openCreate() { setEditItem(null); setForm(emptyForm); setUseUrlInput(false); setDialogOpen(true); }
   function openEdit(c: Campaign) {
     setEditItem(c);
-    setForm({ title: c.title, description: c.description, story: c.story || "", category: c.category as any, targetAmount: c.targetAmount, imageUrl: c.imageUrl || "", videoUrl: c.videoUrl || "", status: c.status as any, featured: c.featured || false });
+    setForm({ title: c.title, description: c.description, story: c.story || "", category: c.category as any, targetAmount: c.targetAmount, imageUrl: c.imageUrl || "", videoUrl: c.videoUrl || "", status: c.status as any, featured: c.featured || false, upiId: (c as any).upiId || "", upiName: (c as any).upiName || "", bankAccountName: (c as any).bankAccountName || "", bankAccountNumber: (c as any).bankAccountNumber || "", bankIfsc: (c as any).bankIfsc || "", bankName: (c as any).bankName || "" });
+    setUseUrlInput(!!c.imageUrl && !c.imageUrl.startsWith("/uploads/"));
     setDialogOpen(true);
   }
 
-  const statusColor: Record<string, string> = { active: "bg-green-100 text-green-700", completed: "bg-blue-100 text-blue-700", paused: "bg-gray-100 text-gray-600" };
+  const statusColor: Record<string, string> = { active: "bg-green-100 text-green-700", completed: "bg-blue-100 text-blue-700", paused: "bg-yellow-100 text-yellow-700" };
+
+  const pendingCampaigns = (campaigns || []).filter(c => c.status === "paused" && c.createdBy);
+  const activeCampaigns = (campaigns || []).filter(c => !(c.status === "paused" && c.createdBy));
 
   return (
     <AdminLayout>
@@ -94,51 +130,88 @@ export default function AdminCampaigns() {
         {isLoading ? (
           <div className="flex items-center justify-center h-40"><Loader2 className="w-8 h-8 animate-spin text-green-600" /></div>
         ) : (
-          <div className="space-y-4">
-            {campaigns?.map((c) => (
-              <Card key={c.id} className="overflow-hidden">
-                <CardContent className="p-0 flex">
-                  {c.imageUrl && (
-                    <img src={c.imageUrl} alt={c.title} className="w-32 h-28 object-cover flex-shrink-0" />
-                  )}
-                  <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
-                    <div>
-                      <div className="flex items-start gap-2 flex-wrap">
-                        <h3 className="font-semibold text-gray-900 text-sm line-clamp-1 flex-1">{c.title}</h3>
-                        <div className="flex items-center gap-1 flex-shrink-0">
-                          {c.featured && <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-400" />}
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColor[c.status]}`}>{c.status}</span>
-                          <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">{c.category}</span>
+          <>
+            {pendingCampaigns.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-sm font-semibold text-yellow-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4" /> Pending Approval ({pendingCampaigns.length})
+                </h2>
+                <div className="space-y-3">
+                  {pendingCampaigns.map(c => (
+                    <Card key={c.id} className="border-yellow-200 bg-yellow-50 overflow-hidden">
+                      <CardContent className="p-0 flex">
+                        {c.imageUrl && <img src={c.imageUrl} alt={c.title} className="w-24 h-20 object-cover flex-shrink-0" />}
+                        <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+                          <div>
+                            <p className="font-semibold text-gray-900 text-sm line-clamp-1">{c.title}</p>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{c.description}</p>
+                            <p className="text-xs text-gray-400 mt-1">Target: ₹{Number(c.targetAmount).toLocaleString()} · {c.category}</p>
+                          </div>
+                          <div className="flex gap-2 mt-3">
+                            <Button size="sm" className="h-7 text-xs gap-1 bg-green-600 hover:bg-green-700"
+                              disabled={approveMutation.isPending}
+                              onClick={() => approveMutation.mutate(c.id)}>
+                              <CheckCircle className="w-3 h-3" /> Approve & Publish
+                            </Button>
+                            <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => openEdit(c)}>
+                              <Pencil className="w-3 h-3" /> Edit
+                            </Button>
+                            <Button size="sm" variant="outline" className="h-7 text-xs gap-1 text-red-600 hover:bg-red-50" onClick={() => setDeleteId(c.id)}>
+                              <Trash2 className="w-3 h-3" /> Reject
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              {activeCampaigns.map((c) => (
+                <Card key={c.id} className="overflow-hidden">
+                  <CardContent className="p-0 flex">
+                    {c.imageUrl && <img src={c.imageUrl} alt={c.title} className="w-32 h-28 object-cover flex-shrink-0" />}
+                    <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+                      <div>
+                        <div className="flex items-start gap-2 flex-wrap">
+                          <h3 className="font-semibold text-gray-900 text-sm line-clamp-1 flex-1">{c.title}</h3>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            {c.featured && <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-400" />}
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColor[c.status]}`}>{c.status}</span>
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">{c.category}</span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 line-clamp-2">{c.description}</p>
+                      </div>
+                      <div className="flex items-center justify-between mt-3">
+                        <div className="text-xs text-gray-500">
+                          <span className="font-bold text-gray-800">₹{Number(c.currentAmount).toLocaleString()}</span>
+                          <span className="mx-1">of</span>
+                          <span>₹{Number(c.targetAmount).toLocaleString()}</span>
+                          <span className="ml-2 text-green-600 font-medium">
+                            {Math.min(100, Math.round((Number(c.currentAmount) / Number(c.targetAmount)) * 100))}%
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => setUpdateDialog(c.id)}>
+                            <RefreshCw className="w-3 h-3" /> Update
+                          </Button>
+                          <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => openEdit(c)}>
+                            <Pencil className="w-3 h-3" /> Edit
+                          </Button>
+                          <Button size="sm" variant="outline" className="h-7 text-xs gap-1 text-red-600 hover:bg-red-50" onClick={() => setDeleteId(c.id)}>
+                            <Trash2 className="w-3 h-3" /> Delete
+                          </Button>
                         </div>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">{c.description}</p>
                     </div>
-                    <div className="flex items-center justify-between mt-3">
-                      <div className="text-xs text-gray-500">
-                        <span className="font-bold text-gray-800">₹{Number(c.currentAmount).toLocaleString()}</span>
-                        <span className="mx-1">of</span>
-                        <span>₹{Number(c.targetAmount).toLocaleString()}</span>
-                        <span className="ml-2 text-green-600 font-medium">
-                          {Math.min(100, Math.round((Number(c.currentAmount) / Number(c.targetAmount)) * 100))}%
-                        </span>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => setUpdateDialog(c.id)}>
-                          <RefreshCw className="w-3 h-3" /> Update
-                        </Button>
-                        <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => openEdit(c)}>
-                          <Pencil className="w-3 h-3" /> Edit
-                        </Button>
-                        <Button size="sm" variant="outline" className="h-7 text-xs gap-1 text-red-600 hover:bg-red-50" onClick={() => setDeleteId(c.id)}>
-                          <Trash2 className="w-3 h-3" /> Delete
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </>
         )}
 
         {/* Create/Edit Dialog */}
@@ -188,10 +261,35 @@ export default function AdminCampaigns() {
                 <Label>Full Story</Label>
                 <Textarea rows={4} value={form.story} onChange={e => setForm(f => ({ ...f, story: e.target.value }))} placeholder="Detailed story shown on campaign page..." />
               </div>
+
+              {/* Image upload */}
               <div>
-                <Label>Image URL</Label>
-                <Input value={form.imageUrl} onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))} placeholder="https://..." />
+                <div className="flex items-center justify-between mb-2">
+                  <Label>Campaign Image</Label>
+                  <button type="button" onClick={() => setUseUrlInput(!useUrlInput)}
+                    className="text-xs text-blue-600 hover:underline flex items-center gap-1">
+                    {useUrlInput ? <><Upload className="w-3 h-3" /> Upload file</> : <><LinkIcon className="w-3 h-3" /> Use URL instead</>}
+                  </button>
+                </div>
+                {useUrlInput ? (
+                  <Input value={form.imageUrl} onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))} placeholder="https://..." />
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <input type="file" accept="image/*" ref={fileRef} className="hidden" onChange={handleFileChange} />
+                    <Button type="button" variant="outline" className="gap-2" onClick={() => fileRef.current?.click()} disabled={uploading}>
+                      {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                      {uploading ? "Uploading..." : "Choose Image"}
+                    </Button>
+                    {form.imageUrl && (
+                      <div className="flex items-center gap-2">
+                        <img src={form.imageUrl} alt="Preview" className="w-12 h-12 object-cover rounded border" />
+                        <span className="text-xs text-green-600 font-medium">Image ready</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
+
               <div>
                 <Label>YouTube Video URL</Label>
                 <Input value={form.videoUrl} onChange={e => setForm(f => ({ ...f, videoUrl: e.target.value }))} placeholder="https://youtube.com/..." />
@@ -205,7 +303,7 @@ export default function AdminCampaigns() {
               <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
               <Button
                 className="bg-green-600 hover:bg-green-700"
-                disabled={saveMutation.isPending}
+                disabled={saveMutation.isPending || uploading}
                 onClick={() => saveMutation.mutate({ ...form, targetAmount: String(form.targetAmount) })}
               >
                 {saveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : (editItem ? "Update" : "Create")}

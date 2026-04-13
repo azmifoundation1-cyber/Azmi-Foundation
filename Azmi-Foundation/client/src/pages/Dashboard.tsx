@@ -3,8 +3,8 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, User, Clock, FileText, Heart, Shield, ExternalLink, CheckCircle, XCircle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2, Clock, FileText, Heart, Shield, ExternalLink, Megaphone, Plus } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
   const qc = useQueryClient();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<"applications" | "donations">("applications");
+  const [activeTab, setActiveTab] = useState<"applications" | "donations" | "campaigns">("applications");
 
   const bootstrap = useMutation({
     mutationFn: async () => {
@@ -46,6 +46,12 @@ export default function Dashboard() {
   const { data: campaigns } = useQuery({
     queryKey: ["/api/campaigns"],
     queryFn: () => fetch("/api/campaigns").then(r => r.json()),
+    enabled: !!user,
+  });
+
+  const { data: myCampaigns, isLoading: camLoading } = useQuery({
+    queryKey: ["/api/my/campaigns"],
+    queryFn: () => fetch("/api/my/campaigns").then(r => r.ok ? r.json() : []),
     enabled: !!user,
   });
 
@@ -113,7 +119,7 @@ export default function Dashboard() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-4 gap-4 mb-8">
           <Card className="text-center p-4">
             <p className="text-2xl font-bold text-primary">{(myRegistrations || []).length}</p>
             <p className="text-xs text-gray-500 mt-1">Applications</p>
@@ -123,26 +129,40 @@ export default function Dashboard() {
             <p className="text-xs text-gray-500 mt-1">Donations</p>
           </Card>
           <Card className="text-center p-4">
+            <p className="text-2xl font-bold text-blue-600">{(myCampaigns || []).length}</p>
+            <p className="text-xs text-gray-500 mt-1">Campaigns</p>
+          </Card>
+          <Card className="text-center p-4">
             <p className="text-2xl font-bold text-amber-600">₹{totalDonated.toLocaleString()}</p>
-            <p className="text-xs text-gray-500 mt-1">Total Contributed</p>
+            <p className="text-xs text-gray-500 mt-1">Contributed</p>
           </Card>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-gray-200 mb-6">
-          {[
-            { id: "applications", label: "My Applications", icon: FileText },
-            { id: "donations", label: "My Donations", icon: Heart },
-          ].map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => setActiveTab(id as any)}
-              className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition-colors ${activeTab === id ? "border-primary text-primary" : "border-transparent text-gray-500 hover:text-gray-700"}`}
-            >
-              <Icon className="w-4 h-4" />
-              {label}
-            </button>
-          ))}
+        <div className="flex items-center justify-between border-b border-gray-200 mb-6">
+          <div className="flex">
+            {[
+              { id: "applications", label: "Applications", icon: FileText },
+              { id: "donations", label: "Donations", icon: Heart },
+              { id: "campaigns", label: "My Campaigns", icon: Megaphone },
+            ].map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id as any)}
+                className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold border-b-2 transition-colors ${activeTab === id ? "border-primary text-primary" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </button>
+            ))}
+          </div>
+          {activeTab === "campaigns" && (
+            <Link href="/campaigns/create">
+              <Button size="sm" className="gap-1.5 bg-primary hover:bg-primary/90 mb-1">
+                <Plus className="w-3.5 h-3.5" /> New Campaign
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Applications Tab */}
@@ -244,6 +264,75 @@ export default function Dashboard() {
                             </a>
                           </Link>
                         )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* My Campaigns Tab */}
+        {activeTab === "campaigns" && (
+          <div>
+            {camLoading ? (
+              <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+            ) : !myCampaigns || myCampaigns.length === 0 ? (
+              <Card className="p-12 text-center text-gray-400 border-dashed">
+                <Megaphone className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                <p className="font-medium">No campaigns yet</p>
+                <p className="text-sm mt-1">Start a campaign to raise funds for a cause you care about</p>
+                <Link href="/campaigns/create">
+                  <Button className="mt-4 bg-primary hover:bg-primary/90 gap-2">
+                    <Plus className="w-4 h-4" /> Start a Campaign
+                  </Button>
+                </Link>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {myCampaigns.map((c: any) => {
+                  const statusColor: Record<string, string> = {
+                    active: "bg-green-100 text-green-700",
+                    paused: "bg-yellow-100 text-yellow-700",
+                    completed: "bg-blue-100 text-blue-700",
+                  };
+                  const statusLabel: Record<string, string> = {
+                    active: "Live",
+                    paused: "Pending Review",
+                    completed: "Completed",
+                  };
+                  return (
+                    <Card key={c.id} className="overflow-hidden">
+                      <CardContent className="p-0 flex">
+                        {c.imageUrl && (
+                          <img src={c.imageUrl} alt={c.title} className="w-28 h-24 object-cover flex-shrink-0" />
+                        )}
+                        <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-semibold text-gray-900 text-sm line-clamp-1 flex-1">{c.title}</h3>
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColor[c.status] || "bg-gray-100 text-gray-600"}`}>
+                                {statusLabel[c.status] || c.status}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{c.description}</p>
+                          </div>
+                          <div className="flex items-center justify-between mt-3">
+                            <div className="text-xs text-gray-500">
+                              <span className="font-medium">₹{Number(c.currentAmount).toLocaleString()}</span>
+                              <span className="mx-1">of</span>
+                              <span>₹{Number(c.targetAmount).toLocaleString()}</span>
+                            </div>
+                            {c.status === "active" && (
+                              <Link href={`/campaigns/${c.id}`}>
+                                <a className="text-xs text-primary hover:underline flex items-center gap-1">
+                                  <ExternalLink className="w-3 h-3" /> View
+                                </a>
+                              </Link>
+                            )}
+                          </div>
+                        </div>
                       </CardContent>
                     </Card>
                   );

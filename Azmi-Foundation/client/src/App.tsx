@@ -15,6 +15,7 @@ import Dashboard from "@/pages/Dashboard";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 
+import CreateCampaign from "@/pages/CreateCampaign";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminCampaigns from "@/pages/admin/AdminCampaigns";
 import AdminDonations from "@/pages/admin/AdminDonations";
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/programs" component={Programs} />
       <Route path="/campaigns" component={Campaigns} />
+      <Route path="/campaigns/create" component={CreateCampaign} />
       <Route path="/campaigns/:id" component={CampaignDetail} />
       <Route path="/donate" component={Donate} />
       <Route path="/get-involved" component={GetInvolved} />
