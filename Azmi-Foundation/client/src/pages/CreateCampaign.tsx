@@ -82,7 +82,7 @@ export default function CreateCampaign() {
   }
 
   if (!user) {
-    window.location.href = "/api/login";
+    window.location.href = "/login";
     return null;
   }
 

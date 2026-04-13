@@ -64,7 +64,7 @@ export default function Dashboard() {
   }
 
   if (!user) {
-    window.location.href = "/api/login";
+    window.location.href = "/login";
     return null;
   }
 

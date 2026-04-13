@@ -131,9 +131,19 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
   const user = req.user as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  // Local email/password auth — user object has localUser flag
+  if (user.localUser) {
+    return next();
+  }
+
+  // Replit OIDC auth — check token expiry and refresh
+  if (!user.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 

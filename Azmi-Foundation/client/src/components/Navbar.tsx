@@ -78,11 +78,11 @@ export function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <a href="/api/login">
+              <Link href="/login">
                 <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white transition-all font-bold uppercase tracking-widest">
                   Sign In
                 </Button>
-              </a>
+              </Link>
             )}
 
             <Link href="/donate">
@@ -140,9 +140,9 @@ export function Navbar() {
               </Link>
             ))}
             {!user && (
-              <a href="/api/login" className="block w-full">
+              <Link href="/login" className="block w-full">
                 <Button variant="outline" className="w-full mt-4">Sign In</Button>
-              </a>
+              </Link>
             )}
             <Link href="/donate">
               <Button className="w-full mt-2 bg-secondary text-white">Donate Now</Button>

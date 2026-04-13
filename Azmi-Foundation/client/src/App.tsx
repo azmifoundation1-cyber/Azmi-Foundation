@@ -15,6 +15,8 @@ import Dashboard from "@/pages/Dashboard";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 
+import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
 import CreateCampaign from "@/pages/CreateCampaign";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminCampaigns from "@/pages/admin/AdminCampaigns";
@@ -27,6 +29,8 @@ import AdminMessages from "@/pages/admin/AdminMessages";
 function Router() {
   return (
     <Switch>
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
       <Route path="/programs" component={Programs} />
