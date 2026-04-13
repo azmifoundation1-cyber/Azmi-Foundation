@@ -55,6 +55,9 @@ export interface IStorage {
   getContactMessages(): Promise<ContactMessage[]>;
   updateMessageStatus(id: number, status: "read" | "replied", adminNote?: string): Promise<ContactMessage>;
 
+  // Public Stats
+  getPublicStats(): Promise<{ totalAmount: number; totalDonors: number; activeCampaigns: number }>;
+
   // Admin Stats
   getAdminStats(): Promise<{
     totalDonations: number;
@@ -226,6 +229,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Admin Stats
+  async getPublicStats() {
+    const [donationStats] = await db.select({
+      totalAmount: sum(donations.amount),
+      total: count(),
+    }).from(donations).where(eq(donations.status, "completed"));
+    const [campaignStats] = await db.select({ total: count() }).from(campaigns).where(eq(campaigns.status, "active"));
+    return {
+      totalAmount: Number(donationStats?.totalAmount || 0),
+      totalDonors: Number(donationStats?.total || 0),
+      activeCampaigns: Number(campaignStats?.total || 0),
+    };
+  }
+
   async getAdminStats() {
     const [donationStats] = await db.select({
       total: count(),

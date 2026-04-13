@@ -62,6 +62,16 @@ export async function registerRoutes(
   // PUBLIC ROUTES
   // ==============================
 
+  // --- Public Stats ---
+  app.get("/api/public/stats", async (_req, res) => {
+    try {
+      const stats = await storage.getPublicStats();
+      res.json(stats);
+    } catch {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // --- Campaigns ---
   app.get(api.campaigns.list.path, async (req, res) => {
     const campaigns = await storage.getCampaigns();
@@ -372,6 +382,52 @@ export async function registerRoutes(
   app.get(api.donations.list.path, isAdmin, async (req, res) => {
     const donations = await storage.getDonations();
     res.json(donations);
+  });
+
+  app.post("/api/admin/donations", isAdmin, async (req, res) => {
+    try {
+      const schema = z.object({
+        donorName: z.string().min(1),
+        donorEmail: z.string().email().optional().or(z.literal("")),
+        donorPhone: z.string().optional(),
+        amount: z.coerce.number().min(1),
+        campaignId: z.coerce.number().optional(),
+        paymentMethod: z.string().default("upi"),
+        paymentId: z.string().optional(),
+        message: z.string().optional(),
+        isAnonymous: z.boolean().default(false),
+        taxReceiptRequested: z.boolean().default(false),
+        donorPan: z.string().optional(),
+        donorAddress: z.string().optional(),
+        donorCity: z.string().optional(),
+        donorState: z.string().optional(),
+        donorPincode: z.string().optional(),
+      });
+      const data = schema.parse(req.body);
+      const donation = await storage.createDonation({
+        donorName: data.donorName,
+        donorEmail: data.donorEmail || null,
+        donorPhone: data.donorPhone || null,
+        amount: String(data.amount),
+        campaignId: data.campaignId || null,
+        userId: null,
+        status: "completed",
+        paymentId: data.paymentId || `MANUAL-${Date.now()}`,
+        paymentMethod: data.paymentMethod,
+        message: data.message || null,
+        isAnonymous: data.isAnonymous,
+        taxReceiptRequested: data.taxReceiptRequested,
+        donorPan: data.donorPan || null,
+        donorAddress: data.donorAddress || null,
+        donorCity: data.donorCity || null,
+        donorState: data.donorState || null,
+        donorPincode: data.donorPincode || null,
+      });
+      res.status(201).json(donation);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Internal server error" });
+    }
   });
 
   app.patch("/api/admin/donations/:id/status", isAdmin, async (req, res) => {

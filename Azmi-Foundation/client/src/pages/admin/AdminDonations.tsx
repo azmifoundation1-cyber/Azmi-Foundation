@@ -4,11 +4,21 @@ import AdminLayout from "./AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Search, Download, Filter, ChevronDown, ChevronRight, FileText, Phone, MapPin, CreditCard, BadgeCheck } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Loader2, Search, Download, Filter, ChevronDown, ChevronRight, FileText, Phone, MapPin, CreditCard, BadgeCheck, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Donation } from "@shared/schema";
 import { generate80GReceipt } from "@/lib/generate-80g-receipt";
+
+const EMPTY_FORM = {
+  donorName: "", donorEmail: "", donorPhone: "", amount: "",
+  campaignId: "", paymentMethod: "upi", paymentId: "", message: "",
+  isAnonymous: false, taxReceiptRequested: false,
+  donorPan: "", donorAddress: "", donorCity: "", donorState: "", donorPincode: "",
+};
 
 const STATUS_COLORS: Record<string, string> = {
   completed: "bg-green-100 text-green-700",
@@ -25,6 +35,9 @@ export default function AdminDonations() {
   const [receiptFilter, setReceiptFilter] = useState("all");
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [generatingPdf, setGeneratingPdf] = useState<number | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const [form, setForm] = useState({ ...EMPTY_FORM });
+  const [submitting, setSubmitting] = useState(false);
 
   const { data: donations, isLoading } = useQuery<Donation[]>({
     queryKey: ["/api/donations"],
@@ -52,6 +65,59 @@ export default function AdminDonations() {
       toast({ title: "Donation status updated" });
     },
   });
+
+  async function handleRecordDonation() {
+    if (!form.donorName.trim() || !form.amount || Number(form.amount) < 1) {
+      toast({ title: "Please fill in donor name and amount", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/admin/donations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          amount: Number(form.amount),
+          campaignId: form.campaignId ? Number(form.campaignId) : undefined,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to record donation");
+      }
+      const donation = await res.json();
+      qc.invalidateQueries({ queryKey: ["/api/donations"] });
+      qc.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      qc.invalidateQueries({ queryKey: ["/api/public/stats"] });
+      toast({ title: "Donation recorded", description: `₹${form.amount} from ${form.donorName} added successfully.` });
+      setShowDialog(false);
+      setForm({ ...EMPTY_FORM });
+      if (form.taxReceiptRequested && form.donorPan) {
+        const campaignMap2 = Object.fromEntries((campaigns || []).map((c: any) => [String(c.id), c.title]));
+        const receiptNo = `AF-${new Date().getFullYear()}-${String(donation.id).padStart(5, "0")}`;
+        await generate80GReceipt({
+          receiptNo,
+          paymentId: donation.paymentId || "N/A",
+          donationDate: new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" }),
+          donorName: form.donorName,
+          donorPan: form.donorPan,
+          donorPhone: form.donorPhone,
+          donorEmail: form.donorEmail,
+          donorAddress: form.donorAddress,
+          donorCity: form.donorCity,
+          donorState: form.donorState,
+          donorPincode: form.donorPincode,
+          amount: Number(form.amount),
+          campaignTitle: campaignMap2[form.campaignId] || "General Donation",
+          paymentMethod: form.paymentMethod,
+        });
+      }
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  }
 
   const campaignMap = Object.fromEntries((campaigns || []).map((c: any) => [c.id, c.title]));
 
@@ -142,9 +208,14 @@ export default function AdminDonations() {
               {total80G > 0 && <span className="ml-3 text-amber-600 font-semibold">· {total80G} with 80G receipt</span>}
             </p>
           </div>
-          <Button variant="outline" className="gap-2" onClick={exportCSV}>
-            <Download className="w-4 h-4" /> Export CSV
-          </Button>
+          <div className="flex gap-2">
+            <Button className="gap-2 bg-green-600 hover:bg-green-700 text-white" onClick={() => { setForm({ ...EMPTY_FORM }); setShowDialog(true); }}>
+              <Plus className="w-4 h-4" /> Record Donation
+            </Button>
+            <Button variant="outline" className="gap-2" onClick={exportCSV}>
+              <Download className="w-4 h-4" /> Export CSV
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -397,6 +468,132 @@ export default function AdminDonations() {
           </Card>
         )}
       </div>
+
+      {/* Record Manual Donation Dialog */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">Record Offline Donation</DialogTitle>
+            <p className="text-sm text-gray-500 mt-1">Record a donation received via UPI, bank transfer, cash, or cheque.</p>
+          </DialogHeader>
+
+          <div className="grid grid-cols-2 gap-4 mt-2">
+            {/* Donor Name */}
+            <div className="col-span-2 sm:col-span-1">
+              <Label>Donor Name <span className="text-red-500">*</span></Label>
+              <Input value={form.donorName} onChange={e => setForm(f => ({ ...f, donorName: e.target.value }))} placeholder="Full name" className="mt-1" />
+            </div>
+            {/* Amount */}
+            <div className="col-span-2 sm:col-span-1">
+              <Label>Amount (₹) <span className="text-red-500">*</span></Label>
+              <Input type="number" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder="e.g. 5000" className="mt-1" />
+            </div>
+            {/* Email */}
+            <div className="col-span-2 sm:col-span-1">
+              <Label>Email Address</Label>
+              <Input type="email" value={form.donorEmail} onChange={e => setForm(f => ({ ...f, donorEmail: e.target.value }))} placeholder="donor@example.com" className="mt-1" />
+            </div>
+            {/* Phone */}
+            <div className="col-span-2 sm:col-span-1">
+              <Label>Phone Number</Label>
+              <Input value={form.donorPhone} onChange={e => setForm(f => ({ ...f, donorPhone: e.target.value }))} placeholder="10-digit mobile" className="mt-1" />
+            </div>
+            {/* Campaign */}
+            <div className="col-span-2 sm:col-span-1">
+              <Label>Campaign (optional)</Label>
+              <Select value={form.campaignId} onValueChange={v => setForm(f => ({ ...f, campaignId: v }))}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="General Fund" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">General Fund</SelectItem>
+                  {(campaigns || []).map((c: any) => (
+                    <SelectItem key={c.id} value={String(c.id)}>{c.title}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {/* Payment Method */}
+            <div className="col-span-2 sm:col-span-1">
+              <Label>Payment Method</Label>
+              <Select value={form.paymentMethod} onValueChange={v => setForm(f => ({ ...f, paymentMethod: v }))}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="upi">UPI</SelectItem>
+                  <SelectItem value="bank_transfer">Bank Transfer / NEFT / RTGS</SelectItem>
+                  <SelectItem value="cash">Cash</SelectItem>
+                  <SelectItem value="cheque">Cheque</SelectItem>
+                  <SelectItem value="razorpay">Razorpay (manual)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {/* Payment Ref / UTR */}
+            <div className="col-span-2">
+              <Label>Payment Reference / UTR Number</Label>
+              <Input value={form.paymentId} onChange={e => setForm(f => ({ ...f, paymentId: e.target.value }))} placeholder="UTR / Transaction ID / Cheque number (optional)" className="mt-1" />
+            </div>
+            {/* Message */}
+            <div className="col-span-2">
+              <Label>Message / Note</Label>
+              <Textarea value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} placeholder="Donor's message or internal note..." className="mt-1" rows={2} />
+            </div>
+
+            {/* Checkboxes */}
+            <div className="col-span-2 flex gap-6">
+              <label className="flex items-center gap-2 cursor-pointer text-sm">
+                <input type="checkbox" checked={form.isAnonymous} onChange={e => setForm(f => ({ ...f, isAnonymous: e.target.checked }))} />
+                Anonymous donation
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer text-sm">
+                <input type="checkbox" checked={form.taxReceiptRequested} onChange={e => setForm(f => ({ ...f, taxReceiptRequested: e.target.checked }))} />
+                80G Tax Receipt required
+              </label>
+            </div>
+
+            {/* 80G fields — shown only if receipt requested */}
+            {form.taxReceiptRequested && (
+              <>
+                <div className="col-span-2">
+                  <div className="border-t pt-3 mb-2">
+                    <p className="text-sm font-semibold text-amber-700">80G Receipt Details</p>
+                    <p className="text-xs text-gray-500">Required to issue a valid 80G income tax receipt.</p>
+                  </div>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <Label>PAN Card Number</Label>
+                  <Input value={form.donorPan} onChange={e => setForm(f => ({ ...f, donorPan: e.target.value.toUpperCase() }))} placeholder="ABCDE1234F" maxLength={10} className="mt-1 font-mono" />
+                </div>
+                <div className="col-span-2">
+                  <Label>Address</Label>
+                  <Input value={form.donorAddress} onChange={e => setForm(f => ({ ...f, donorAddress: e.target.value }))} placeholder="House No., Street, Area" className="mt-1" />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <Label>City</Label>
+                  <Input value={form.donorCity} onChange={e => setForm(f => ({ ...f, donorCity: e.target.value }))} placeholder="City" className="mt-1" />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <Label>State</Label>
+                  <Input value={form.donorState} onChange={e => setForm(f => ({ ...f, donorState: e.target.value }))} placeholder="State" className="mt-1" />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <Label>PIN Code</Label>
+                  <Input value={form.donorPincode} onChange={e => setForm(f => ({ ...f, donorPincode: e.target.value }))} placeholder="6-digit PIN" maxLength={6} className="mt-1" />
+                </div>
+              </>
+            )}
+          </div>
+
+          <DialogFooter className="mt-4 gap-2">
+            <Button variant="outline" onClick={() => setShowDialog(false)} disabled={submitting}>Cancel</Button>
+            <Button onClick={handleRecordDonation} disabled={submitting} className="bg-green-600 hover:bg-green-700 text-white min-w-[140px]">
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              {submitting ? "Recording..." : "Record Donation"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }

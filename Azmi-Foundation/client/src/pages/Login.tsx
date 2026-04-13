@@ -1,14 +1,27 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Mail, Lock, AlertCircle } from "lucide-react";
 
+function formatAmount(n: number) {
+  if (n >= 10000000) return `₹${(n / 10000000).toFixed(1)} Cr+`;
+  if (n >= 100000) return `₹${(n / 100000).toFixed(1)} L+`;
+  if (n >= 1000) return `₹${(n / 1000).toFixed(0)}K+`;
+  return `₹${n.toLocaleString("en-IN")}`;
+}
+
 export default function Login() {
   const [, navigate] = useLocation();
   const { login, user } = useAuth();
+  const { data: stats } = useQuery<{ totalAmount: number; totalDonors: number; activeCampaigns: number }>({
+    queryKey: ["/api/public/stats"],
+    queryFn: () => fetch("/api/public/stats").then(r => r.json()),
+    staleTime: 60000,
+  });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -52,17 +65,17 @@ export default function Login() {
         </div>
         <div className="relative z-10 flex gap-6">
           <div className="text-center">
-            <div className="text-3xl font-bold text-white">₹2.4 Cr+</div>
+            <div className="text-3xl font-bold text-white">{stats ? formatAmount(stats.totalAmount) : "—"}</div>
             <div className="text-white/60 text-xs uppercase tracking-wider mt-1">Funds Raised</div>
           </div>
           <div className="w-px bg-white/20" />
           <div className="text-center">
-            <div className="text-3xl font-bold text-white">12,000+</div>
-            <div className="text-white/60 text-xs uppercase tracking-wider mt-1">Lives Impacted</div>
+            <div className="text-3xl font-bold text-white">{stats ? `${stats.totalDonors.toLocaleString("en-IN")}+` : "—"}</div>
+            <div className="text-white/60 text-xs uppercase tracking-wider mt-1">Donors</div>
           </div>
           <div className="w-px bg-white/20" />
           <div className="text-center">
-            <div className="text-3xl font-bold text-white">48+</div>
+            <div className="text-3xl font-bold text-white">{stats ? `${stats.activeCampaigns}+` : "—"}</div>
             <div className="text-white/60 text-xs uppercase tracking-wider mt-1">Campaigns</div>
           </div>
         </div>
