@@ -58,6 +58,11 @@ export const donations = pgTable("donations", {
   paymentMethod: text("payment_method", { enum: ["upi", "bank_transfer", "card", "other"] }).default("other"),
   isAnonymous: boolean("is_anonymous").default(false),
   taxReceiptRequested: boolean("tax_receipt_requested").default(false),
+  donorPan: text("donor_pan"),
+  donorAddress: text("donor_address"),
+  donorCity: text("donor_city"),
+  donorState: text("donor_state"),
+  donorPincode: text("donor_pincode"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

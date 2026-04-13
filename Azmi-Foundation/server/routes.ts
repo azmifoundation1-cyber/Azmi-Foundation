@@ -132,8 +132,11 @@ export async function registerRoutes(
   // --- Razorpay: Verify Payment & Record Donation ---
   app.post("/api/razorpay/verify", async (req, res) => {
     try {
-      const { razorpay_order_id, razorpay_payment_id, razorpay_signature, campaignId, amount, donorName, donorEmail, isAnonymous } =
-        z.object({
+      const {
+        razorpay_order_id, razorpay_payment_id, razorpay_signature,
+        campaignId, amount, donorName, donorEmail, donorPhone, isAnonymous,
+        taxReceiptRequested, donorPan, donorAddress, donorCity, donorState, donorPincode,
+      } = z.object({
           razorpay_order_id: z.string(),
           razorpay_payment_id: z.string(),
           razorpay_signature: z.string(),
@@ -141,7 +144,14 @@ export async function registerRoutes(
           amount: z.string(),
           donorName: z.string().optional(),
           donorEmail: z.string().optional().nullable(),
+          donorPhone: z.string().optional().nullable(),
           isAnonymous: z.boolean().optional(),
+          taxReceiptRequested: z.boolean().optional(),
+          donorPan: z.string().optional().nullable(),
+          donorAddress: z.string().optional().nullable(),
+          donorCity: z.string().optional().nullable(),
+          donorState: z.string().optional().nullable(),
+          donorPincode: z.string().optional().nullable(),
         }).parse(req.body);
 
       const expectedSig = crypto
@@ -161,7 +171,14 @@ export async function registerRoutes(
         amount,
         donorName: isAnonymous ? "Anonymous" : (donorName || "Anonymous"),
         donorEmail: donorEmail || null,
+        donorPhone: donorPhone || null,
         isAnonymous: isAnonymous ?? false,
+        taxReceiptRequested: taxReceiptRequested ?? false,
+        donorPan: taxReceiptRequested ? (donorPan || null) : null,
+        donorAddress: taxReceiptRequested ? (donorAddress || null) : null,
+        donorCity: taxReceiptRequested ? (donorCity || null) : null,
+        donorState: taxReceiptRequested ? (donorState || null) : null,
+        donorPincode: taxReceiptRequested ? (donorPincode || null) : null,
         paymentId: razorpay_payment_id,
         status: "completed",
         userId,

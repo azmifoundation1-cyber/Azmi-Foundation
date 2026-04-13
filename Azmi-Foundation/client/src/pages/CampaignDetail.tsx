@@ -4,15 +4,16 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Heart, Share2, Users, CheckCircle, ShieldCheck,
   ChevronRight, Loader2, ArrowLeft, Copy, Check,
-  Clock, Bell, Calendar, Facebook, Twitter
+  Clock, Bell, Calendar, Facebook, Twitter, FileText, Download, IndianRupee, Phone, MapPin, Building2, Hash
 } from "lucide-react";
 import type { Campaign, Donation, CampaignUpdate } from "@shared/schema";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { generate80GReceipt, type ReceiptData } from "@/lib/generate-80g-receipt";
 
 declare global {
   interface Window {
@@ -88,10 +89,22 @@ export default function CampaignDetail() {
   const [amount, setAmount] = useState("1000");
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
+  const [donorPhone, setDonorPhone] = useState("");
   const [isAnon, setIsAnon] = useState(false);
   const [copied, setCopied] = useState(false);
   const [donating, setDonating] = useState(false);
   const [activeTab, setActiveTab] = useState<"story" | "updates" | "supporters">("story");
+
+  // 80G Receipt fields
+  const [want80G, setWant80G] = useState(false);
+  const [donorPan, setDonorPan] = useState("");
+  const [donorAddress, setDonorAddress] = useState("");
+  const [donorCity, setDonorCity] = useState("");
+  const [donorState, setDonorState] = useState("");
+  const [donorPincode, setDonorPincode] = useState("");
+  const [lastReceipt, setLastReceipt] = useState<ReceiptData | null>(null);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const upiId = "8320218861@okbizaxis";
@@ -122,6 +135,24 @@ export default function CampaignDetail() {
   const handleDonate = async () => {
     const amt = Number(amount);
     if (!amt || amt < 1) return;
+
+    // Validate 80G fields if requested
+    if (want80G && !isAnon) {
+      if (!donorName.trim()) { toast({ title: "Name required for 80G receipt", variant: "destructive" }); return; }
+      if (!donorPan.trim() || !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(donorPan.trim().toUpperCase())) {
+        toast({ title: "Valid PAN required for 80G receipt", description: "Format: ABCDE1234F", variant: "destructive" }); return;
+      }
+      if (!donorPhone.trim() || !/^\d{10}$/.test(donorPhone.trim())) {
+        toast({ title: "Valid 10-digit mobile number required for 80G receipt", variant: "destructive" }); return;
+      }
+      if (!donorAddress.trim()) { toast({ title: "Address required for 80G receipt", variant: "destructive" }); return; }
+      if (!donorCity.trim()) { toast({ title: "City required for 80G receipt", variant: "destructive" }); return; }
+      if (!donorState.trim()) { toast({ title: "State required for 80G receipt", variant: "destructive" }); return; }
+      if (!donorPincode.trim() || !/^\d{6}$/.test(donorPincode.trim())) {
+        toast({ title: "Valid 6-digit PIN code required for 80G receipt", variant: "destructive" }); return;
+      }
+    }
+
     setDonating(true);
     try {
       // Load Razorpay script if not already loaded
@@ -160,6 +191,7 @@ export default function CampaignDetail() {
         prefill: {
           name: isAnon ? "" : donorName,
           email: isAnon ? "" : donorEmail,
+          contact: isAnon ? "" : donorPhone,
         },
         theme: { color: "#1a1a2e" },
         handler: async (response: any) => {
@@ -175,16 +207,56 @@ export default function CampaignDetail() {
                 amount: String(amt),
                 donorName: isAnon ? "Anonymous" : (donorName || "Anonymous"),
                 donorEmail: donorEmail || null,
+                donorPhone: donorPhone || null,
                 isAnonymous: isAnon,
+                taxReceiptRequested: want80G && !isAnon,
+                donorPan: want80G ? donorPan.toUpperCase() : null,
+                donorAddress: want80G ? donorAddress : null,
+                donorCity: want80G ? donorCity : null,
+                donorState: want80G ? donorState : null,
+                donorPincode: want80G ? donorPincode : null,
               }),
             });
             if (!verifyRes.ok) throw new Error("Verification failed");
-            toast({ title: "Donation Successful!", description: "Thank you for your generous support." });
+            const donationData = await verifyRes.json();
+
+            // Build receipt data if 80G was requested
+            if (want80G && !isAnon) {
+              const receiptNo = `AF-${new Date().getFullYear()}-${String(donationData.id).padStart(5, "0")}`;
+              const receipt: ReceiptData = {
+                receiptNo,
+                paymentId: response.razorpay_payment_id,
+                donationDate: new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" }),
+                donorName: donorName.trim(),
+                donorPan: donorPan.trim().toUpperCase(),
+                donorPhone: donorPhone.trim(),
+                donorEmail: donorEmail.trim(),
+                donorAddress: donorAddress.trim(),
+                donorCity: donorCity.trim(),
+                donorState: donorState.trim(),
+                donorPincode: donorPincode.trim(),
+                amount: amt,
+                campaignTitle: campaign?.title || "General Donation",
+                paymentMethod: "Razorpay",
+              };
+              setLastReceipt(receipt);
+              // Auto-download
+              setGeneratingPdf(true);
+              await generate80GReceipt(receipt);
+              setGeneratingPdf(false);
+            }
+
+            toast({
+              title: "Donation Successful! 🎉",
+              description: want80G && !isAnon
+                ? "Your 80G receipt has been downloaded automatically."
+                : "Thank you for your generous support.",
+            });
             queryClient.invalidateQueries({ queryKey: ["/api/donations/campaign", id] });
             queryClient.invalidateQueries({ queryKey: ["/api/campaigns", id] });
             queryClient.invalidateQueries({ queryKey: ["/api/campaigns/featured"] });
             setDonating(false);
-            setDonorName(""); setDonorEmail(""); setAmount("1000");
+            setDonorName(""); setDonorEmail(""); setDonorPhone(""); setAmount("1000");
           } catch {
             toast({ title: "Payment recorded but verification pending.", description: "Our team will confirm your donation soon.", variant: "destructive" });
             setDonating(false);
@@ -572,7 +644,7 @@ export default function CampaignDetail() {
                     value={donorName}
                     onChange={e => setDonorName(e.target.value)}
                     className="rounded-none border-2 border-gray-200 focus:border-primary font-bold text-primary h-12"
-                    placeholder="Your Name"
+                    placeholder={want80G ? "Full Name (as per PAN card)" : "Your Name"}
                     disabled={isAnon}
                   />
 
@@ -586,10 +658,131 @@ export default function CampaignDetail() {
                     disabled={isAnon}
                   />
 
+                  {/* Phone */}
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input
+                      type="tel"
+                      value={donorPhone}
+                      onChange={e => setDonorPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                      className="pl-9 rounded-none border-2 border-gray-200 focus:border-primary font-bold text-primary h-12"
+                      placeholder={want80G ? "Mobile Number (mandatory for 80G)" : "Mobile Number (optional)"}
+                      disabled={isAnon}
+                      maxLength={10}
+                    />
+                  </div>
+
+                  {/* ── 80G RECEIPT TOGGLE ── */}
+                  {!isAnon && (
+                    <div
+                      onClick={() => setWant80G(!want80G)}
+                      className={`flex items-center gap-3 px-4 py-3 cursor-pointer border-2 transition-all duration-300 ${
+                        want80G
+                          ? "border-amber-400 bg-amber-50"
+                          : "border-gray-200 bg-gray-50 hover:border-amber-300 hover:bg-amber-50/40"
+                      }`}
+                    >
+                      <div className={`w-5 h-5 border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                        want80G ? "border-amber-500 bg-amber-500" : "border-gray-300"
+                      }`}>
+                        {want80G && <Check className="w-3 h-3 text-white" />}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-black text-primary uppercase tracking-widest">
+                          <IndianRupee className="w-3 h-3 inline mr-1 text-amber-600" />
+                          I want an 80G Tax Exemption Receipt
+                        </p>
+                        <p className="text-[10px] text-gray-500 mt-0.5">
+                          Claim income tax deduction under Section 80G. PAN & address required.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── 80G DETAILS FORM (animated) ── */}
+                  <AnimatePresence>
+                    {want80G && !isAnon && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="border-2 border-amber-300 bg-amber-50/60 p-4 space-y-3">
+                          <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest flex items-center gap-1">
+                            <FileText className="w-3 h-3" /> 80G Receipt Details
+                            <span className="text-red-500 ml-1">— All fields mandatory</span>
+                          </p>
+
+                          {/* PAN */}
+                          <div className="relative">
+                            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-amber-600" />
+                            <Input
+                              type="text"
+                              value={donorPan}
+                              onChange={e => setDonorPan(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10))}
+                              className="pl-8 rounded-none border-2 border-amber-300 focus:border-amber-500 font-bold text-primary h-11 bg-white text-sm uppercase tracking-widest"
+                              placeholder="PAN Number (e.g. ABCDE1234F)"
+                              maxLength={10}
+                            />
+                          </div>
+
+                          {/* Address */}
+                          <div className="relative">
+                            <MapPin className="absolute left-3 top-3.5 w-3.5 h-3.5 text-amber-600" />
+                            <textarea
+                              value={donorAddress}
+                              onChange={e => setDonorAddress(e.target.value)}
+                              className="w-full pl-8 pr-3 py-2.5 border-2 border-amber-300 focus:border-amber-500 font-bold text-primary bg-white text-sm resize-none rounded-none outline-none"
+                              placeholder="Full Address (House/Street/Area)"
+                              rows={2}
+                            />
+                          </div>
+
+                          {/* City + State */}
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="relative">
+                              <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-amber-600" />
+                              <Input
+                                type="text"
+                                value={donorCity}
+                                onChange={e => setDonorCity(e.target.value)}
+                                className="pl-8 rounded-none border-2 border-amber-300 focus:border-amber-500 font-bold text-primary h-11 bg-white text-sm"
+                                placeholder="City"
+                              />
+                            </div>
+                            <Input
+                              type="text"
+                              value={donorState}
+                              onChange={e => setDonorState(e.target.value)}
+                              className="rounded-none border-2 border-amber-300 focus:border-amber-500 font-bold text-primary h-11 bg-white text-sm"
+                              placeholder="State"
+                            />
+                          </div>
+
+                          {/* Pincode */}
+                          <Input
+                            type="text"
+                            value={donorPincode}
+                            onChange={e => setDonorPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                            className="rounded-none border-2 border-amber-300 focus:border-amber-500 font-bold text-primary h-11 bg-white text-sm"
+                            placeholder="PIN Code (6 digits)"
+                            maxLength={6}
+                          />
+
+                          <p className="text-[9px] text-amber-700 bg-amber-100 p-2 border border-amber-200">
+                            Your 80G receipt (PDF) will be <strong>auto-downloaded</strong> immediately after successful payment. It is also available for re-download below.
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   {/* Anonymous toggle */}
                   <label className="flex items-center gap-3 cursor-pointer group">
                     <div
-                      onClick={() => setIsAnon(!isAnon)}
+                      onClick={() => { setIsAnon(!isAnon); if (!isAnon) setWant80G(false); }}
                       className={`w-4 h-4 border-2 flex items-center justify-center transition-all ${isAnon ? "border-primary bg-primary" : "border-gray-300 group-hover:border-primary"}`}
                     >
                       {isAnon && <Check className="w-2.5 h-2.5 text-white" />}
@@ -607,11 +800,36 @@ export default function CampaignDetail() {
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                       <span className="flex items-center justify-center gap-2">
-                        <Heart className="w-4 h-4" /> Donate Now
+                        <Heart className="w-4 h-4" />
+                        {want80G && !isAnon ? "Donate & Get 80G Receipt" : "Donate Now"}
                       </span>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-r from-accent/0 via-accent/20 to-accent/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                   </Button>
+
+                  {/* Re-download Receipt button */}
+                  <AnimatePresence>
+                    {lastReceipt && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                      >
+                        <Button
+                          onClick={async () => {
+                            setGeneratingPdf(true);
+                            await generate80GReceipt(lastReceipt);
+                            setGeneratingPdf(false);
+                          }}
+                          disabled={generatingPdf}
+                          className="w-full bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-xs rounded-none py-4 flex items-center justify-center gap-2"
+                        >
+                          {generatingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                          {generatingPdf ? "Generating PDF…" : "Re-download 80G Receipt"}
+                        </Button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* UPI QR Section */}
