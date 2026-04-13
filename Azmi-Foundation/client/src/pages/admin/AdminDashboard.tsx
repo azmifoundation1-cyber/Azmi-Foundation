@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import AdminLayout from "./AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Megaphone, Users, ClipboardList, MessageSquare, TrendingUp, Loader2 } from "lucide-react";
+import { Heart, Megaphone, Users, ClipboardList, MessageSquare, TrendingUp, Loader2, FileText, Phone } from "lucide-react";
 import { Link } from "wouter";
 
 interface AdminStats {
@@ -93,17 +93,36 @@ export default function AdminDashboard() {
             ) : (
               <div className="space-y-0">
                 {recentDonations.slice(0, 8).map((d: any) => (
-                  <div key={d.id} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-sm">
+                  <div key={d.id} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0 gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${d.taxReceiptRequested ? "bg-amber-100 text-amber-700" : "bg-green-100 text-green-700"}`}>
                         {d.isAnonymous ? "A" : (d.donorName?.[0] || "?")}
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{d.isAnonymous ? "Anonymous" : d.donorName}</p>
-                        <p className="text-xs text-gray-400">{new Date(d.createdAt).toLocaleDateString()}</p>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium text-gray-900 truncate">{d.isAnonymous ? "Anonymous" : d.donorName}</p>
+                          {d.taxReceiptRequested && (
+                            <span className="flex-shrink-0 text-[9px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                              <FileText className="w-2.5 h-2.5" /> 80G
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <p className="text-xs text-gray-400">
+                            {new Date(d.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                          </p>
+                          {d.donorPhone && (
+                            <p className="text-xs text-gray-400 flex items-center gap-0.5">
+                              <Phone className="w-2.5 h-2.5" /> {d.donorPhone}
+                            </p>
+                          )}
+                        </div>
+                        {d.donorPan && (
+                          <p className="text-[10px] text-amber-600 font-mono font-bold">PAN: {d.donorPan}</p>
+                        )}
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex-shrink-0">
                       <p className="text-sm font-bold text-green-700">₹{Number(d.amount).toLocaleString()}</p>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${d.status === "completed" ? "bg-green-100 text-green-700" : d.status === "failed" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}>
                         {d.status}
