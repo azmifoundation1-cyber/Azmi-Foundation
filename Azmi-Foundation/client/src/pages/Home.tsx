@@ -4,8 +4,8 @@ import { Footer } from "@/components/Footer";
 import { CampaignCard } from "@/components/CampaignCard";
 import { useCampaigns } from "@/hooks/use-campaigns";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Heart, Globe, Users, Award, Shield, Zap, Target } from "lucide-react";
-import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion";
+import { ArrowRight, Heart, Globe, Users, Award, Shield, Zap, Target, Search, CreditCard, TrendingUp, CheckCircle, Star, Quote } from "lucide-react";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
 
 export default function Home() {
@@ -231,6 +231,163 @@ export default function Home() {
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS ── */}
+      <section className="py-24 sm:py-40 bg-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <motion.span
+              whileInView={{ opacity: [0, 1] }}
+              viewport={{ once: true }}
+              className="text-accent font-black tracking-[0.6em] uppercase text-[10px] flex items-center justify-center gap-3 mb-4"
+            >
+              <TrendingUp className="w-4 h-4" /> Simple & Transparent
+            </motion.span>
+            <h2 className="text-5xl sm:text-7xl font-black tracking-tighter text-primary uppercase leading-[0.9]">
+              How It <span className="text-primary/20 italic">Works</span>
+            </h2>
+            <p className="text-gray-500 mt-6 max-w-xl mx-auto text-sm sm:text-base">
+              From browsing to impact — your donation journey with Azmi Foundation is fully transparent.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 relative">
+            {/* connecting line */}
+            <div className="hidden lg:block absolute top-16 left-[12.5%] right-[12.5%] h-0.5 bg-primary/10 z-0" />
+            {[
+              { step: "01", icon: Search, title: "Browse Campaigns", desc: "Explore verified causes across health, education, emergency, and community categories." },
+              { step: "02", icon: CreditCard, title: "Choose & Donate", desc: "Give any amount securely via UPI, Razorpay, or bank transfer. Every rupee counts." },
+              { step: "03", icon: CheckCircle, title: "100% Transparency", desc: "Track how your donation is utilized with real-time updates from our field team." },
+              { step: "04", icon: Heart, title: "See Your Impact", desc: "Receive reports and photos showing the direct change your contribution created." },
+            ].map(({ step, icon: Icon, title, desc }, i) => (
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15, duration: 0.8 }}
+                className="relative z-10 flex flex-col items-center text-center p-8"
+              >
+                <div className="w-16 h-16 bg-primary flex items-center justify-center mb-6 relative shadow-[0_20px_40px_rgba(0,0,0,0.15)]">
+                  <Icon className="w-7 h-7 text-white" />
+                  <span className="absolute -top-3 -right-3 bg-accent text-primary text-[10px] font-black w-7 h-7 flex items-center justify-center">{step}</span>
+                </div>
+                <h3 className="text-base font-black text-primary uppercase tracking-tight mb-3">{title}</h3>
+                <p className="text-gray-400 text-xs leading-relaxed">{desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TRUST & SAFETY ── */}
+      <section className="py-16 bg-gray-50 border-y border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-black text-primary uppercase tracking-tight">Why Donors Trust Azmi Foundation</h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+            {[
+              { icon: "🛡️", label: "NGO Verified", sub: "Govt. Registered" },
+              { icon: "🔒", label: "Secure Payments", sub: "Razorpay PCI-DSS" },
+              { icon: "📋", label: "80G Tax Benefit", sub: "Income Tax Exemption" },
+              { icon: "📊", label: "Full Transparency", sub: "Fund Reports Shared" },
+              { icon: "🤝", label: "Direct Impact", sub: "No Middlemen" },
+              { icon: "⭐", label: "5-Star Trust", sub: "Community Endorsed" },
+            ].map(({ icon, label, sub }) => (
+              <motion.div
+                key={label}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                className="flex flex-col items-center text-center p-4 bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <span className="text-3xl mb-3">{icon}</span>
+                <p className="text-[11px] font-black text-primary uppercase tracking-wide">{label}</p>
+                <p className="text-[10px] text-gray-400 mt-1">{sub}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ── */}
+      <section className="py-24 sm:py-40 bg-primary text-white overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <motion.span
+              whileInView={{ opacity: [0, 1] }}
+              viewport={{ once: true }}
+              className="text-accent font-black tracking-[0.6em] uppercase text-[10px] block mb-4"
+            >
+              Stories of Impact
+            </motion.span>
+            <h2 className="text-5xl sm:text-7xl font-black tracking-tighter leading-[0.9] uppercase">
+              Real <span className="text-white/20 italic">Voices</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                name: "Siddiqui Family",
+                location: "Gomtipur, Ahmedabad",
+                quote: "When my husband was hospitalized, we had nothing. Azmi Foundation stepped in immediately — food for our children every day, medical guidance, and hope. We are forever grateful.",
+                stars: 5,
+              },
+              {
+                name: "Ravi Kumar",
+                location: "Donor, Mumbai",
+                quote: "I've donated to many NGOs, but none give me the transparency that Azmi Foundation does. I receive photos and updates from the field every month. My money truly reaches the people.",
+                stars: 5,
+              },
+              {
+                name: "Zainab Sheikh",
+                location: "Volunteer, Ahmedabad",
+                quote: "Volunteering with Azmi Foundation changed my perspective on life. Seeing Dr. Shahbaaz work tirelessly for thousands of families with zero personal motive — it is inspiring.",
+                stars: 5,
+              },
+            ].map(({ name, location, quote, stars }, i) => (
+              <motion.div
+                key={name}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15 }}
+                className="bg-white/5 border border-white/10 p-8 backdrop-blur-sm hover:bg-white/10 transition-colors"
+              >
+                <Quote className="w-8 h-8 text-accent/40 mb-4" />
+                <p className="text-white/80 text-sm leading-relaxed mb-6 italic">"{quote}"</p>
+                <div className="flex items-center gap-1 mb-4">
+                  {Array.from({ length: stars }).map((_, j) => (
+                    <Star key={j} className="w-3.5 h-3.5 fill-accent text-accent" />
+                  ))}
+                </div>
+                <p className="text-white font-black text-sm uppercase tracking-wide">{name}</p>
+                <p className="text-white/40 text-[10px] uppercase tracking-widest mt-1">{location}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TAX BENEFIT BANNER ── */}
+      <section className="py-12 bg-accent/10 border-y border-accent/20">
+        <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <span className="text-4xl">🧾</span>
+            <div>
+              <p className="font-black text-primary text-base uppercase tracking-tight">Get 80G Tax Exemption on Your Donation</p>
+              <p className="text-sm text-gray-500 mt-1">All donations to Azmi Foundation are eligible for income tax deductions under Section 80G of the Income Tax Act.</p>
+            </div>
+          </div>
+          <Link href="/donate">
+            <Button className="bg-primary text-white hover:bg-black font-black uppercase tracking-widest text-xs rounded-none px-8 py-5 whitespace-nowrap">
+              Donate & Save Tax
+            </Button>
+          </Link>
         </div>
       </section>
 
