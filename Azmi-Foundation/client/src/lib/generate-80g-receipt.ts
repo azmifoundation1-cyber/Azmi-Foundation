@@ -1,19 +1,28 @@
 import { jsPDF } from "jspdf";
 
-// Azmi Foundation 80G Certificate Details
+// Azmi Foundation — All Legal Credentials
 const ORG = {
   name: "AZMI FOUNDATION",
   pan: "AAGTA9354B",
-  regNo: "AAGTA9354BF20261",
-  docId: "AAGTA9354BF2026101",
-  section: "80G — Sub-clause (A) of clause (iv) of first proviso to sub-section (5) of section 80G",
-  approvalDate: "06-04-2026",
-  validFrom: "AY 2026-27",
-  validTo: "AY 2028-29",
-  address: "Gomtipur Bridge Corner, Kamdar Maidan, Gomtipur, Ahmedabad – 380021, Gujarat, India",
+  // 80G Details
+  reg80G: "AAGTA9354BF20261",
+  doc80G: "AAGTA9354BF2026101",
+  section80G: "80G — Sub-clause (A) of clause (iv) of first proviso to sub-section (5) of section 80G",
+  approval80G: "06-04-2026",
+  valid80GFrom: "AY 2026-27",
+  valid80GTo: "AY 2028-29",
+  // 12A Details
+  reg12A: "AAGTA9354BE2025101",
+  // CSR-1 Details
+  csr1: "CSR00108803",
+  // NGO Darpan Details
+  darpanId: "GJ/2021/0276308",
+  regNo: "E/22280/AHMEDABAD",
+  regDate: "23-07-2018",
+  address: "1962/8 Magan Kumbhar Ni Chali, Gomtipur, Ahmedabad – 380021, Gujarat, India",
   email: "azmifoundation786@gmail.com",
   upi: "8320218861@okbizaxis",
-  bank: "Axis Bank, Relief Road | A/C: 921020009805552 | IFSC: UTIB0000453",
+  bank: "Axis Bank | A/C: 921020009805552 | IFSC: UTIB0000453",
 };
 
 // Convert number to Indian words
@@ -125,11 +134,14 @@ export async function generate80GReceipt(data: ReceiptData): Promise<void> {
   doc.setLineWidth(0.8);
   doc.line(margin, 35, W - margin, 35);
 
-  // PAN & Reg in header
-  text(`PAN: ${ORG.pan}`, margin + 26, 41, { size: 7, color: "#ccccdd" });
-  text(`80G Reg No: ${ORG.regNo}`, margin + 26, 46, { size: 7, color: "#ccccdd" });
-  text(`Valid: ${ORG.validFrom} to ${ORG.validTo}`, W - margin, 41, { size: 7, color: "#d4af37", align: "right" });
-  text(`Approval Date: ${ORG.approvalDate}`, W - margin, 46, { size: 7, color: "#d4af37", align: "right" });
+  // Credentials row in header — PAN, 80G, 12A, CSR-1, Darpan
+  text(`PAN: ${ORG.pan}`, margin + 26, 40, { size: 6.5, color: "#ccccdd" });
+  text(`80G: ${ORG.reg80G}`, margin + 26, 45, { size: 6.5, color: "#ccccdd" });
+  text(`12A: ${ORG.reg12A}`, margin + 26, 50, { size: 6.5, color: "#ccccdd" });
+  text(`CSR-1: ${ORG.csr1}`, W / 2, 40, { size: 6.5, color: "#d4af37", align: "center" });
+  text(`NGO Darpan: ${ORG.darpanId}`, W / 2, 45, { size: 6.5, color: "#d4af37", align: "center" });
+  text(`Approved: ${ORG.approval80G} | Valid: ${ORG.valid80GFrom}–${ORG.valid80GTo}`, W - margin, 40, { size: 6.5, color: "#aaaacc", align: "right" });
+  text(`Estd: ${ORG.regDate} | Reg: ${ORG.regNo}`, W - margin, 45, { size: 6.5, color: "#aaaacc", align: "right" });
 
   y = 58;
 
@@ -225,11 +237,17 @@ export async function generate80GReceipt(data: ReceiptData): Promise<void> {
   gfield("ORGANIZATION PAN", ORG.pan, col1, y);
   gfield("ORGANIZATION NAME", ORG.name, col2, y);
   y += 11;
-  gfield("UNIQUE REGISTRATION NUMBER", ORG.regNo, col1, y);
-  gfield("DOCUMENT ID NUMBER", ORG.docId, col2, y);
+  gfield("80G REGISTRATION NUMBER", ORG.reg80G, col1, y);
+  gfield("DOCUMENT ID NUMBER", ORG.doc80G, col2, y);
   y += 11;
-  gfield("DATE OF 80G APPROVAL", ORG.approvalDate, col1, y);
-  gfield("VALID FOR ASSESSMENT YEARS", `${ORG.validFrom} to ${ORG.validTo}`, col2, y);
+  gfield("DATE OF 80G APPROVAL", ORG.approval80G, col1, y);
+  gfield("VALID FOR ASSESSMENT YEARS", `${ORG.valid80GFrom} to ${ORG.valid80GTo}`, col2, y);
+  y += 11;
+  gfield("12A REGISTRATION NUMBER", ORG.reg12A, col1, y);
+  gfield("CSR-1 REGISTRATION NUMBER", ORG.csr1, col2, y);
+  y += 11;
+  gfield("NGO DARPAN ID", ORG.darpanId, col1, y);
+  gfield("TRUST REG. NUMBER", ORG.regNo, col2, y);
   y += 13;
 
   // Section reference box
@@ -237,8 +255,8 @@ export async function generate80GReceipt(data: ReceiptData): Promise<void> {
   doc.setDrawColor("#f0d890");
   doc.setLineWidth(0.3);
   doc.rect(margin, y, innerW, 8);
-  text("SECTION: ", margin + 3, y + 5, { size: 6.5, bold: true, color: "#a07000" });
-  text(ORG.section, margin + 20, y + 5, { size: 6.5, color: "#5a3c00", italic: true });
+  text("80G SECTION: ", margin + 3, y + 5, { size: 6.5, bold: true, color: "#a07000" });
+  text(ORG.section80G, margin + 26, y + 5, { size: 6.5, color: "#5a3c00", italic: true });
   y += 13;
 
   // ── CERTIFICATION TEXT ──

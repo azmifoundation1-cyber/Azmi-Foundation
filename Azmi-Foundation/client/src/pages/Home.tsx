@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { CampaignCard } from "@/components/CampaignCard";
+import { LegalCredentials } from "@/components/LegalCredentials";
 import { useCampaigns } from "@/hooks/use-campaigns";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Heart, Globe, Users, Award, Shield, Zap, Target, Search, CreditCard, TrendingUp, CheckCircle, Star, Quote } from "lucide-react";
@@ -390,6 +391,8 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      <LegalCredentials />
 
       <Footer />
     </div>

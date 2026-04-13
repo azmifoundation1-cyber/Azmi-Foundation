@@ -886,18 +886,31 @@ export default function CampaignDetail() {
                 </div>
               </div>
 
-              {/* 80G Tax Benefit Card */}
-              <div className="bg-accent/10 border border-accent/30 p-5 space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">🧾</span>
-                  <p className="text-xs font-black text-primary uppercase tracking-wide">80G Tax Benefit Available</p>
+              {/* Legal Credentials Card */}
+              <div className="bg-white shadow-sm p-5 space-y-3">
+                <h3 className="text-xs font-black text-primary uppercase tracking-[0.3em] flex items-center gap-2 border-b border-gray-100 pb-3">
+                  <ShieldCheck className="w-3.5 h-3.5 text-accent" /> Legal Registrations
+                </h3>
+                <div className="space-y-2">
+                  {[
+                    { icon: "📜", label: "80G Tax Exemption", value: "AAGTA9354BF20261", sub: "AY 2026-27 to 2028-29", color: "text-amber-600" },
+                    { icon: "🏛️", label: "12A IT Exemption", value: "AAGTA9354BE2025101", sub: "Income Tax Act 1961", color: "text-blue-600" },
+                    { icon: "🤝", label: "CSR-1 Registered", value: "CSR00108803", sub: "Ministry of Corporate Affairs", color: "text-green-600" },
+                    { icon: "🇮🇳", label: "NGO Darpan ID", value: "GJ/2021/0276308", sub: "NITI Aayog, Govt. of India", color: "text-purple-600" },
+                  ].map(c => (
+                    <div key={c.label} className="flex items-start gap-2.5 py-1.5 border-b border-gray-50 last:border-0">
+                      <span className="text-base leading-none mt-0.5">{c.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-[10px] font-black uppercase tracking-widest ${c.color}`}>{c.label}</p>
+                        <p className="text-[11px] font-black text-primary tracking-wider truncate">{c.value}</p>
+                        <p className="text-[9px] text-gray-400">{c.sub}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <p className="text-[11px] text-gray-500 leading-relaxed">
-                  Your donation qualifies for income tax deduction under Section 80G. Contact us at the email below after donating to request your certificate.
+                <p className="text-[9px] text-gray-400 text-center pt-1">
+                  Your 80G receipt is <strong>auto-downloaded</strong> after payment when you tick the 80G box above.
                 </p>
-                <a href="mailto:azmifoundation786@gmail.com" className="text-[11px] text-accent font-black hover:underline">
-                  azmifoundation786@gmail.com
-                </a>
               </div>
 
               {/* Bank Transfer Info */}

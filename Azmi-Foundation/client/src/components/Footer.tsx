@@ -70,8 +70,31 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/5 pt-12 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-white/20">
-          <p>&copy; {new Date().getFullYear()} Azmi Foundation. All rights reserved.</p>
+        {/* Legal Credentials Strip */}
+        <div className="border-t border-white/5 pt-8 mb-6">
+          <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 text-center mb-4">Registered & Certified By</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              { icon: "📜", label: "80G", value: "AAGTA9354BF20261" },
+              { icon: "🏛️", label: "12A", value: "AAGTA9354BE2025101" },
+              { icon: "🤝", label: "CSR-1", value: "CSR00108803" },
+              { icon: "🇮🇳", label: "NGO Darpan", value: "GJ/2021/0276308" },
+              { icon: "🪪", label: "PAN", value: "AAGTA9354B" },
+              { icon: "⚖️", label: "Trust Reg.", value: "E/22280/AHMEDABAD" },
+            ].map(c => (
+              <div key={c.label} className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5">
+                <span className="text-xs">{c.icon}</span>
+                <div>
+                  <p className="text-[8px] font-black text-white/30 uppercase tracking-widest leading-none">{c.label}</p>
+                  <p className="text-[9px] font-black text-white/60 tracking-wider leading-none mt-0.5">{c.value}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-t border-white/5 pt-8 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-white/20">
+          <p>&copy; {new Date().getFullYear()} Azmi Foundation. All rights reserved. | Estd. 23-07-2018</p>
         </div>
       </div>
     </footer>

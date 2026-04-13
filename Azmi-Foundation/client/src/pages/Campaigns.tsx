@@ -5,7 +5,7 @@ import { CampaignCard } from "@/components/CampaignCard";
 import { useCampaigns } from "@/hooks/use-campaigns";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Search, SlidersHorizontal, X, Filter } from "lucide-react";
+import { Loader2, Search, SlidersHorizontal, X, Filter, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 
@@ -117,6 +117,27 @@ export default function Campaigns() {
                 <X className="h-4 w-4" />
               </button>
             )}
+          </motion.div>
+
+          {/* Trust Badges */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-wrap justify-center gap-3 mt-6"
+          >
+            {[
+              { icon: "📜", label: "80G Approved" },
+              { icon: "🏛️", label: "12A Registered" },
+              { icon: "🤝", label: "CSR-1 Certified" },
+              { icon: "🇮🇳", label: "NGO Darpan Verified" },
+              { icon: "🔒", label: "Razorpay Secured" },
+            ].map(b => (
+              <div key={b.label} className="flex items-center gap-1.5 bg-white/10 border border-white/20 px-3 py-1.5 text-white/80 text-[10px] font-black uppercase tracking-widest">
+                <span>{b.icon}</span>
+                <span>{b.label}</span>
+              </div>
+            ))}
           </motion.div>
         </div>
       </div>
