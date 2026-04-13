@@ -36,7 +36,7 @@ externalPort = 80
 
 [deployment]
 deploymentTarget = "vm"
-run = ["sh", "-c", "cd Azmi-Foundation && npm run start"]
+run = ["sh", "-c", "cd Azmi-Foundation && node dist/index.js"]
 build = ["sh", "-c", "cd Azmi-Foundation && npm install && npm run build"]
 
 [userenv]
