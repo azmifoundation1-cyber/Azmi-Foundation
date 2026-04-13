@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Loader2, Search, Download, Filter, ChevronDown, ChevronRight, FileText, Phone, MapPin, CreditCard, BadgeCheck, Plus } from "lucide-react";
+import { Loader2, Search, Download, Filter, ChevronDown, ChevronRight, FileText, Phone, MapPin, CreditCard, BadgeCheck, Plus, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Donation } from "@shared/schema";
 import { generate80GReceipt } from "@/lib/generate-80g-receipt";
@@ -38,6 +38,7 @@ export default function AdminDonations() {
   const [showDialog, setShowDialog] = useState(false);
   const [form, setForm] = useState({ ...EMPTY_FORM });
   const [submitting, setSubmitting] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   const { data: donations, isLoading } = useQuery<Donation[]>({
     queryKey: ["/api/donations"],
@@ -65,6 +66,28 @@ export default function AdminDonations() {
       toast({ title: "Donation status updated" });
     },
   });
+
+  async function handleRazorpaySync() {
+    setSyncing(true);
+    try {
+      const res = await fetch("/api/admin/razorpay/sync", { method: "POST" });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Sync failed");
+      }
+      const data = await res.json();
+      qc.invalidateQueries({ queryKey: ["/api/donations"] });
+      qc.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      qc.invalidateQueries({ queryKey: ["/api/public/stats"] });
+      toast({
+        title: `Razorpay Sync Complete`,
+        description: data.message,
+      });
+    } catch (err: any) {
+      toast({ title: "Sync failed", description: err.message, variant: "destructive" });
+    }
+    setSyncing(false);
+  }
 
   async function handleRecordDonation() {
     if (!form.donorName.trim() || !form.amount || Number(form.amount) < 1) {
@@ -208,7 +231,17 @@ export default function AdminDonations() {
               {total80G > 0 && <span className="ml-3 text-amber-600 font-semibold">· {total80G} with 80G receipt</span>}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              className="gap-2 border-blue-300 text-blue-700 hover:bg-blue-50"
+              onClick={handleRazorpaySync}
+              disabled={syncing}
+              title="Fetch all captured payments from Razorpay and store in database"
+            >
+              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+              {syncing ? "Syncing..." : "Sync Razorpay"}
+            </Button>
             <Button className="gap-2 bg-green-600 hover:bg-green-700 text-white" onClick={() => { setForm({ ...EMPTY_FORM }); setShowDialog(true); }}>
               <Plus className="w-4 h-4" /> Record Donation
             </Button>

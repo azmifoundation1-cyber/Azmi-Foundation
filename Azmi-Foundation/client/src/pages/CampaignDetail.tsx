@@ -174,7 +174,7 @@ export default function CampaignDetail() {
       const orderRes = await fetch("/api/razorpay/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: amt }),
+        body: JSON.stringify({ amount: amt, campaignId: id, donorName: isAnon ? "" : donorName }),
       });
       if (!orderRes.ok) throw new Error("Order creation failed");
       const { orderId, amount: orderAmount, currency } = await orderRes.json();

@@ -38,3 +38,8 @@ externalPort = 80
 deploymentTarget = "vm"
 run = ["sh", "-c", "cd Azmi-Foundation && npm run start"]
 build = ["sh", "-c", "cd Azmi-Foundation && npm install && npm run build"]
+
+[userenv]
+
+[userenv.shared]
+RAZORPAY_WEBHOOK_SECRET = "4d2038997bc7029b3b5335876c756bde3ae517f112c0ec56b9bd483a44e75078"

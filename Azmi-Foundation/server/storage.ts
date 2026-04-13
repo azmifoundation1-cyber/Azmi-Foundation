@@ -35,6 +35,7 @@ export interface IStorage {
   getDonations(): Promise<Donation[]>;
   getDonationsByCampaign(campaignId: number): Promise<Donation[]>;
   getDonationsByUser(userId: string): Promise<Donation[]>;
+  getDonationByPaymentId(paymentId: string): Promise<Donation | undefined>;
   updateDonationStatus(id: number, status: string): Promise<Donation>;
 
   // Programs
@@ -152,6 +153,11 @@ export class DatabaseStorage implements IStorage {
 
   async getDonationsByUser(userId: string): Promise<Donation[]> {
     return await db.select().from(donations).where(eq(donations.userId, userId)).orderBy(desc(donations.createdAt));
+  }
+
+  async getDonationByPaymentId(paymentId: string): Promise<Donation | undefined> {
+    const [donation] = await db.select().from(donations).where(eq(donations.paymentId, paymentId));
+    return donation;
   }
 
   async updateDonationStatus(id: number, status: string): Promise<Donation> {

@@ -126,11 +126,20 @@ export async function registerRoutes(
   // --- Razorpay: Create Order ---
   app.post("/api/razorpay/order", async (req, res) => {
     try {
-      const { amount } = z.object({ amount: z.number().min(1) }).parse(req.body);
+      const { amount, campaignId, donorName } = z.object({
+        amount: z.number().min(1),
+        campaignId: z.coerce.number().optional(),
+        donorName: z.string().optional(),
+      }).parse(req.body);
       const order = await razorpay.orders.create({
         amount: Math.round(amount * 100), // paise
         currency: "INR",
-        receipt: `receipt_${Date.now()}`,
+        receipt: `AF-${Date.now()}`,
+        notes: {
+          campaign_id: campaignId ? String(campaignId) : "",
+          donor_name: donorName || "",
+          source: "azmi-foundation-website",
+        } as any,
       });
       res.json({ orderId: order.id, amount: order.amount, currency: order.currency });
     } catch (err) {
@@ -150,7 +159,7 @@ export async function registerRoutes(
           razorpay_order_id: z.string(),
           razorpay_payment_id: z.string(),
           razorpay_signature: z.string(),
-          campaignId: z.number(),
+          campaignId: z.coerce.number(),
           amount: z.string(),
           donorName: z.string().optional(),
           donorEmail: z.string().optional().nullable(),
@@ -173,6 +182,23 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Payment verification failed" });
       }
 
+      // Prevent duplicate recording
+      const existing = await storage.getDonationByPaymentId(razorpay_payment_id);
+      if (existing) return res.status(200).json(existing);
+
+      // Fetch full payment details from Razorpay to get method etc.
+      let paymentMethod = "other";
+      try {
+        const paymentDetails = await razorpay.payments.fetch(razorpay_payment_id) as any;
+        const m = paymentDetails?.method;
+        if (m === "upi") paymentMethod = "upi";
+        else if (m === "card" || m === "emi") paymentMethod = "card";
+        else if (m === "netbanking" || m === "bank_transfer") paymentMethod = "bank_transfer";
+        // fill in contact details from Razorpay if not supplied by client
+        if (!donorPhone && paymentDetails?.contact) (req.body as any).__rzpContact = paymentDetails.contact;
+        if (!donorEmail && paymentDetails?.email) (req.body as any).__rzpEmail = paymentDetails.email;
+      } catch { /* ignore — non-critical */ }
+
       const user = req.user as any;
       const userId = user?.claims?.sub || user?.id || null;
 
@@ -190,6 +216,7 @@ export async function registerRoutes(
         donorState: taxReceiptRequested ? (donorState || null) : null,
         donorPincode: taxReceiptRequested ? (donorPincode || null) : null,
         paymentId: razorpay_payment_id,
+        paymentMethod: paymentMethod as any,
         status: "completed",
         userId,
       });
@@ -199,6 +226,64 @@ export async function registerRoutes(
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
       console.error("Razorpay verify error:", err);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // --- Razorpay: Webhook (server-to-server real-time) ---
+  app.post("/api/razorpay/webhook", async (req, res) => {
+    try {
+      const webhookSecret = (process.env.RAZORPAY_WEBHOOK_SECRET || "").trim();
+      if (webhookSecret) {
+        const sig = req.headers["x-razorpay-signature"] as string;
+        const expected = crypto
+          .createHmac("sha256", webhookSecret)
+          .update((req as any).rawBody || JSON.stringify(req.body))
+          .digest("hex");
+        if (sig !== expected) {
+          return res.status(400).json({ message: "Invalid webhook signature" });
+        }
+      }
+
+      const event = req.body?.event;
+      const payment = req.body?.payload?.payment?.entity;
+      if (!payment || !["payment.captured", "payment.authorized"].includes(event)) {
+        return res.json({ status: "ignored" });
+      }
+
+      // Check for duplicate
+      const existing = await storage.getDonationByPaymentId(payment.id);
+      if (existing) return res.json({ status: "already_recorded" });
+
+      const amountInRupees = String(Math.round(payment.amount / 100));
+      const method = payment.method === "upi" ? "upi"
+        : (payment.method === "card" || payment.method === "emi") ? "card"
+        : (payment.method === "netbanking") ? "bank_transfer" : "other";
+
+      // Try to find which campaign this order belongs to via notes
+      let campaignId: number | null = null;
+      if (payment.notes?.campaign_id) {
+        campaignId = Number(payment.notes.campaign_id);
+      }
+
+      await storage.createDonation({
+        campaignId,
+        amount: amountInRupees,
+        donorName: payment.notes?.donor_name || (payment.email ? payment.email.split("@")[0] : "Online Donor"),
+        donorEmail: payment.email || null,
+        donorPhone: payment.contact || null,
+        isAnonymous: false,
+        taxReceiptRequested: false,
+        paymentId: payment.id,
+        paymentMethod: method as any,
+        status: "completed",
+        userId: null,
+      });
+
+      console.log(`[Webhook] Recorded payment ${payment.id} ₹${amountInRupees}`);
+      res.json({ status: "recorded" });
+    } catch (err) {
+      console.error("[Webhook] Error:", err);
+      res.status(500).json({ message: "Webhook processing failed" });
     }
   });
 
@@ -382,6 +467,65 @@ export async function registerRoutes(
   app.get(api.donations.list.path, isAdmin, async (req, res) => {
     const donations = await storage.getDonations();
     res.json(donations);
+  });
+
+  // --- Admin: Sync from Razorpay ---
+  app.post("/api/admin/razorpay/sync", isAdmin, async (req, res) => {
+    try {
+      let imported = 0;
+      let skipped = 0;
+      let from = 0; // page offset
+      let hasMore = true;
+
+      while (hasMore) {
+        const result: any = await razorpay.payments.all({ count: 100, skip: from });
+        const items: any[] = result?.items || [];
+        if (!items.length) break;
+
+        for (const p of items) {
+          if (p.status !== "captured") { skipped++; continue; }
+
+          // Skip if already recorded
+          const dup = await storage.getDonationByPaymentId(p.id);
+          if (dup) { skipped++; continue; }
+
+          const amountRupees = String(Math.round(p.amount / 100));
+          const method = p.method === "upi" ? "upi"
+            : (p.method === "card" || p.method === "emi") ? "card"
+            : (p.method === "netbanking") ? "bank_transfer" : "other";
+
+          let campaignId: number | null = null;
+          if (p.notes?.campaign_id) campaignId = Number(p.notes.campaign_id);
+
+          const donorName = p.notes?.donor_name
+            || (p.email ? p.email.split("@")[0] : "Online Donor");
+
+          await storage.createDonation({
+            campaignId,
+            amount: amountRupees,
+            donorName,
+            donorEmail: p.email || null,
+            donorPhone: p.contact || null,
+            isAnonymous: false,
+            taxReceiptRequested: false,
+            paymentId: p.id,
+            paymentMethod: method as any,
+            status: "completed",
+            userId: null,
+          });
+          imported++;
+        }
+
+        from += items.length;
+        if (items.length < 100) hasMore = false;
+        if (from >= 1000) hasMore = false; // safety cap
+      }
+
+      res.json({ imported, skipped, message: `Imported ${imported} payments, skipped ${skipped} (duplicates/non-captured)` });
+    } catch (err: any) {
+      console.error("Razorpay sync error:", err);
+      res.status(500).json({ message: err.message || "Sync failed" });
+    }
   });
 
   app.post("/api/admin/donations", isAdmin, async (req, res) => {
