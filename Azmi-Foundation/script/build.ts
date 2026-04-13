@@ -4,12 +4,12 @@ import { rm, readFile } from "fs/promises";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
+// Only pure-JS packages safe to bundle. Native addons (bcrypt, pg with native bindings)
+// must remain external so they load from node_modules at runtime.
 const allowlist = [
   "@google/generative-ai",
   "axios",
-  "bcrypt",
   "compression",
-  "connect-pg-simple",
   "cors",
   "date-fns",
   "drizzle-orm",
@@ -25,7 +25,6 @@ const allowlist = [
   "openai",
   "passport",
   "passport-local",
-  "pg",
   "razorpay",
   "stripe",
   "uuid",
@@ -61,6 +60,16 @@ async function buildAll() {
     minify: true,
     external: externals,
     logLevel: "info",
+    banner: {
+      js: `
+import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+const require = createRequire(import.meta.url);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+`.trim(),
+    },
   });
 }
 
