@@ -26,6 +26,7 @@ const allowlist = [
   "passport",
   "passport-local",
   "pg",
+  "razorpay",
   "stripe",
   "uuid",
   "ws",
@@ -52,8 +53,8 @@ async function buildAll() {
     entryPoints: ["server/index.ts"],
     platform: "node",
     bundle: true,
-    format: "cjs",
-    outfile: "dist/index.cjs",
+    format: "esm",
+    outfile: "dist/index.js",
     define: {
       "process.env.NODE_ENV": '"production"',
     },
