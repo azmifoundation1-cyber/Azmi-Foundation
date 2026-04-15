@@ -419,13 +419,16 @@ export default function CampaignDetail() {
             <p>
               Dr. Shahbaaz's father fed over 2 lakh strangers from his own savings. Today he lies in ICU — heart failure, kidney failure, brain haemorrhage. His son is feeding 2,000 people alone, with an empty bank account. <strong className="text-primary">846 families in Ahmedabad have no other food source.</strong>
             </p>
-            <div className="my-4 bg-black rounded-none overflow-hidden">
+            <div className="my-4 overflow-hidden rounded-none bg-black">
               <video
                 src="/shahbaaz-video.mp4"
+                autoPlay
+                muted
+                playsInline
                 controls
-                poster="/shahbaaz-thumb.jpg"
-                className="w-full max-h-[320px] object-contain"
-                preload="metadata"
+                preload="auto"
+                className="w-full h-auto block"
+                style={{ maxWidth: "100%" }}
               />
             </div>
             <p>
