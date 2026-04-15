@@ -1,0 +1,111 @@
+I need you to rebuild a campaign donation page for my NGO (Azmi Foundation, Ahmedabad, India) 
+that maximizes donation conversions. The page is currently failing badly — people visit but don't donate.
+
+TECH STACK: Use Next.js (or plain HTML/CSS/JS if simpler). The page must be fully mobile-first 
+(80%+ of Indian donors are on mobile). 
+
+--- THE CORE PROBLEMS TO FIX ---
+
+1. TRUST: Show trust signals ABOVE the donate button, not at the bottom.
+2. EMOTION: The hero section must lead with a human story — photo + 2 sentences — before any stats.
+3. FORM FRICTION: Simplify the donation form to ONE default amount (₹680), THREE choices only, 
+   and auto-check the 80G box.
+4. FAKE URGENCY: Replace the countdown timer with a real deadline or a "families remaining" live counter.
+5. PAYMENT UX: UPI should be primary. Bank transfer goes behind an accordion. 
+   No QR code shown until user clicks "Pay via UPI QR".
+
+--- COPY (USE EXACTLY THIS TEXT) ---
+
+PAGE TITLE (H1, SEO-optimized): 
+"18 साल की विरासत खतरे में — क्या आप इसे बचाएंगे? | 18-Year Legacy at Risk — Help Us Feed 846 Families"
+
+HERO SUBHEAD:
+"Dr. Shahbaaz's father fed over 2 lakh strangers from his own savings. Today he lies in ICU 
+— heart failure, kidney failure, brain haemorrhage. His son is feeding 2,000 people alone, 
+with an empty bank account. 846 families in Ahmedabad have no other food source."
+
+URGENCY (real, not fake): 
+"Grocery kits ship on 30 April 2026. We need to reach ₹5,75,280 before then. 
+Currently: ₹25,470 raised. ₹5,49,810 still needed."
+
+IMPACT LINE (above donate button): 
+"₹680 = 1 family's groceries for a month. That is less than one restaurant meal."
+
+CTA BUTTON TEXT: "Feed a Family — ₹680"
+
+TRUST BAR (show immediately under H1, before the story):
+- "80G Tax Exemption | Cert No. AAGTA9354BF20261"
+- "NGO Darpan Verified | GJ/2021/0276308"  
+- "CSR-1 Registered | CSR00108803"
+- "7 people have already donated"
+
+DONATION AMOUNTS: 
+₹680 (1 family — DEFAULT SELECTED), ₹2,040 (3 families), ₹6,800 (10 families)
++ custom amount field
+
+FORM FIELDS — keep minimal:
+- Name (required)
+- Phone (required, for 80G receipt WhatsApp)
+- Email (optional)
+- 80G box: PRE-CHECKED with text "I want my 80G tax receipt (auto-sent after payment)"
+- Anonymous toggle: OFF by default
+
+PAYMENT OPTIONS:
+- Primary: Razorpay/PayU button ("Pay Securely — UPI / Card / NetBanking")
+- Secondary (collapsed accordion): "Pay via UPI directly — 8320218861@okbizaxis"
+- Tertiary (collapsed accordion): "Bank Transfer — A/C 921020009805552, IFSC UTIB0000453, Axis Bank"
+
+AFTER DONATION:
+- WhatsApp message auto-trigger: "Thank you [Name]! You just fed [X] families. 
+  Your 80G receipt will arrive within 24 hours. Share this: [link]"
+
+--- SEO REQUIREMENTS ---
+
+Add this structured data in <head> as JSON-LD:
+{
+  "@context": "https://schema.org",
+  "@type": "DonateAction",
+  "name": "Help Feed 846 Families in Ahmedabad",
+  "description": "Dr. Shahbaaz Azmi feeds 2000+ people daily while his father battles ICU. 846 families need grocery kits. ₹680 feeds one family.",
+  "recipient": {
+    "@type": "NGO",
+    "name": "Azmi Foundation",
+    "url": "https://azmifoundation.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Gomtipur Bridge East-End, Opp. Kamdar Maidan",
+      "addressLocality": "Ahmedabad",
+      "addressRegion": "Gujarat",
+      "postalCode": "380021",
+      "addressCountry": "IN"
+    }
+  }
+}
+
+Meta description (160 chars max):
+"Help Dr. Shahbaaz feed 846 families in Ahmedabad. ₹680 = 1 grocery kit. 80G tax receipt. 
+NGO Darpan verified. Donate now — groceries ship April 30."
+
+Target keywords (use in H2 headings naturally):
+- "donate food Ahmedabad"
+- "NGO donation 80G tax exemption India"
+- "help poor families Gujarat"
+- "grocery donation Ahmedabad"
+
+--- LAYOUT ORDER (mobile-first, top to bottom) ---
+
+1. Sticky top bar: Progress bar (₹25,470 of ₹5,75,280) + "Donate" button — always visible
+2. Hero photo (full-width, Dr. Shahbaaz or family receiving food)
+3. H1 headline
+4. Trust bar (4 badges in a row)
+5. 2-paragraph story (short — 80 words max per paragraph)
+6. "Your Impact" section: ₹680 = 1 family graphic
+7. DONATION FORM — simplified (see above)
+8. Payment button (large, orange/green, full-width)
+9. Social proof: "7 donors · ₹25,470 raised · Last donation 2 days ago"
+10. FAQ accordion: "Is this legit?", "When will I get my 80G receipt?", 
+    "How are funds used?", "Can I donate monthly?"
+11. Legal registrations (full list)
+12. Footer
+
+---
