@@ -66,11 +66,10 @@ const CAMPAIGN_STORIES: Record<number, {
   3: {
     localVideo: "/shahbaaz-video.mp4",
     story: [
-      "For over 18 years, Dr. Shahbaaz Azmi's father dedicated his life to serving the poor and the forgotten. Through the Azmi Foundation, he fed more than 2 lakh people for free, often using his own clinic income and personal savings. Long before charity became organized, helping the hungry was already his daily habit. If he saw someone sitting hungry or sleeping on the road, he would stop, sit with them, and ensure they were fed. Serving people was not an activity for him — it was his way of life.",
-      "Today, the man who spent his life saving others is fighting for his own. He is battling heart failure, kidney failure, and a brain haemorrhage and is currently admitted in critical condition. He cannot stand, sit, eat, or drink without assistance. Once a pillar of strength for thousands, he is now completely dependent on medical support. Watching this decline has been devastating for his family, especially his son.",
-      "Everything now rests on Dr. Shahbaaz. While struggling to manage his father's life-saving treatment, he continues running the foundation on his own. His clinic has been shut down for months due to his father's illness, and his personal savings have been fully exhausted. Medical expenses keep rising, while the foundation itself struggles to survive. Yet, despite the pressure, he refuses to step away from the people who depend on him.",
-      "Even in this crisis, Dr. Shahbaaz ensures that 2,000 people are fed every single day. He continues distributing food, ration kits, clothes, and essential support to families living in slums and on footpaths. Many of them survive only because this daily food reaches them. If the foundation stops, thousands will be left helpless, with no food and no support. For these families, the foundation is not charity — it is survival.",
-      "Dr. Shahbaaz cannot let his father's dream die. He cannot turn away from the people who wait every day, hoping someone will come with food. But today, he cannot do this alone. He needs support to save his father and keep this mission alive. By helping him now, you are helping feed hungry souls and protect a legacy built on humanity."
+      "For 18 years, Dr. Shahbaaz Azmi's father fed the forgotten — the homeless, the hungry, the abandoned. He fed over 2 lakh people using his own savings, sitting down to share meals with strangers on the roadside. Serving the poor was not charity for him. It was his religion.",
+      "Today, this selfless man lies in critical condition — heart failure, kidney failure, and a brain haemorrhage. He cannot eat or move without assistance. His son, Dr. Shahbaaz, is now fighting alone to save his father's life while keeping this 18-year legacy alive. His clinic is shut. His savings are gone. The medical bills keep rising.",
+      "Yet every single day, Dr. Shahbaaz ensures 2,000 people are fed. He reaches slum families and footpath dwellers who have no other food source. For them, this is not charity — it is survival. If we stop, they go hungry.",
+      "750 families in Ahmedabad need groceries right now. Your ₹500 feeds a family for 7 days. Please help us carry this legacy forward — before it is too late."
     ],
     images: [
       "/shahbaaz-thumb.jpg",   // [0] — video poster
@@ -339,6 +338,27 @@ export default function CampaignDetail() {
         </div>
       </div>
 
+      {/* URGENT BANNER — campaign 3 only */}
+      {id === 3 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-red-600 text-white py-4 px-4"
+        >
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 text-center">
+            <span className="text-lg sm:text-2xl font-black uppercase tracking-tight leading-tight">
+              ⚠️ ONLY 9 DAYS LEFT – 750 FAMILIES NEED GROCERIES
+            </span>
+            <a
+              href="#donate-widget"
+              className="shrink-0 bg-white text-red-600 font-black text-xs uppercase tracking-widest px-4 py-2 hover:bg-red-50 transition-colors"
+            >
+              Donate Now →
+            </a>
+          </div>
+        </motion.div>
+      )}
+
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
 
@@ -353,6 +373,11 @@ export default function CampaignDetail() {
               <h1 className="text-2xl sm:text-4xl font-black text-primary leading-tight tracking-tight">
                 {campaign.title}
               </h1>
+              {id === 3 && (
+                <p className="mt-4 text-sm sm:text-base text-gray-700 leading-relaxed border-l-4 border-red-500 pl-4 bg-red-50 py-3 pr-3">
+                  We need <strong>₹5,70,000</strong> to provide groceries to <strong>750 poor families</strong> in Ahmedabad. Dr. Shahbaaz is fighting serious illness but still feeding 2000+ people daily. His father's 18-year legacy is at risk. <span className="text-red-600 font-bold">Time is running out.</span>
+                </p>
+              )}
             </motion.div>
 
             {/* Hero Image */}
@@ -603,6 +628,24 @@ export default function CampaignDetail() {
                   </div>
                 </div>
 
+                {/* IMPACT TABLE — campaign 3 only */}
+                {id === 3 && (
+                  <div className="border border-red-100 bg-red-50 p-4 space-y-2">
+                    <p className="text-[10px] font-black text-red-700 uppercase tracking-widest mb-3">Your Donation Impact</p>
+                    {[
+                      { amount: "₹500", impact: "Groceries for 1 family for 1 week" },
+                      { amount: "₹1,000", impact: "Groceries for 2 families" },
+                      { amount: "₹2,000", impact: "Groceries for 4 families" },
+                      { amount: "₹5,000", impact: "Groceries for 10 families" },
+                    ].map((row) => (
+                      <div key={row.amount} className="flex items-center gap-3 py-1.5 border-b border-red-100 last:border-0">
+                        <span className="text-sm font-black text-red-600 w-16 shrink-0">{row.amount}</span>
+                        <span className="text-xs text-gray-700 font-medium">=&nbsp;{row.impact}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <div className="border-t border-gray-100 pt-5 space-y-4">
                   <p className="text-xs font-black text-gray-500 uppercase tracking-widest">
                     Only INR donations accepted
@@ -790,22 +833,40 @@ export default function CampaignDetail() {
                     <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Donate Anonymously</span>
                   </label>
 
+                  {/* Urgency text — campaign 3 only */}
+                  {id === 3 && (
+                    <p className="text-center text-[10px] font-bold text-red-600 uppercase tracking-widest">
+                      ⏳ Only 9 days left — act now!
+                    </p>
+                  )}
+
                   {/* Donate Button */}
                   <Button
                     onClick={handleDonate}
                     disabled={donating || !amount || Number(amount) < 1}
-                    className="w-full bg-primary hover:bg-black text-white font-black uppercase tracking-[0.3em] text-sm rounded-none py-6 gold-edge transition-all duration-500 relative overflow-hidden group"
+                    className={`w-full text-white font-black uppercase tracking-[0.3em] rounded-none transition-all duration-500 relative overflow-hidden group ${
+                      id === 3
+                        ? "bg-red-600 hover:bg-red-700 text-white py-7 text-base shadow-lg shadow-red-200"
+                        : "bg-primary hover:bg-black py-6 text-sm gold-edge"
+                    }`}
                   >
                     {donating ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                       <span className="flex items-center justify-center gap-2">
-                        <Heart className="w-4 h-4" />
+                        <Heart className={`${id === 3 ? "w-5 h-5" : "w-4 h-4"}`} />
                         {want80G && !isAnon ? "Donate & Get 80G Receipt" : "Donate Now"}
                       </span>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-r from-accent/0 via-accent/20 to-accent/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                   </Button>
+
+                  {/* Trust text — campaign 3 only */}
+                  {id === 3 && (
+                    <p className="text-center text-[10px] text-gray-500 font-medium">
+                      Every rupee helps. &nbsp;80G tax receipt available. &nbsp;Fully transparent.
+                    </p>
+                  )}
 
                   {/* Re-download Receipt button */}
                   <AnimatePresence>
