@@ -440,7 +440,7 @@ export default function CampaignDetail() {
                   height: "13%",
                   backdropFilter: "blur(12px)",
                   WebkitBackdropFilter: "blur(12px)",
-                  backgroundColor: "rgba(0,0,0,0.25)",
+                  backgroundColor: "rgba(0,0,0,0.04)",
                   pointerEvents: "none",
                   zIndex: 5,
                 }}
