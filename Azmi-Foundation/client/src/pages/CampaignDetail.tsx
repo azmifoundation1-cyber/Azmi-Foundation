@@ -419,7 +419,7 @@ export default function CampaignDetail() {
             <p>
               Dr. Shahbaaz's father fed over 2 lakh strangers from his own savings. Today he lies in ICU — heart failure, kidney failure, brain haemorrhage. His son is feeding 2,000 people alone, with an empty bank account. <strong className="text-primary">846 families in Ahmedabad have no other food source.</strong>
             </p>
-            <div className="my-4 overflow-hidden rounded-none bg-black">
+            <div className="my-4 rounded-none bg-black" style={{ position: "relative", overflow: "hidden" }}>
               <video
                 src="/shahbaaz-video.mp4"
                 autoPlay
@@ -428,7 +428,22 @@ export default function CampaignDetail() {
                 controls
                 preload="auto"
                 className="w-full h-auto block"
-                style={{ maxWidth: "100%" }}
+                style={{ maxWidth: "100%", display: "block" }}
+              />
+              {/* Milaap watermark blur — top-right corner */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  width: "22%",
+                  height: "13%",
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                  backgroundColor: "rgba(0,0,0,0.25)",
+                  pointerEvents: "none",
+                  zIndex: 5,
+                }}
               />
             </div>
             <p>
