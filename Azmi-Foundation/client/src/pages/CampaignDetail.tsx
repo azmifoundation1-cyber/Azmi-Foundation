@@ -431,21 +431,45 @@ export default function CampaignDetail() {
                 className="w-full h-auto block"
                 style={{ maxWidth: "100%", display: "block" }}
               />
-              {/* Milaap watermark blur — top-right corner */}
+              {/* Azmi Foundation branding — covers Milaap watermark, top-right */}
               <div
                 style={{
                   position: "absolute",
                   top: 0,
                   right: 0,
-                  width: "22%",
-                  height: "13%",
-                  backdropFilter: "blur(12px)",
-                  WebkitBackdropFilter: "blur(12px)",
-                  backgroundColor: "rgba(0,0,0,0.04)",
+                  width: "28%",
+                  height: "16%",
+                  backdropFilter: "blur(14px)",
+                  WebkitBackdropFilter: "blur(14px)",
+                  backgroundColor: "rgba(0,0,0,0.52)",
                   pointerEvents: "none",
                   zIndex: 5,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px",
+                  padding: "4px 8px",
                 }}
-              />
+              >
+                <img
+                  src="/logo.png"
+                  alt="Azmi Foundation"
+                  style={{ height: "60%", width: "auto", objectFit: "contain", flexShrink: 0 }}
+                />
+                <span
+                  style={{
+                    color: "#fff",
+                    fontSize: "clamp(7px, 1.1vw, 13px)",
+                    fontWeight: 900,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    lineHeight: 1.15,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Azmi<br />Foundation
+                </span>
+              </div>
             </div>
 
             {/* ── INLINE PROGRESS BAR (below video) ── */}
