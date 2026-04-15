@@ -422,6 +422,7 @@ export default function CampaignDetail() {
             <div className="my-4 rounded-none bg-black" style={{ position: "relative", overflow: "hidden" }}>
               <video
                 src="/shahbaaz-video.mp4"
+                poster="/video-thumbnail.jpg"
                 autoPlay
                 muted
                 playsInline
