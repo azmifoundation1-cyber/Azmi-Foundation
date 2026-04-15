@@ -11,7 +11,7 @@ import {
   Clock, Bell, Calendar, Facebook, Twitter, FileText, Download, IndianRupee, Phone, MapPin, Building2, Hash
 } from "lucide-react";
 import type { Campaign, Donation, CampaignUpdate } from "@shared/schema";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { generate80GReceipt, type ReceiptData } from "@/lib/generate-80g-receipt";
 
@@ -104,6 +104,9 @@ export default function CampaignDetail() {
   const [lastReceipt, setLastReceipt] = useState<ReceiptData | null>(null);
   const [generatingPdf, setGeneratingPdf] = useState(false);
 
+  // Live countdown timer state
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, expired: false });
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const upiId = "8320218861@okbizaxis";
@@ -130,6 +133,27 @@ export default function CampaignDetail() {
     queryKey: ["/api/campaigns"],
     queryFn: () => fetch("/api/campaigns").then(r => r.json()),
   });
+
+  // Live countdown — ticks every second from campaign.endDate
+  useEffect(() => {
+    const tick = () => {
+      const endDate = campaign?.endDate ? new Date(campaign.endDate).getTime() : null;
+      if (!endDate) return;
+      const diff = endDate - Date.now();
+      if (diff <= 0) {
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0, expired: true });
+        return;
+      }
+      const days    = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours   = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      setCountdown({ days, hours, minutes, seconds, expired: false });
+    };
+    tick();
+    const timer = setInterval(tick, 1000);
+    return () => clearInterval(timer);
+  }, [campaign?.endDate]);
 
   const handleDonate = async () => {
     const amt = Number(amount);
@@ -343,12 +367,33 @@ export default function CampaignDetail() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-red-600 text-white py-4 px-4"
+          className="bg-red-600 text-white py-3 px-4"
         >
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 text-center">
-            <span className="text-lg sm:text-2xl font-black uppercase tracking-tight leading-tight">
-              ⚠️ ONLY 9 DAYS LEFT – 750 FAMILIES NEED GROCERIES
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-3 text-center">
+            <span className="text-sm sm:text-base font-black uppercase tracking-tight">
+              ⚠️ 750 FAMILIES NEED GROCERIES — TIME LEFT:
             </span>
+
+            {/* Live countdown blocks */}
+            <div className="flex items-center gap-1 shrink-0">
+              {[
+                { value: countdown.days,    label: "Days" },
+                { value: countdown.hours,   label: "Hrs"  },
+                { value: countdown.minutes, label: "Min"  },
+                { value: countdown.seconds, label: "Sec"  },
+              ].map(({ value, label }, i) => (
+                <div key={label} className="flex items-center gap-1">
+                  <div className="bg-white/20 backdrop-blur px-2 py-1 min-w-[44px] text-center">
+                    <span className="text-xl font-black tabular-nums leading-none block">
+                      {String(value).padStart(2, "0")}
+                    </span>
+                    <span className="text-[9px] font-bold uppercase tracking-widest opacity-80">{label}</span>
+                  </div>
+                  {i < 3 && <span className="text-xl font-black opacity-60">:</span>}
+                </div>
+              ))}
+            </div>
+
             <a
               href="#donate-widget"
               className="shrink-0 bg-white text-red-600 font-black text-xs uppercase tracking-widest px-4 py-2 hover:bg-red-50 transition-colors"
@@ -620,10 +665,22 @@ export default function CampaignDetail() {
                       {supporters.length} Supporters
                     </div>
                     {daysLeft !== null && (
-                      <div className={`flex items-center gap-1.5 font-black ${daysLeft <= 3 ? "text-red-500" : "text-gray-400"}`}>
-                        <Clock className="w-3 h-3" />
-                        {daysLeft === 0 ? "Last day!" : `${daysLeft} days left`}
-                      </div>
+                      id === 3 ? (
+                        <div className="flex items-center gap-1 font-black text-red-500">
+                          <Clock className="w-3 h-3 shrink-0" />
+                          <span className="tabular-nums text-xs">
+                            {countdown.expired
+                              ? "Ended"
+                              : `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h ${String(countdown.minutes).padStart(2,"0")}m ${String(countdown.seconds).padStart(2,"0")}s`
+                            }
+                          </span>
+                        </div>
+                      ) : (
+                        <div className={`flex items-center gap-1.5 font-black ${daysLeft <= 3 ? "text-red-500" : "text-gray-400"}`}>
+                          <Clock className="w-3 h-3" />
+                          {daysLeft === 0 ? "Last day!" : `${daysLeft} days left`}
+                        </div>
+                      )
                     )}
                   </div>
                 </div>
@@ -833,10 +890,14 @@ export default function CampaignDetail() {
                     <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Donate Anonymously</span>
                   </label>
 
-                  {/* Urgency text — campaign 3 only */}
+                  {/* Urgency countdown near button — campaign 3 only */}
                   {id === 3 && (
-                    <p className="text-center text-[10px] font-bold text-red-600 uppercase tracking-widest">
-                      ⏳ Only 9 days left — act now!
+                    <p className="text-center text-[10px] font-bold text-red-600 uppercase tracking-widest tabular-nums">
+                      ⏳{" "}
+                      {countdown.expired
+                        ? "Campaign ended"
+                        : `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h ${String(countdown.minutes).padStart(2,"0")}m ${String(countdown.seconds).padStart(2,"0")}s left — act now!`
+                      }
                     </p>
                   )}
 
