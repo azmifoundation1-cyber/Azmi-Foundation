@@ -358,9 +358,9 @@ export default function CampaignDetail() {
 
         {/* ── STICKY PROGRESS BAR ── */}
         <div className="sticky top-20 z-40 bg-white border-b border-gray-200 shadow-sm">
-          <div className="max-w-2xl mx-auto px-4 py-2.5 flex items-center gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-4">
             <div className="flex-1 space-y-1 min-w-0">
-              <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+              <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest">
                 <span className="text-red-600">₹{liveRaised.toLocaleString("en-IN")} raised</span>
                 <span className="text-gray-400">Goal: ₹5,75,280</span>
               </div>
@@ -392,17 +392,21 @@ export default function CampaignDetail() {
           />
         </div>
 
-        <div className="max-w-2xl mx-auto w-full px-4 sm:px-6 py-6 space-y-8">
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-14 items-start">
+
+          {/* ── LEFT COLUMN — Story content ── */}
+          <div className="lg:col-span-2 space-y-8">
 
           {/* ── H1 HEADLINE ── */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <span className="bg-red-600 text-white text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1">Urgent</span>
-              <span className="bg-gray-100 text-gray-600 text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1">Ahmedabad, Gujarat</span>
+              <span className="bg-red-600 text-white text-xs font-black uppercase tracking-[0.3em] px-3 py-1.5">Urgent</span>
+              <span className="bg-gray-100 text-gray-600 text-xs font-black uppercase tracking-[0.3em] px-3 py-1.5">Ahmedabad, Gujarat</span>
             </div>
-            <h1 className="text-xl sm:text-3xl font-black text-primary leading-tight tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary leading-tight tracking-tight">
               18 साल की विरासत खतरे में — क्या आप इसे बचाएंगे?
-              <span className="block text-base sm:text-xl font-black text-gray-600 mt-1">
+              <span className="block text-xl sm:text-2xl font-black text-gray-500 mt-2">
                 18-Year Legacy at Risk — Help Us Feed 846 Families
               </span>
             </h1>
@@ -416,16 +420,16 @@ export default function CampaignDetail() {
               { Icon: Handshake, line1: "CSR-1 Registered", line2: "CSR00108803", color: "border-green-200 bg-green-50 text-green-700" },
               { Icon: Heart,     line1: `${liveCount} people donated`, line2: "Join them today", color: "border-rose-200 bg-rose-50 text-rose-700" },
             ].map(({ Icon, line1, line2, color }) => (
-              <div key={line1} className={`border rounded-none p-2.5 text-center ${color}`}>
-                <Icon className="w-5 h-5 mx-auto mb-1" />
-                <p className="text-[9px] font-black uppercase tracking-wide mt-1 leading-tight">{line1}</p>
-                <p className="text-[8px] font-bold opacity-70 mt-0.5 leading-tight truncate">{line2}</p>
+              <div key={line1} className={`border rounded-none p-3 text-center ${color}`}>
+                <Icon className="w-5 h-5 mx-auto mb-1.5" />
+                <p className="text-xs font-black uppercase tracking-wide mt-1 leading-tight">{line1}</p>
+                <p className="text-[10px] font-bold opacity-70 mt-0.5 leading-tight truncate">{line2}</p>
               </div>
             ))}
           </div>
 
           {/* ── STORY ── */}
-          <div className="space-y-4 text-gray-700 leading-relaxed text-sm sm:text-base">
+          <div className="space-y-4 text-gray-700 leading-relaxed text-base sm:text-lg">
             <p>
               Dr. Shahbaaz's father fed over 2 lakh strangers from his own savings. Today he lies in ICU — heart failure, kidney failure, brain haemorrhage. His son is feeding 2,000 people alone, with an empty bank account. <strong className="text-primary">846 families in Ahmedabad have no other food source.</strong>
             </p>
@@ -444,11 +448,11 @@ export default function CampaignDetail() {
           </div>
 
           {/* ── IMPACT SECTION ── */}
-          <div className="bg-amber-50 border-2 border-amber-200 p-5 space-y-4">
-            <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Your Donation Impact</p>
-            <p className="text-base sm:text-lg font-black text-primary leading-tight">
+          <div className="bg-amber-50 border-2 border-amber-200 p-6 space-y-4">
+            <p className="text-xs font-black text-amber-700 uppercase tracking-widest">Your Donation Impact</p>
+            <p className="text-xl sm:text-2xl font-black text-primary leading-tight">
               ₹680 = 1 family's groceries for a month.
-              <span className="block text-sm font-bold text-gray-500 mt-1">That is less than one restaurant meal.</span>
+              <span className="block text-base font-bold text-gray-500 mt-1">That is less than one restaurant meal.</span>
             </p>
             <div className="grid grid-cols-3 gap-3">
               {[
@@ -465,9 +469,15 @@ export default function CampaignDetail() {
             </div>
           </div>
 
+          </div>{/* ── END LEFT COLUMN ── */}
+
+          {/* ── RIGHT COLUMN — Sticky form ── */}
+          <div className="lg:col-span-1">
+            <div className="lg:sticky lg:top-28 space-y-4">
+
           {/* ── DONATION FORM ── */}
           <div id="donate-form" className="bg-white border-2 border-gray-100 shadow-sm p-5 sm:p-6 space-y-5">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Choose Amount</p>
+            <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Choose Amount</p>
 
             {/* 3 Preset Amounts */}
             <div className="grid grid-cols-3 gap-3">
@@ -746,8 +756,16 @@ export default function CampaignDetail() {
             </div>
           </div>
 
+            </div>{/* end sticky */}
+          </div>{/* end right col */}
+          </div>{/* end grid */}
+        </div>{/* end max-w-7xl */}
+
+        {/* ── FULL WIDTH BELOW ── */}
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 space-y-8 pb-12">
+
           {/* ── SOCIAL PROOF ── */}
-          <div className="flex flex-wrap items-center justify-center gap-4 py-4 border-y border-gray-100 text-xs text-gray-500 font-medium">
+          <div className="flex flex-wrap items-center justify-center gap-4 py-5 border-y border-gray-100 text-sm text-gray-500 font-medium">
             <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-red-500" /> <strong className="text-primary">{liveCount} donors</strong></span>
             <span className="text-gray-200">|</span>
             <span>₹{liveRaised.toLocaleString("en-IN")} raised</span>
@@ -771,8 +789,8 @@ export default function CampaignDetail() {
           </div>
 
           {/* ── FAQ ── */}
-          <div className="space-y-2">
-            <h2 className="text-base font-black text-primary uppercase tracking-tight">Frequently Asked Questions</h2>
+          <div className="space-y-3">
+            <h2 className="text-2xl font-black text-primary uppercase tracking-tight">Frequently Asked Questions</h2>
             {[
               {
                 q: "Is this legit? How do I know my money reaches the right people?",
@@ -796,8 +814,8 @@ export default function CampaignDetail() {
                   onClick={() => setFaqOpen(faqOpen === i ? null : i)}
                   className="w-full flex items-center justify-between px-4 py-4 text-left"
                 >
-                  <span className="text-sm font-bold text-primary pr-4 leading-snug">{item.q}</span>
-                  <ChevronDown className={`w-4 h-4 text-gray-400 shrink-0 transition-transform ${faqOpen === i ? "rotate-180" : ""}`} />
+                  <span className="text-base font-bold text-primary pr-4 leading-snug">{item.q}</span>
+                  <ChevronDown className={`w-5 h-5 text-gray-400 shrink-0 transition-transform ${faqOpen === i ? "rotate-180" : ""}`} />
                 </button>
                 <AnimatePresence>
                   {faqOpen === i && (
@@ -808,7 +826,7 @@ export default function CampaignDetail() {
                       transition={{ duration: 0.2 }}
                       className="overflow-hidden"
                     >
-                      <div className="px-4 pb-4 text-sm text-gray-600 leading-relaxed border-t border-gray-50 pt-3">
+                      <div className="px-5 pb-5 text-base text-gray-600 leading-relaxed border-t border-gray-50 pt-4">
                         {item.a}
                       </div>
                     </motion.div>
@@ -819,25 +837,25 @@ export default function CampaignDetail() {
           </div>
 
           {/* ── LEGAL REGISTRATIONS ── */}
-          <div className="bg-gray-50 border border-gray-100 p-5 space-y-4">
-            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-              <ShieldCheck className="w-3.5 h-3.5 text-accent" /> Legal Registrations & Certifications
+          <div className="bg-gray-50 border border-gray-100 p-6 space-y-4">
+            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-accent" /> Legal Registrations & Certifications
             </h3>
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
-                { Icon: Scroll,      label: "80G Tax Exemption", value: "AAGTA9354BF20261", sub: "AY 2026-27 to 2028-29 · Income Tax Act 1961", color: "text-amber-600" },
-                { Icon: Landmark,   label: "12A IT Exemption", value: "AAGTA9354BE2025101", sub: "Income Tax Act 1961 — NGO Tax Exemption", color: "text-blue-600" },
-                { Icon: Handshake,  label: "CSR-1 Registered", value: "CSR00108803", sub: "Ministry of Corporate Affairs, Govt. of India", color: "text-green-600" },
-                { Icon: Flag,       label: "NGO Darpan ID", value: "GJ/2021/0276308", sub: "NITI Aayog, Govt. of India", color: "text-purple-600" },
-                { Icon: ClipboardList, label: "Trust Registration", value: "E/22280/AHMEDABAD", sub: "Charity Commissioner, Gujarat", color: "text-gray-600" },
-                { Icon: Briefcase,  label: "PAN", value: "AAGTA9354B", sub: "Income Tax Department", color: "text-gray-600" },
+                { Icon: Scroll,       label: "80G Tax Exemption", value: "AAGTA9354BF20261", sub: "AY 2026-27 to 2028-29 · Income Tax Act 1961", color: "text-amber-600" },
+                { Icon: Landmark,    label: "12A IT Exemption", value: "AAGTA9354BE2025101", sub: "Income Tax Act 1961 — NGO Tax Exemption", color: "text-blue-600" },
+                { Icon: Handshake,   label: "CSR-1 Registered", value: "CSR00108803", sub: "Ministry of Corporate Affairs, Govt. of India", color: "text-green-600" },
+                { Icon: Flag,        label: "NGO Darpan ID", value: "GJ/2021/0276308", sub: "NITI Aayog, Govt. of India", color: "text-purple-600" },
+                { Icon: ClipboardList,label: "Trust Registration", value: "E/22280/AHMEDABAD", sub: "Charity Commissioner, Gujarat", color: "text-gray-600" },
+                { Icon: Briefcase,   label: "PAN", value: "AAGTA9354B", sub: "Income Tax Department", color: "text-gray-600" },
               ].map(c => (
-                <div key={c.label} className="flex items-start gap-3 py-2 border-b border-gray-100 last:border-0">
-                  <c.Icon className={`w-4 h-4 mt-0.5 shrink-0 ${c.color}`} />
+                <div key={c.label} className="flex items-start gap-3 py-2">
+                  <c.Icon className={`w-5 h-5 mt-0.5 shrink-0 ${c.color}`} />
                   <div>
-                    <p className={`text-[10px] font-black uppercase tracking-widest ${c.color}`}>{c.label}</p>
-                    <p className="text-xs font-black text-primary tracking-wider">{c.value}</p>
-                    <p className="text-[9px] text-gray-400">{c.sub}</p>
+                    <p className={`text-xs font-black uppercase tracking-widest ${c.color}`}>{c.label}</p>
+                    <p className="text-sm font-black text-primary tracking-wider">{c.value}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{c.sub}</p>
                   </div>
                 </div>
               ))}
@@ -845,8 +863,8 @@ export default function CampaignDetail() {
           </div>
 
           {/* ── FINAL CTA ── */}
-          <div className="pb-8 text-center space-y-3">
-            <p className="text-sm text-gray-500">
+          <div className="pb-8 text-center space-y-4">
+            <p className="text-base text-gray-500">
               Questions? WhatsApp us at <strong className="text-primary">+91 83202 18861</strong>
             </p>
             <a href="#donate-form">
