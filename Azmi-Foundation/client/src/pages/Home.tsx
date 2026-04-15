@@ -5,7 +5,7 @@ import { CampaignCard } from "@/components/CampaignCard";
 import { LegalCredentials } from "@/components/LegalCredentials";
 import { useCampaigns } from "@/hooks/use-campaigns";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Heart, Globe, Users, Award, Shield, Zap, Target, Search, CreditCard, TrendingUp, CheckCircle, Star, Quote } from "lucide-react";
+import { ArrowRight, Heart, Globe, Users, Award, Shield, Zap, Target, Search, CreditCard, TrendingUp, CheckCircle, Star, Quote, ShieldCheck, Lock, ClipboardList, BarChart3, Handshake, Receipt } from "lucide-react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
 
@@ -291,13 +291,13 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
             {[
-              { icon: "🛡️", label: "NGO Verified", sub: "Govt. Registered" },
-              { icon: "🔒", label: "Secure Payments", sub: "Razorpay PCI-DSS" },
-              { icon: "📋", label: "80G Tax Benefit", sub: "Income Tax Exemption" },
-              { icon: "📊", label: "Full Transparency", sub: "Fund Reports Shared" },
-              { icon: "🤝", label: "Direct Impact", sub: "No Middlemen" },
-              { icon: "⭐", label: "5-Star Trust", sub: "Community Endorsed" },
-            ].map(({ icon, label, sub }) => (
+              { Icon: ShieldCheck,   label: "NGO Verified", sub: "Govt. Registered" },
+              { Icon: Lock,          label: "Secure Payments", sub: "Razorpay PCI-DSS" },
+              { Icon: ClipboardList, label: "80G Tax Benefit", sub: "Income Tax Exemption" },
+              { Icon: BarChart3,     label: "Full Transparency", sub: "Fund Reports Shared" },
+              { Icon: Handshake,     label: "Direct Impact", sub: "No Middlemen" },
+              { Icon: Star,          label: "5-Star Trust", sub: "Community Endorsed" },
+            ].map(({ Icon, label, sub }) => (
               <motion.div
                 key={label}
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -305,7 +305,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="flex flex-col items-center text-center p-4 bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
               >
-                <span className="text-3xl mb-3">{icon}</span>
+                <Icon className="w-8 h-8 mb-3 text-primary/70" />
                 <p className="text-[11px] font-black text-primary uppercase tracking-wide">{label}</p>
                 <p className="text-[10px] text-gray-400 mt-1">{sub}</p>
               </motion.div>
@@ -378,7 +378,7 @@ export default function Home() {
       <section className="py-12 bg-accent/10 border-y border-accent/20">
         <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <span className="text-4xl">🧾</span>
+            <Receipt className="w-10 h-10 text-primary/60 shrink-0" />
             <div>
               <p className="font-black text-primary text-base uppercase tracking-tight">Get 80G Tax Exemption on Your Donation</p>
               <p className="text-sm text-gray-500 mt-1">All donations to Azmi Foundation are eligible for income tax deductions under Section 80G of the Income Tax Act.</p>

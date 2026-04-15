@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Heart, Share2, Users, CheckCircle, ShieldCheck,
+  Heart, Share2, Users, CheckCircle, ShieldCheck, CheckCircle2,
   ChevronRight, ChevronDown, Loader2, ArrowLeft, Copy, Check,
   Clock, Bell, Calendar, Facebook, Twitter, FileText, Download,
-  IndianRupee, Phone, MapPin, Building2, Hash, AlertTriangle
+  IndianRupee, Phone, MapPin, Building2, Hash, AlertTriangle,
+  Scroll, Landmark, Handshake, Flag, Briefcase, ClipboardList,
+  Home as HomeIcon, Building
 } from "lucide-react";
 import type { Campaign, Donation, CampaignUpdate } from "@shared/schema";
 import { useState, useEffect, useRef } from "react";
@@ -275,7 +277,7 @@ export default function CampaignDetail() {
             }
 
             toast({
-              title: "JazakAllahu Khayran! Donation Successful 🎉",
+              title: "JazakAllahu Khayran! Donation Successful",
               description: `You just helped feed ${families > 0 ? families : 1} ${families === 1 ? "family" : "families"}. Thank you!`,
             });
             queryClient.invalidateQueries({ queryKey: ["/api/donations/campaign", id] });
@@ -409,13 +411,13 @@ export default function CampaignDetail() {
           {/* ── TRUST BAR ── */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {[
-              { icon: "📜", line1: "80G Tax Exemption", line2: "AAGTA9354BF20261", color: "border-amber-200 bg-amber-50 text-amber-700" },
-              { icon: "🇮🇳", line1: "NGO Darpan Verified", line2: "GJ/2021/0276308", color: "border-blue-200 bg-blue-50 text-blue-700" },
-              { icon: "🤝", line1: "CSR-1 Registered", line2: "CSR00108803", color: "border-green-200 bg-green-50 text-green-700" },
-              { icon: "💛", line1: `${liveCount} people donated`, line2: "Join them today", color: "border-rose-200 bg-rose-50 text-rose-700" },
-            ].map(({ icon, line1, line2, color }) => (
+              { Icon: Scroll,    line1: "80G Tax Exemption", line2: "AAGTA9354BF20261", color: "border-amber-200 bg-amber-50 text-amber-700" },
+              { Icon: Flag,      line1: "NGO Darpan Verified", line2: "GJ/2021/0276308", color: "border-blue-200 bg-blue-50 text-blue-700" },
+              { Icon: Handshake, line1: "CSR-1 Registered", line2: "CSR00108803", color: "border-green-200 bg-green-50 text-green-700" },
+              { Icon: Heart,     line1: `${liveCount} people donated`, line2: "Join them today", color: "border-rose-200 bg-rose-50 text-rose-700" },
+            ].map(({ Icon, line1, line2, color }) => (
               <div key={line1} className={`border rounded-none p-2.5 text-center ${color}`}>
-                <span className="text-lg block">{icon}</span>
+                <Icon className="w-5 h-5 mx-auto mb-1" />
                 <p className="text-[9px] font-black uppercase tracking-wide mt-1 leading-tight">{line1}</p>
                 <p className="text-[8px] font-bold opacity-70 mt-0.5 leading-tight truncate">{line2}</p>
               </div>
@@ -450,12 +452,12 @@ export default function CampaignDetail() {
             </p>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { amt: "₹680", impact: "1 family", emoji: "🏠" },
-                { amt: "₹2,040", impact: "3 families", emoji: "🏘️" },
-                { amt: "₹6,800", impact: "10 families", emoji: "🏙️" },
-              ].map(({ amt, impact, emoji }) => (
+                { amt: "₹680", impact: "1 family", Icon: HomeIcon },
+                { amt: "₹2,040", impact: "3 families", Icon: Building },
+                { amt: "₹6,800", impact: "10 families", Icon: Building2 },
+              ].map(({ amt, impact, Icon }) => (
                 <div key={amt} className="bg-white border border-amber-200 p-3 text-center space-y-1">
-                  <span className="text-2xl">{emoji}</span>
+                  <Icon className="w-6 h-6 mx-auto text-amber-600" />
                   <p className="text-sm font-black text-primary">{amt}</p>
                   <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">{impact}</p>
                 </div>
@@ -501,8 +503,8 @@ export default function CampaignDetail() {
             </div>
 
             {families > 0 && (
-              <p className="text-center text-xs font-black text-red-600 bg-red-50 py-2 border border-red-100">
-                ✅ Your ₹{Number(amount).toLocaleString("en-IN")} will feed <strong>{families} {families === 1 ? "family" : "families"}</strong>
+              <p className="text-center text-xs font-black text-red-600 bg-red-50 py-2 border border-red-100 flex items-center justify-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Your ₹{Number(amount).toLocaleString("en-IN")} will feed <strong>{families} {families === 1 ? "family" : "families"}</strong>
               </p>
             )}
 
@@ -823,15 +825,15 @@ export default function CampaignDetail() {
             </h3>
             <div className="space-y-3">
               {[
-                { icon: "📜", label: "80G Tax Exemption", value: "AAGTA9354BF20261", sub: "AY 2026-27 to 2028-29 · Income Tax Act 1961", color: "text-amber-600" },
-                { icon: "🏛️", label: "12A IT Exemption", value: "AAGTA9354BE2025101", sub: "Income Tax Act 1961 — NGO Tax Exemption", color: "text-blue-600" },
-                { icon: "🤝", label: "CSR-1 Registered", value: "CSR00108803", sub: "Ministry of Corporate Affairs, Govt. of India", color: "text-green-600" },
-                { icon: "🇮🇳", label: "NGO Darpan ID", value: "GJ/2021/0276308", sub: "NITI Aayog, Govt. of India", color: "text-purple-600" },
-                { icon: "📋", label: "Trust Registration", value: "E/22280/AHMEDABAD", sub: "Charity Commissioner, Gujarat", color: "text-gray-600" },
-                { icon: "💼", label: "PAN", value: "AAGTA9354B", sub: "Income Tax Department", color: "text-gray-600" },
+                { Icon: Scroll,      label: "80G Tax Exemption", value: "AAGTA9354BF20261", sub: "AY 2026-27 to 2028-29 · Income Tax Act 1961", color: "text-amber-600" },
+                { Icon: Landmark,   label: "12A IT Exemption", value: "AAGTA9354BE2025101", sub: "Income Tax Act 1961 — NGO Tax Exemption", color: "text-blue-600" },
+                { Icon: Handshake,  label: "CSR-1 Registered", value: "CSR00108803", sub: "Ministry of Corporate Affairs, Govt. of India", color: "text-green-600" },
+                { Icon: Flag,       label: "NGO Darpan ID", value: "GJ/2021/0276308", sub: "NITI Aayog, Govt. of India", color: "text-purple-600" },
+                { Icon: ClipboardList, label: "Trust Registration", value: "E/22280/AHMEDABAD", sub: "Charity Commissioner, Gujarat", color: "text-gray-600" },
+                { Icon: Briefcase,  label: "PAN", value: "AAGTA9354B", sub: "Income Tax Department", color: "text-gray-600" },
               ].map(c => (
                 <div key={c.label} className="flex items-start gap-3 py-2 border-b border-gray-100 last:border-0">
-                  <span className="text-base mt-0.5">{c.icon}</span>
+                  <c.Icon className={`w-4 h-4 mt-0.5 shrink-0 ${c.color}`} />
                   <div>
                     <p className={`text-[10px] font-black uppercase tracking-widest ${c.color}`}>{c.label}</p>
                     <p className="text-xs font-black text-primary tracking-wider">{c.value}</p>
@@ -1124,13 +1126,13 @@ export default function CampaignDetail() {
                 <h3 className="text-xs font-black text-primary uppercase tracking-[0.3em] flex items-center gap-2 border-b border-gray-100 pb-3"><ShieldCheck className="w-3.5 h-3.5 text-accent" /> Legal Registrations</h3>
                 <div className="space-y-2">
                   {[
-                    { icon: "📜", label: "80G Tax Exemption", value: "AAGTA9354BF20261", sub: "AY 2026-27 to 2028-29", color: "text-amber-600" },
-                    { icon: "🏛️", label: "12A IT Exemption", value: "AAGTA9354BE2025101", sub: "Income Tax Act 1961", color: "text-blue-600" },
-                    { icon: "🤝", label: "CSR-1 Registered", value: "CSR00108803", sub: "Ministry of Corporate Affairs", color: "text-green-600" },
-                    { icon: "🇮🇳", label: "NGO Darpan ID", value: "GJ/2021/0276308", sub: "NITI Aayog, Govt. of India", color: "text-purple-600" },
+                    { Icon: Scroll,    label: "80G Tax Exemption", value: "AAGTA9354BF20261", sub: "AY 2026-27 to 2028-29", color: "text-amber-600" },
+                    { Icon: Landmark,  label: "12A IT Exemption", value: "AAGTA9354BE2025101", sub: "Income Tax Act 1961", color: "text-blue-600" },
+                    { Icon: Handshake, label: "CSR-1 Registered", value: "CSR00108803", sub: "Ministry of Corporate Affairs", color: "text-green-600" },
+                    { Icon: Flag,      label: "NGO Darpan ID", value: "GJ/2021/0276308", sub: "NITI Aayog, Govt. of India", color: "text-purple-600" },
                   ].map(c => (
                     <div key={c.label} className="flex items-start gap-2.5 py-1.5 border-b border-gray-50 last:border-0">
-                      <span className="text-base leading-none mt-0.5">{c.icon}</span>
+                      <c.Icon className={`w-4 h-4 leading-none mt-0.5 shrink-0 ${c.color}`} />
                       <div className="flex-1 min-w-0">
                         <p className={`text-[10px] font-black uppercase tracking-widest ${c.color}`}>{c.label}</p>
                         <p className="text-[11px] font-black text-primary tracking-wider truncate">{c.value}</p>
