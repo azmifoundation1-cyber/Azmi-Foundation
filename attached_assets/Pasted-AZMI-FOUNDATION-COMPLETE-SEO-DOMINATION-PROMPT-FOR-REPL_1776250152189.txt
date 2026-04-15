@@ -1,0 +1,335 @@
+AZMI FOUNDATION — COMPLETE SEO DOMINATION PROMPT FOR REPLIT
+Crafted by: Senior SEO Strategist Persona | April 2026
+Target: azmifoundation.com | Niche: Islamic Charity, Education, Healthcare, Social Welfare
+
+
+CONTEXT FOR REPLIT AI / DEVELOPER:
+You are a senior SEO engineer who has managed organic growth for platforms exceeding 1 billion monthly visitors. You now have a new client — Azmi Foundation (azmifoundation.com) — an Islamic nonprofit focused on education, healthcare, social welfare, and Islamic community empowerment. The site currently renders blank HTML to crawlers (critical technical failure), has no schema markup, no sitemap, no backlink profile, and zero content depth. Your mission is to rebuild this site's SEO architecture from the ground up and make it the dominant Islamic foundation/charity website in organic search globally. This prompt is your full engineering and content specification.
+
+
+PART 1: TECHNICAL SEO FIXES (Implement First — Nothing Else Works Without This)
+1.1 Server-Side Rendering (SSR) or Static Site Generation (SSG)
+TASK: The current site renders blank HTML to Googlebot. Fix this immediately.
+
+If the site uses React/Next.js:
+- Enable getServerSideProps() or getStaticProps() on all pages
+- Ensure all critical content (mission statement, programs, about text) is present in the initial HTML payload
+- Test with: curl -A "Googlebot" https://azmifoundation.com — the response must contain visible text content
+
+If using WordPress:
+- Disable any "loading screen" or splash page plugins
+- Ensure the theme renders content in the first HTML response
+- Install Rank Math or Yoast SEO plugin immediately
+
+Target: Googlebot must see at least 500+ words of content on the homepage HTML response with zero JavaScript execution required.
+1.2 Meta Tags — Every Single Page
+IMPLEMENT on every page of the site:
+
+Homepage:
+<title>Azmi Foundation | Islamic Education, Healthcare & Community Welfare Nonprofit</title>
+<meta name="description" content="Azmi Foundation is an Islamic nonprofit empowering communities through education, healthcare, and social welfare. Donate Zakat and Sadaqah to support the Ummah worldwide.">
+<meta name="keywords" content="Islamic foundation, Muslim charity, Zakat donation, Islamic education nonprofit, community welfare Islam">
+<link rel="canonical" href="https://azmifoundation.com/">
+
+About Page:
+<title>About Azmi Foundation | Our Mission to Serve the Ummah</title>
+<meta name="description" content="Learn about Azmi Foundation's mission to educate communities about Islam, provide healthcare, and support those in need. Founded to empower Muslim and minority communities globally.">
+
+Donate Page:
+<title>Donate to Azmi Foundation | Zakat, Sadaqah & One-Time Gifts</title>
+<meta name="description" content="Make your Zakat or Sadaqah count. Donate to Azmi Foundation to fund Islamic education, healthcare programs, and community welfare. 100% of your donation goes to those in need.">
+
+Programs Page:
+<title>Our Programs | Education, Healthcare & Social Welfare — Azmi Foundation</title>
+<meta name="description" content="Azmi Foundation runs Islamic education programs, healthcare outreach, and social welfare initiatives for underserved communities. See how your donation creates impact.">
+
+Open Graph Tags (add to ALL pages):
+<meta property="og:type" content="website">
+<meta property="og:title" content="[Page-specific title]">
+<meta property="og:description" content="[Page-specific description]">
+<meta property="og:image" content="https://azmifoundation.com/images/og-image.jpg">
+<meta property="og:url" content="https://azmifoundation.com/[page-slug]">
+<meta property="og:site_name" content="Azmi Foundation">
+
+Twitter Cards:
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="[Page-specific title]">
+<meta name="twitter:description" content="[Page-specific description]">
+<meta name="twitter:image" content="https://azmifoundation.com/images/twitter-card.jpg">
+1.3 JSON-LD Schema Markup — Add to Homepage <head>
+json<!-- PASTE THIS IN THE <head> OF EVERY PAGE — MODIFY PER PAGE -->
+
+<!-- Organization Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": ["Organization", "NGO"],
+  "name": "Azmi Foundation",
+  "alternateName": "Azmi Foundation for Islamic Education and Welfare",
+  "url": "https://azmifoundation.com",
+  "logo": "https://azmifoundation.com/images/logo.png",
+  "description": "Azmi Foundation is an Islamic nonprofit empowering communities through Islamic education, healthcare access, and social welfare programs for underserved populations globally.",
+  "foundingDate": "2021",
+  "nonprofitStatus": "Nonprofit501c3",
+  "areaServed": "Worldwide",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "donations",
+    "url": "https://azmifoundation.com/donate"
+  },
+  "sameAs": [
+    "https://www.facebook.com/azmifoundation",
+    "https://www.instagram.com/azmifoundation",
+    "https://twitter.com/azmifoundation",
+    "https://www.linkedin.com/company/azmifoundation"
+  ]
+}
+</script>
+
+<!-- WebSite Schema (enables sitelinks search box) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Azmi Foundation",
+  "url": "https://azmifoundation.com",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://azmifoundation.com/search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<!-- BreadcrumbList Schema (add to inner pages) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://azmifoundation.com"},
+    {"@type": "ListItem", "position": 2, "name": "Programs", "item": "https://azmifoundation.com/programs"},
+    {"@type": "ListItem", "position": 3, "name": "Education", "item": "https://azmifoundation.com/programs/education"}
+  ]
+}
+</script>
+
+<!-- FAQPage Schema (add to FAQ/About pages) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How can I donate Zakat through Azmi Foundation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can donate your Zakat directly through our secure online donation page at azmifoundation.com/donate. We accept one-time and recurring Zakat, Sadaqah, and general donations. 100% of your Zakat goes directly to eligible recipients."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What programs does Azmi Foundation run?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Azmi Foundation runs Islamic education programs for children, healthcare outreach for underserved communities, and social welfare initiatives including food assistance, women empowerment, and minority community support."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Azmi Foundation a registered 501(c)(3) nonprofit?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, Azmi Foundation is a registered nonprofit organization. Donations are tax-deductible to the extent permitted by law. Our EIN and registration details are available on our About page."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does Azmi Foundation use donations?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Donations to Azmi Foundation fund Islamic education programs including Quran learning for children, healthcare access for underserved communities, and social welfare for families affected by poverty and hardship."
+      }
+    }
+  ]
+}
+</script>
+1.4 sitemap.xml — Generate and Submit
+xml<!-- CREATE FILE: /sitemap.xml at root of domain -->
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://azmifoundation.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://azmifoundation.com/about</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://azmifoundation.com/programs</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://azmifoundation.com/programs/education</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://azmifoundation.com/programs/healthcare</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://azmifoundation.com/programs/social-welfare</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://azmifoundation.com/donate</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://azmifoundation.com/zakat</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://azmifoundation.com/sadaqah</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://azmifoundation.com/volunteer</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://azmifoundation.com/contact</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://azmifoundation.com/blog</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://azmifoundation.com/impact</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+</urlset>
+After creating sitemap.xml:
+1. Go to Google Search Console → Sitemaps → Submit: https://azmifoundation.com/sitemap.xml
+2. Go to Bing Webmaster Tools → Submit same URL
+3. Add to robots.txt: Sitemap: https://azmifoundation.com/sitemap.xml
+1.5 robots.txt
+CREATE FILE: /robots.txt
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /wp-admin/
+Disallow: /private/
+Disallow: /?s=
+
+Sitemap: https://azmifoundation.com/sitemap.xml
+1.6 Core Web Vitals Checklist
+IMPLEMENT ALL OF THE FOLLOWING:
+
+Image optimization:
+- Convert all images to WebP format
+- Add width and height attributes to all <img> tags
+- Use loading="lazy" on all images below the fold
+- Add descriptive alt text to EVERY image using target keywords
+  Example: alt="Azmi Foundation Islamic education program children Quran"
+  NOT: alt="image1" or alt=""
+
+Performance:
+- Minify all CSS and JavaScript files
+- Enable gzip/Brotli compression on the server
+- Use a CDN (Cloudflare free tier is sufficient)
+- Defer non-critical JavaScript with defer or async attributes
+- Preload critical fonts and above-fold images
+
+Targets:
+- Largest Contentful Paint (LCP): under 2.5 seconds
+- First Input Delay (FID) / INP: under 100ms
+- Cumulative Layout Shift (CLS): under 0.1
+- PageSpeed score: 90+ on mobile, 95+ on desktop
+- Test at: https://pagespeed.web.dev/
+
+Mobile optimization:
+- Viewport meta tag: <meta name="viewport" content="width=device-width, initial-scale=1">
+- All tap targets minimum 48x48px
+- Font size minimum 16px for body text
+- No horizontal scroll on any mobile viewport
+
+PART 2: ON-PAGE SEO — CONTENT PAGES TO BUILD
+2.1 Homepage — Full SEO Content Specification
+URL: https://azmifoundation.com/
+H1 (ONE only): "Empowering the Ummah Through Islamic Education, Healthcare & Community Welfare"
+Primary keyword: Islamic foundation education healthcare
+Secondary keywords: Muslim charity, nonprofit, Zakat, Sadaqah, community welfare
+
+CONTENT STRUCTURE (minimum 800 words visible text):
+
+Section 1 — Hero (above fold):
+- H1 as above
+- 2-3 sentence mission statement containing primary keyword
+- CTA button: "Donate Now" linking to /donate
+- CTA button: "Our Programs" linking to /programs
+
+Section 2 — What We Do (H2: "Our Mission: Serving the Ummah"):
+- 150-200 word paragraph on Islamic foundation mission
+- Use keywords: Islamic education, healthcare access, social welfare, Ummah, community
+
+Section 3 — Program cards (H2: "How Your Donation Creates Impact"):
+- Islamic Education card → links to /programs/education
+- Healthcare Outreach card → links to /programs/healthcare
+- Social Welfare card → links to /programs/social-welfare
+- Each card: 50-word description with 1 target keyword
+
+Section 4 — Impact Stats (H2: "Our Impact in Numbers"):
+- [X] children reached through Islamic education
+- [X] families supported
+- [X] communities served
+- [X] countries impacted
+
+Section 5 — Donate CTA (H2: "Give Zakat or Sadaqah Today"):
+- 100-word text on Islamic importance of giving
+- Mention: Zakat, Sadaqah Jariyah, one-time donations
+- Donate button
+
+Section 6 — About Founder (H2: "About Our Foundation"):
+- 100-word bio/mission origin story
+- Photo with alt text
+
+Section 7 — Latest Blog Posts (H2: "Islamic Giving Insights"):
+- 3 most recent blog post excerpts
+- This section auto-updates and adds fresh content signal to homepage
+
+Footer:
+- Physical address (required for local SEO)
+- Phone number
+- Email
+- 501(c)(3) EIN number
+- Links: About | Programs | Donate | Volunteer | Blog | Contact | Privacy Policy
+
+KEYWORD DENSITY TARGET: Primary keyword appears 3-5 times. Secondary keywords 1-2 times each. Never keyword stuff.
+2.2 Core Program Pages to Build
+=== PAGE: /programs/education ===
+URL: https://azmifoundation.com/programs/education
+Title: Islamic Education Programs | Quran Learning for Children — Azmi Foundation
+Meta: Help children learn the Quran and foundations of Islam. Azmi Foundation's education programs provide quality Islamic learning to disadvantaged youth worldwide.
+H1: "Islamic Education Programs: Teaching the Quran to Every Child"
+Content (1000+ words):
+- What Islamic education means in the context of Islam (Hadith/Quran reference)
+- Description of specific programs (Quran classes, Islamic studies, women's education)
+- Impact metrics
+- How donations fund the program
+- CTA: "Fund Islamic Education"
+Target keywords: Islamic education nonprofit, Quran learning program, Islamic school children, Muslim education charity
+
+=== PAGE: /programs/healthcare ===
+URL: https://azmifoundation.com/programs/healthcare
+Title: Islamic Healthcare Outreach | Medical Aid for Underserved Communities — Azmi Foundation
+Meta: Azmi Foundation provides healthcare access to underserved Muslim and minority communities. Your Sadaqah funds free medical clinics, maternal care, and health education.
+H1: "Healthcare for Those Who Need It Most: Serving Underserved Communities"
+Content (1000+ words):
+- Islamic perspective on healthcare as a right
+- Specific healthcare programs offered
+- Who benefits (underserved, maternal, child health)
+- Impact metrics
+- CTA: "Donate for Healthcare"
+Target keywords: Islamic healthcare charity, Muslim community healthcare, medical aid nonprofit
+
+=== PAGE: /zakat ===
+URL: https://azmifoundation.com/zakat
+Title: Pay Your Zakat | Zakat Calculator & Donation — Azmi Foundation
+Meta: Calculate and pay your Zakat online through Azmi Foundation. Your Zakat funds education, healthcare, and relief for those in need. Fully Shariah-compliant.
+H1: "Pay Your Zakat: Transform Lives Through the Third Pillar of Islam"
+Content (1500+ words) — THIS IS YOUR HIGHEST VALUE SEO PAGE:
+- What is Zakat (detailed explanation — ranks for "what is Zakat" searches)
+- Nisab threshold for current year
+- How to calculate Zakat (step-by-step — ranks for "how to calculate Zakat")
+- Who is eligible to receive Zakat (the eight categories)
+- Why pay Zakat through Azmi Foundation
+- Interactive Zakat calculator widget (embed)
+- CTA: "Pay Zakat Now"
+Target keywords: Zakat calculator, how to calculate Zakat, pay Zakat online, Zakat donation USA
+
+=== PAGE: /sadaqah ===
+URL: https://azmifoundation.com/sadaqah
+Title: Sadaqah Jariyah | Give Continuous Charity Through Azmi Foundation
+Meta: Give Sadaqah Jariyah through Azmi Foundation. Fund Islamic education, clean water, and healthcare — causes that earn reward long after your donation. Give today.
+H1: "Sadaqah Jariyah: Give Charity That Keeps Giving After You"
+Content (1200+ words):
+- Types of Sadaqah in Islam
+- What Sadaqah Jariyah is and its rewards
+- Best causes for Sadaqah Jariyah (education = top tier)
+- How Azmi Foundation uses Sadaqah
+- CTA: "Give Sadaqah Now"
+Target keywords: Sadaqah Jariyah, best Sadaqah causes, Sadaqah donation online, continuous charity Islam
+
+=== PAGE: /volunteer ===
+URL: https://azmifoundation.com/volunteer
+Title: Volunteer With Azmi Foundation | Join Our Mission
+Meta: Volunteer with Azmi Foundation and help us educate communities, improve healthcare access, and support those in need. Remote and in-person opportunities available.
+H1: "Volunteer With Us: Be the Hands of the Ummah"
+Target keywords: volunteer Islamic foundation, Muslim volunteer opportunities, nonprofit volunteer USA
+
