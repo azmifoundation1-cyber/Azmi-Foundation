@@ -381,18 +381,7 @@ export default function CampaignDetail() {
           </div>
         </div>
 
-        {/* ── HERO IMAGE ── */}
-        <div className="w-full" style={{ maxHeight: "420px", overflow: "hidden" }}>
-          <img
-            src="/papa-eyes-campaign.jpg"
-            alt="Dr. Shahbaaz Azmi's father — 18-year legacy at risk"
-            className="w-full object-cover object-top"
-            style={{ maxHeight: "420px" }}
-            onError={e => { (e.target as HTMLImageElement).src = "/azmi-img3.jpg"; }}
-          />
-        </div>
-
-        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-14 items-start">
 
           {/* ── LEFT COLUMN — Story content ── */}
@@ -405,10 +394,7 @@ export default function CampaignDetail() {
               <span className="bg-gray-100 text-gray-600 text-xs font-black uppercase tracking-[0.3em] px-3 py-1.5">Ahmedabad, Gujarat</span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary leading-tight tracking-tight">
-              18 साल की विरासत खतरे में — क्या आप इसे बचाएंगे?
-              <span className="block text-xl sm:text-2xl font-black text-gray-500 mt-2">
-                18-Year Legacy at Risk — Help Us Feed 846 Families
-              </span>
+              18-Year Legacy at Risk — Help Us Feed 846 Families
             </h1>
           </div>
 
@@ -764,15 +750,6 @@ export default function CampaignDetail() {
         {/* ── FULL WIDTH BELOW ── */}
         <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 space-y-8 pb-12">
 
-          {/* ── SOCIAL PROOF ── */}
-          <div className="flex flex-wrap items-center justify-center gap-4 py-5 border-y border-gray-100 text-sm text-gray-500 font-medium">
-            <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-red-500" /> <strong className="text-primary">{liveCount} donors</strong></span>
-            <span className="text-gray-200">|</span>
-            <span>₹{liveRaised.toLocaleString("en-IN")} raised</span>
-            <span className="text-gray-200">|</span>
-            <span>Last donation 2 days ago</span>
-          </div>
-
           {/* ── SHARE ── */}
           <div className="flex flex-wrap gap-2">
             <button onClick={handleWhatsAppShare} className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white text-[10px] font-black uppercase tracking-widest hover:bg-green-600 transition-colors">
@@ -837,42 +814,32 @@ export default function CampaignDetail() {
           </div>
 
           {/* ── LEGAL REGISTRATIONS ── */}
-          <div className="bg-gray-50 border border-gray-100 p-6 space-y-4">
-            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-accent" /> Legal Registrations & Certifications
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="border-t border-gray-100 pt-6">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5 mb-4">
+              <ShieldCheck className="w-3.5 h-3.5 text-accent" /> Registered & Verified
+            </p>
+            <div className="flex flex-wrap gap-2">
               {[
-                { Icon: Scroll,       label: "80G Tax Exemption", value: "AAGTA9354BF20261", sub: "AY 2026-27 to 2028-29 · Income Tax Act 1961", color: "text-amber-600" },
-                { Icon: Landmark,    label: "12A IT Exemption", value: "AAGTA9354BE2025101", sub: "Income Tax Act 1961 — NGO Tax Exemption", color: "text-blue-600" },
-                { Icon: Handshake,   label: "CSR-1 Registered", value: "CSR00108803", sub: "Ministry of Corporate Affairs, Govt. of India", color: "text-green-600" },
-                { Icon: Flag,        label: "NGO Darpan ID", value: "GJ/2021/0276308", sub: "NITI Aayog, Govt. of India", color: "text-purple-600" },
-                { Icon: ClipboardList,label: "Trust Registration", value: "E/22280/AHMEDABAD", sub: "Charity Commissioner, Gujarat", color: "text-gray-600" },
-                { Icon: Briefcase,   label: "PAN", value: "AAGTA9354B", sub: "Income Tax Department", color: "text-gray-600" },
+                { label: "80G", value: "AAGTA9354BF20261" },
+                { label: "12A", value: "AAGTA9354BE2025101" },
+                { label: "CSR-1", value: "CSR00108803" },
+                { label: "NGO Darpan", value: "GJ/2021/0276308" },
+                { label: "PAN", value: "AAGTA9354B" },
+                { label: "Trust Reg.", value: "E/22280/AHMEDABAD" },
               ].map(c => (
-                <div key={c.label} className="flex items-start gap-3 py-2">
-                  <c.Icon className={`w-5 h-5 mt-0.5 shrink-0 ${c.color}`} />
-                  <div>
-                    <p className={`text-xs font-black uppercase tracking-widest ${c.color}`}>{c.label}</p>
-                    <p className="text-sm font-black text-primary tracking-wider">{c.value}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{c.sub}</p>
-                  </div>
+                <div key={c.label} className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 px-3 py-1.5 text-xs">
+                  <span className="font-black text-gray-500 uppercase">{c.label}</span>
+                  <span className="text-gray-400">·</span>
+                  <span className="font-mono text-gray-600 text-[11px]">{c.value}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* ── FINAL CTA ── */}
-          <div className="pb-8 text-center space-y-4">
-            <p className="text-base text-gray-500">
-              Questions? WhatsApp us at <strong className="text-primary">+91 83202 18861</strong>
-            </p>
-            <a href="#donate-form">
-              <Button className="bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-widest rounded-none px-10 py-6">
-                <Heart className="w-4 h-4 mr-2 fill-white" /> Feed a Family — ₹680
-              </Button>
-            </a>
-          </div>
+          {/* ── CONTACT NOTE ── */}
+          <p className="pb-8 text-sm text-gray-400 text-center">
+            Questions? WhatsApp us at <strong className="text-primary">+91 83202 18861</strong>
+          </p>
 
         </div>
 
