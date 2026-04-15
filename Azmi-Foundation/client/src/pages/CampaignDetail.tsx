@@ -356,30 +356,6 @@ export default function CampaignDetail() {
       <div className="min-h-screen flex flex-col bg-white font-sans">
         <Navbar />
 
-        {/* ── STICKY PROGRESS BAR ── */}
-        <div className="sticky top-20 z-40 bg-white border-b border-gray-200 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-4">
-            <div className="flex-1 space-y-1 min-w-0">
-              <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest">
-                <span className="text-red-600">₹{liveRaised.toLocaleString("en-IN")} raised</span>
-                <span className="text-gray-400">Goal: ₹5,75,280</span>
-              </div>
-              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${percent}%` }}
-                  transition={{ duration: 1.2, ease: "circOut" }}
-                  className="h-full bg-red-500 rounded-full"
-                />
-              </div>
-            </div>
-            <a href="#donate-form">
-              <Button className="bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-widest rounded-none px-4 py-2 text-xs shrink-0">
-                Donate →
-              </Button>
-            </a>
-          </div>
-        </div>
 
         <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-14 items-start">
@@ -437,33 +413,30 @@ export default function CampaignDetail() {
                   position: "absolute",
                   top: 0,
                   right: 0,
-                  width: "28%",
-                  height: "16%",
                   backdropFilter: "blur(14px)",
                   WebkitBackdropFilter: "blur(14px)",
                   backgroundColor: "rgba(0,0,0,0.52)",
                   pointerEvents: "none",
                   zIndex: 5,
-                  display: "flex",
+                  display: "inline-flex",
                   alignItems: "center",
-                  justifyContent: "center",
-                  gap: "6px",
-                  padding: "4px 8px",
+                  gap: "5px",
+                  padding: "5px 8px",
                 }}
               >
                 <img
                   src="/logo.png"
                   alt="Azmi Foundation"
-                  style={{ height: "60%", width: "auto", objectFit: "contain", flexShrink: 0 }}
+                  style={{ height: "22px", width: "auto", objectFit: "contain", flexShrink: 0 }}
                 />
                 <span
                   style={{
                     color: "#fff",
-                    fontSize: "clamp(7px, 1.1vw, 13px)",
+                    fontSize: "10px",
                     fontWeight: 900,
-                    letterSpacing: "0.08em",
+                    letterSpacing: "0.06em",
                     textTransform: "uppercase",
-                    lineHeight: 1.15,
+                    lineHeight: 1.2,
                     whiteSpace: "nowrap",
                   }}
                 >
