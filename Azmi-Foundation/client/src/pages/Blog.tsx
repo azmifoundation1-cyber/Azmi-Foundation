@@ -349,9 +349,9 @@ export default function Blog() {
       <section className="bg-primary text-white py-16 px-4 text-center">
         <div className="max-w-3xl mx-auto space-y-4">
           <span className="text-accent text-xs font-black uppercase tracking-[0.4em]">Knowledge & Giving</span>
-          <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight">Islamic Giving Blog</h1>
+          <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight">Giving & Impact Blog</h1>
           <p className="text-white/80 text-base max-w-xl mx-auto">
-            Guides on Zakat, Sadaqah Jariyah, Islamic charity, and how your donations create real impact for families in Ahmedabad.
+            Guides on giving, tax-saving donations, and how your contribution creates real impact for families in Ahmedabad.
           </p>
         </div>
       </section>

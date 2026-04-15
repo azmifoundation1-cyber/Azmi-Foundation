@@ -277,7 +277,7 @@ export default function CampaignDetail() {
             }
 
             toast({
-              title: "JazakAllahu Khayran! Donation Successful",
+              title: "Thank You! Donation Successful",
               description: `You just helped feed ${families > 0 ? families : 1} ${families === 1 ? "family" : "families"}. Thank you!`,
             });
             queryClient.invalidateQueries({ queryKey: ["/api/donations/campaign", id] });
@@ -806,7 +806,7 @@ export default function CampaignDetail() {
               },
               {
                 q: "Can I donate monthly / become a recurring donor?",
-                a: "Yes! WhatsApp +91 83202 18861 or email us to set up a monthly standing commitment. Even ₹680/month sponsors one family's food security for an entire year. JazakAllahu Khayran.",
+                a: "Yes! WhatsApp +91 83202 18861 or email us to set up a monthly standing commitment. Even ₹680/month sponsors one family's food security for an entire year. Thank you for your generosity.",
               },
             ].map((item, i) => (
               <div key={i} className="border border-gray-100">

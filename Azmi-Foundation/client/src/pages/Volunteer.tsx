@@ -13,7 +13,7 @@ const ROLES = [
   { icon: <Heart />, title: "Fundraising", type: "Remote / On-Site", desc: "Organize local fundraising events, approach donors, and help us reach our campaign goals." },
   { icon: <Users />, title: "Community Outreach", type: "On-Site", desc: "Visit slums and footpath communities in Ahmedabad to identify and register families in need." },
   { icon: <Clock />, title: "Admin & Documentation", type: "Remote", desc: "Help maintain records, prepare impact reports, and assist with 80G receipt processing." },
-  { icon: <MapPin />, title: "Event Coordination", type: "On-Site", desc: "Coordinate food distribution events, Eid drives, and community welfare programs." },
+  { icon: <MapPin />, title: "Event Coordination", type: "On-Site", desc: "Coordinate food distribution events, festive drives, and community welfare programs." },
 ];
 
 function Utensils() {
@@ -64,7 +64,7 @@ export default function Volunteer() {
             Volunteer With Us
           </h1>
           <p className="text-white/80 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            Be the hands of the Ummah. Join Azmi Foundation volunteers who help feed 2,000+ people daily in Ahmedabad. Remote and on-site roles available.
+            Be the hands that make a real difference. Join Azmi Foundation volunteers who help feed 2,000+ people daily in Ahmedabad. Remote and on-site roles available.
           </p>
         </div>
       </section>
@@ -128,7 +128,7 @@ export default function Volunteer() {
               className="bg-green-50 border-2 border-green-200 p-10 text-center space-y-4"
             >
               <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
-              <h3 className="text-xl font-black text-primary uppercase">JazakAllahu Khayran!</h3>
+              <h3 className="text-xl font-black text-primary uppercase">Thank You for Signing Up!</h3>
               <p className="text-gray-600 text-sm">We have received your application. Our team will contact you within 48 hours to discuss your role.</p>
             </motion.div>
           ) : (
