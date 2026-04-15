@@ -446,6 +446,30 @@ export default function CampaignDetail() {
                 }}
               />
             </div>
+
+            {/* ── INLINE PROGRESS BAR (below video) ── */}
+            <div className="bg-white border border-gray-200 px-4 py-3 flex items-center gap-4 shadow-sm">
+              <div className="flex-1 space-y-1 min-w-0">
+                <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest">
+                  <span className="text-red-600">₹{liveRaised.toLocaleString("en-IN")} raised</span>
+                  <span className="text-gray-400">Goal: ₹5,75,280</span>
+                </div>
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${percent}%` }}
+                    transition={{ duration: 1.2, ease: "circOut" }}
+                    className="h-full bg-red-500 rounded-full"
+                  />
+                </div>
+              </div>
+              <a href="#donate-form">
+                <Button className="bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-widest rounded-none px-4 py-2 text-xs shrink-0">
+                  Donate →
+                </Button>
+              </a>
+            </div>
+
             <p>
               Grocery kits ship on <strong>30 April 2026</strong>. We need to reach <strong>₹5,75,280</strong> before then. Currently: <span className="text-green-600 font-black">₹{liveRaised.toLocaleString("en-IN")}</span> raised. <span className="text-red-600 font-black">₹{Math.max(0, GOAL - liveRaised).toLocaleString("en-IN")} still needed.</span>
             </p>
