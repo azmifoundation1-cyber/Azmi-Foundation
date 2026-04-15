@@ -69,7 +69,7 @@ const CAMPAIGN_STORIES: Record<number, {
       "For 18 years, Dr. Shahbaaz Azmi's father fed the forgotten — the homeless, the hungry, the abandoned. He fed over 2 lakh people using his own savings, sitting down to share meals with strangers on the roadside. Serving the poor was not charity for him. It was his religion.",
       "Today, this selfless man lies in critical condition — heart failure, kidney failure, and a brain haemorrhage. He cannot eat or move without assistance. His son, Dr. Shahbaaz, is now fighting alone to save his father's life while keeping this 18-year legacy alive. His clinic is shut. His savings are gone. The medical bills keep rising.",
       "Yet every single day, Dr. Shahbaaz ensures 2,000 people are fed. He reaches slum families and footpath dwellers who have no other food source. For them, this is not charity — it is survival. If we stop, they go hungry.",
-      "750 families in Ahmedabad need groceries right now. Your ₹500 feeds a family for 7 days. Please help us carry this legacy forward — before it is too late."
+      "846 families in Ahmedabad need groceries right now. Just ₹680 provides one complete grocery kit for a family. Please help us carry this legacy forward — before it is too late."
     ],
     images: [
       "/shahbaaz-thumb.jpg",   // [0] — video poster
@@ -137,7 +137,11 @@ export default function CampaignDetail() {
   // Live countdown — ticks every second from campaign.endDate
   useEffect(() => {
     const tick = () => {
-      const endDate = campaign?.endDate ? new Date(campaign.endDate).getTime() : null;
+      // Fallback hardcoded date for campaign 3 if DB end_date isn't set yet
+      const rawEnd = campaign?.endDate
+        ? campaign.endDate
+        : (id === 3 ? "2026-04-24T18:29:59.000Z" : null);
+      const endDate = rawEnd ? new Date(rawEnd).getTime() : null;
       if (!endDate) return;
       const diff = endDate - Date.now();
       if (diff <= 0) {
@@ -153,7 +157,7 @@ export default function CampaignDetail() {
     tick();
     const timer = setInterval(tick, 1000);
     return () => clearInterval(timer);
-  }, [campaign?.endDate]);
+  }, [campaign?.endDate, id]);
 
   const handleDonate = async () => {
     const amt = Number(amount);
@@ -371,7 +375,7 @@ export default function CampaignDetail() {
         >
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-3 text-center">
             <span className="text-sm sm:text-base font-black uppercase tracking-tight">
-              ⚠️ 750 FAMILIES NEED GROCERIES — TIME LEFT:
+              ⚠️ 846 FAMILIES NEED GROCERIES — TIME LEFT:
             </span>
 
             {/* Live countdown blocks */}
@@ -420,7 +424,7 @@ export default function CampaignDetail() {
               </h1>
               {id === 3 && (
                 <p className="mt-4 text-sm sm:text-base text-gray-700 leading-relaxed border-l-4 border-red-500 pl-4 bg-red-50 py-3 pr-3">
-                  We need <strong>₹5,70,000</strong> to provide groceries to <strong>750 poor families</strong> in Ahmedabad. Dr. Shahbaaz is fighting serious illness but still feeding 2000+ people daily. His father's 18-year legacy is at risk. <span className="text-red-600 font-bold">Time is running out.</span>
+                  We need <strong>₹5,75,280</strong> to provide groceries to <strong>846 poor families</strong> in Ahmedabad. Dr. Shahbaaz is fighting serious illness but still feeding 2000+ people daily. His father's 18-year legacy is at risk. <span className="text-red-600 font-bold">Time is running out.</span>
                 </p>
               )}
             </motion.div>
@@ -690,10 +694,10 @@ export default function CampaignDetail() {
                   <div className="border border-red-100 bg-red-50 p-4 space-y-2">
                     <p className="text-[10px] font-black text-red-700 uppercase tracking-widest mb-3">Your Donation Impact</p>
                     {[
-                      { amount: "₹500", impact: "Groceries for 1 family for 1 week" },
-                      { amount: "₹1,000", impact: "Groceries for 2 families" },
-                      { amount: "₹2,000", impact: "Groceries for 4 families" },
-                      { amount: "₹5,000", impact: "Groceries for 10 families" },
+                      { amount: "₹680",   impact: "1 grocery kit for 1 family" },
+                      { amount: "₹1,360", impact: "Grocery kits for 2 families" },
+                      { amount: "₹3,400", impact: "Grocery kits for 5 families" },
+                      { amount: "₹6,800", impact: "Grocery kits for 10 families" },
                     ].map((row) => (
                       <div key={row.amount} className="flex items-center gap-3 py-1.5 border-b border-red-100 last:border-0">
                         <span className="text-sm font-black text-red-600 w-16 shrink-0">{row.amount}</span>
