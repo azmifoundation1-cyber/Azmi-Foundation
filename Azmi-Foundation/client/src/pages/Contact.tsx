@@ -45,8 +45,8 @@ export default function Contact() {
             <h1 className="text-4xl sm:text-7xl lg:text-9xl font-black tracking-tighter text-white uppercase leading-[0.85] mb-8 drop-shadow-2xl">
               Connect <br /> <span className="text-white/30 italic">With Us</span>
             </h1>
-            <p className="text-lg sm:text-2xl text-white/70 max-w-3xl mx-auto font-medium tracking-tight uppercase">
-              Bridging Hearts, Building Hope. Every message counts.
+            <p className="text-lg sm:text-2xl text-white/70 max-w-3xl mx-auto font-medium tracking-tight">
+              Have a question, or want to donate by bank transfer? We reply within 24 hours.
             </p>
           </motion.div>
         </div>

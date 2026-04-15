@@ -14,8 +14,8 @@ export function Footer() {
             <div className="flex items-center gap-2">
               <img src="/logo.png" alt="Azmi Foundation" className="h-14 w-auto brightness-0 invert" />
             </div>
-            <p className="text-gray-400 text-sm leading-relaxed font-light tracking-wide uppercase">
-              Promoting interfaith harmony and sustainable development through unity and compassion.
+            <p className="text-gray-400 text-sm leading-relaxed font-light tracking-wide">
+              Feeding families, funding education, and supporting healthcare in Ahmedabad — open to everyone, regardless of faith or background.
             </p>
             <div className="flex space-x-4 pt-4">
               <SocialIcon Icon={Facebook} href="https://facebook.com/azmifoundation" />

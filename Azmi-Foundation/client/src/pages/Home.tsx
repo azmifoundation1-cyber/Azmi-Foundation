@@ -128,7 +128,7 @@ export default function Home() {
               transition={{ delay: 1.5 }}
               className="text-sm sm:text-xl md:text-3xl text-primary/70 leading-relaxed max-w-4xl mx-auto font-medium tracking-tight px-4 sm:px-0"
             >
-              Nestled in the vibrant heart of Ahmedabad, pioneering the global evolution of interfaith harmony through <span className="text-primary font-black italic">revolutionary compassion</span>.
+              For 18 years, we have fed over 2 lakh people in Ahmedabad — <span className="text-primary font-black italic">regardless of religion, caste, or background.</span>
             </motion.p>
 
             <motion.div 
@@ -164,7 +164,7 @@ export default function Home() {
           className="absolute bottom-6 sm:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
         >
           <div className="w-0.5 h-16 sm:h-24 bg-gradient-to-b from-primary/0 via-primary/40 to-primary/0" />
-          <span className="text-[6px] sm:text-[8px] font-black tracking-[0.6em] uppercase text-primary/60">Explore the Horizon</span>
+          <span className="text-[6px] sm:text-[8px] font-black tracking-[0.6em] uppercase text-primary/60">Scroll to explore</span>
         </motion.div>
       </section>
 
@@ -190,16 +190,16 @@ export default function Home() {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="text-accent font-black tracking-[0.6em] uppercase text-[10px] sm:text-xs flex items-center justify-center lg:justify-start gap-3"
               >
-                <Target className="w-4 h-4" /> Strategic Objectives
+                <Target className="w-4 h-4" /> Active Campaigns
               </motion.div>
               <h2 className="text-5xl sm:text-7xl md:text-9xl font-black tracking-tighter text-primary uppercase leading-[0.85]">
-                GLOBAL <br /> <span className="text-primary/20 italic">MISSIONS</span>
+                OUR <br /> <span className="text-primary/20 italic">CAMPAIGNS</span>
               </h2>
             </div>
             <Link href="/campaigns">
               <Button variant="link" className="text-primary font-black tracking-[0.4em] uppercase text-xs sm:text-sm group hover:no-underline">
                 <span className="relative">
-                  Command Center
+                  View All Campaigns
                   <span className="absolute -bottom-2 left-0 w-0 h-0.5 bg-accent group-hover:w-full transition-all duration-500" />
                 </span>
                 <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-4 transition-transform duration-500" />
