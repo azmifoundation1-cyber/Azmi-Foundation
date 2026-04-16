@@ -423,64 +423,94 @@ export default function CampaignDetail() {
           {/* Orb – gold right */}
           <div className="glass-orb-2 absolute pointer-events-none" style={{ top: "-15px", right: "-10px", width: "70px", height: "70px", borderRadius: "50%", background: "radial-gradient(circle, rgba(212,175,55,0.3) 0%, transparent 70%)", filter: "blur(12px)" }} />
 
-          <div className="relative max-w-7xl mx-auto flex flex-nowrap items-center justify-center gap-x-2 text-center overflow-hidden">
-            {/* Label */}
-            <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-tight shrink min-w-0">
-              <AlertTriangle className="w-2.5 h-2.5 shrink-0" style={{ color: "#d4af37", filter: "drop-shadow(0 0 6px rgba(212,175,55,1))" }} />
-              <span
-                className="truncate"
+          <div className="relative max-w-7xl mx-auto space-y-1.5 px-1">
+            {/* Row 1: Headline + CTA */}
+            <div className="flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1.5">
+                <AlertTriangle
+                  className="w-3.5 h-3.5 shrink-0"
+                  style={{ color: "#d4af37", filter: "drop-shadow(0 0 5px rgba(212,175,55,0.9))" }}
+                />
+                <span
+                  className="font-black uppercase text-[11px] leading-none"
+                  style={{
+                    color: "#d4af37",
+                    textShadow: "0 0 6px rgba(212,175,55,0.95), 0 0 14px rgba(212,175,55,0.55), 0 0 28px rgba(212,175,55,0.25)",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  846 Families Need Your Help
+                </span>
+              </span>
+              <a
+                href="#mobile-donate"
+                className="shrink-0 font-black text-[10px] uppercase tracking-widest px-3 py-1.5 transition-all duration-200 whitespace-nowrap"
                 style={{
-                  color: "#d4af37",
-                  textShadow: "0 0 8px rgba(212,175,55,0.9), 0 0 16px rgba(212,175,55,0.5), 0 0 30px rgba(212,175,55,0.3)",
-                  letterSpacing: "0.08em",
+                  borderRadius: "5px",
+                  border: "1px solid rgba(220,38,38,0.75)",
+                  background: "linear-gradient(135deg, #c01414, #8a0000)",
+                  color: "#fff",
+                  boxShadow: "0 0 14px rgba(220,38,38,0.55), inset 0 1px 0 rgba(255,255,255,0.1)",
+                  textShadow: "0 1px 2px rgba(0,0,0,0.5)",
                 }}
               >
-                846 Families — Time Left:
-              </span>
-            </span>
-
-            {/* Live countdown blocks */}
-            <div className="flex items-center gap-2 shrink-0">
-              {[
-                { value: countdown.days,    label: "D" },
-                { value: countdown.hours,   label: "H" },
-                { value: countdown.minutes, label: "M" },
-                { value: countdown.seconds, label: "S" },
-              ].map(({ value, label }, i) => (
-                <div key={label} className="flex items-center gap-2">
-                  <div
-                    className="px-1.5 py-0.5 min-w-[26px] text-center"
-                    style={{
-                      borderRadius: "4px",
-                      border: "1px solid rgba(220,38,38,0.4)",
-                      background: "rgba(220,38,38,0.15)",
-                      backdropFilter: "blur(8px)",
-                      boxShadow: "0 0 8px rgba(220,38,38,0.2)",
-                    }}
-                  >
-                    <span className="text-sm font-black tabular-nums leading-none block text-white">
-                      {String(value).padStart(2, "0")}
-                    </span>
-                    <span className="text-[8px] font-bold uppercase" style={{ color: "rgba(212,175,55,0.8)" }}>{label}</span>
-                  </div>
-                  {i < 3 && <span className="text-xs font-black" style={{ color: "rgba(220,38,38,0.6)" }}>:</span>}
-                </div>
-              ))}
+                Donate Now →
+              </a>
             </div>
 
-            <a
-              href="#mobile-donate"
-              className="shrink-0 font-black text-[10px] uppercase tracking-widest px-2.5 py-1 transition-all duration-200"
-              style={{
-                borderRadius: "4px",
-                border: "1px solid rgba(220,38,38,0.7)",
-                background: "linear-gradient(135deg, rgba(200,20,20,0.85), rgba(140,0,0,0.9))",
-                color: "#fff",
-                boxShadow: "0 0 12px rgba(220,38,38,0.5)",
-              }}
-            >
-              Donate →
-            </a>
+            {/* Row 2: "Time Remaining" + countdown */}
+            <div className="flex items-center gap-2">
+              <span
+                className="text-[9px] font-bold uppercase tracking-widest shrink-0"
+                style={{ color: "rgba(255,255,255,0.45)" }}
+              >
+                Time Remaining:
+              </span>
+              <div className="flex items-center gap-1.5">
+                {[
+                  { value: countdown.days,    label: "Days" },
+                  { value: countdown.hours,   label: "Hrs" },
+                  { value: countdown.minutes, label: "Min" },
+                  { value: countdown.seconds, label: "Sec" },
+                ].map(({ value, label }, i) => (
+                  <div key={label} className="flex items-center gap-1.5">
+                    <div
+                      className="flex flex-col items-center px-2 py-0.5 min-w-[32px]"
+                      style={{
+                        borderRadius: "5px",
+                        border: "1px solid rgba(212,175,55,0.25)",
+                        background: "rgba(212,175,55,0.07)",
+                        boxShadow: "0 0 6px rgba(212,175,55,0.12)",
+                      }}
+                    >
+                      <span
+                        className="text-[15px] font-black tabular-nums leading-none"
+                        style={{
+                          color: "#fff",
+                          textShadow: "0 0 8px rgba(255,255,255,0.3)",
+                        }}
+                      >
+                        {String(value).padStart(2, "0")}
+                      </span>
+                      <span
+                        className="text-[7px] font-semibold uppercase tracking-wider mt-0.5"
+                        style={{ color: "rgba(212,175,55,0.75)" }}
+                      >
+                        {label}
+                      </span>
+                    </div>
+                    {i < 3 && (
+                      <span
+                        className="text-xs font-black pb-2"
+                        style={{ color: "rgba(220,38,38,0.5)" }}
+                      >
+                        :
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </motion.div>
       )}
