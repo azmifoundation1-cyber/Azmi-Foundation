@@ -409,15 +409,15 @@ export default function CampaignDetail() {
         </motion.div>
       )}
 
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-4 lg:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-12 items-start">
 
           {/* ── LEFT COLUMN ── */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-4 lg:space-y-8">
 
             {/* Campaign Title */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <Link href="/campaigns" className="inline-flex items-center gap-2 text-xs text-gray-400 font-bold uppercase tracking-widest mb-4 hover:text-primary transition-colors">
+              <Link href="/campaigns" className="inline-flex items-center gap-2 text-xs text-gray-400 font-bold uppercase tracking-widest mb-2 hover:text-primary transition-colors">
                 <ArrowLeft className="w-3 h-3" /> All Campaigns
               </Link>
               <h1 className="text-2xl sm:text-4xl font-black text-primary leading-tight tracking-tight">
