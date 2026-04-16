@@ -517,22 +517,31 @@ export default function CampaignDetail() {
                 id="mobile-donate"
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="lg:hidden relative overflow-hidden"
+                className="lg:hidden relative overflow-hidden glass-panel-neon glass-shimmer"
                 style={{
-                  background: "linear-gradient(135deg, rgba(8,0,18,0.96) 0%, rgba(20,0,40,0.94) 50%, rgba(8,0,18,0.96) 100%)",
-                  backdropFilter: "blur(24px)",
-                  WebkitBackdropFilter: "blur(24px)",
-                  border: "1px solid rgba(220,38,38,0.5)",
-                  boxShadow: "0 0 30px rgba(220,38,38,0.25), 0 0 60px rgba(220,38,38,0.12), inset 0 0 40px rgba(220,38,38,0.04)",
-                  borderRadius: "12px",
+                  background: "linear-gradient(135deg, rgba(4,0,15,0.97) 0%, rgba(12,0,28,0.96) 40%, rgba(6,0,20,0.97) 100%)",
+                  backdropFilter: "blur(32px)",
+                  WebkitBackdropFilter: "blur(32px)",
+                  border: "1px solid rgba(220,38,38,0.45)",
+                  borderRadius: "16px",
                   padding: "14px",
                 }}
               >
-                {/* Animated neon corner accents */}
-                <div className="absolute top-0 left-0 w-8 h-8 pointer-events-none" style={{ background: "radial-gradient(circle at 0% 0%, rgba(220,38,38,0.6) 0%, transparent 70%)" }} />
-                <div className="absolute top-0 right-0 w-8 h-8 pointer-events-none" style={{ background: "radial-gradient(circle at 100% 0%, rgba(220,38,38,0.4) 0%, transparent 70%)" }} />
-                <div className="absolute bottom-0 left-0 w-8 h-8 pointer-events-none" style={{ background: "radial-gradient(circle at 0% 100%, rgba(180,20,20,0.3) 0%, transparent 70%)" }} />
-                <div className="absolute bottom-0 right-0 w-8 h-8 pointer-events-none" style={{ background: "radial-gradient(circle at 100% 100%, rgba(220,38,38,0.4) 0%, transparent 70%)" }} />
+                {/* ── Dynamic floating aurora orbs ── */}
+                {/* Orb 1: Crimson red – top-left */}
+                <div className="glass-orb-1 absolute pointer-events-none" style={{ top: "-30px", left: "-20px", width: "120px", height: "120px", borderRadius: "50%", background: "radial-gradient(circle, rgba(220,38,38,0.55) 0%, rgba(180,0,60,0.2) 50%, transparent 70%)", filter: "blur(18px)" }} />
+                {/* Orb 2: Cyan/teal – top-right */}
+                <div className="glass-orb-2 absolute pointer-events-none" style={{ top: "-20px", right: "-15px", width: "100px", height: "100px", borderRadius: "50%", background: "radial-gradient(circle, rgba(0,200,220,0.4) 0%, rgba(0,120,200,0.15) 50%, transparent 70%)", filter: "blur(16px)" }} />
+                {/* Orb 3: Purple/violet – center */}
+                <div className="glass-orb-3 absolute pointer-events-none" style={{ top: "40%", left: "30%", width: "140px", height: "80px", borderRadius: "50%", background: "radial-gradient(circle, rgba(140,0,220,0.25) 0%, transparent 70%)", filter: "blur(20px)" }} />
+                {/* Orb 4: Pink – bottom-right */}
+                <div className="glass-orb-1 absolute pointer-events-none" style={{ bottom: "-25px", right: "-10px", width: "110px", height: "110px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,40,120,0.3) 0%, rgba(200,0,80,0.12) 50%, transparent 70%)", filter: "blur(18px)", animationDelay: "3.5s" }} />
+                {/* Orb 5: Orange/gold – bottom-left */}
+                <div className="glass-orb-2 absolute pointer-events-none" style={{ bottom: "10%", left: "-10px", width: "80px", height: "80px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,120,0,0.25) 0%, transparent 70%)", filter: "blur(14px)", animationDelay: "2s" }} />
+                {/* Glass surface highlight line */}
+                <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: "linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.18) 30%, rgba(0,220,255,0.15) 60%, transparent 95%)" }} />
+                {/* Bottom depth line */}
+                <div className="absolute bottom-0 left-0 right-0 h-px pointer-events-none" style={{ background: "linear-gradient(90deg, transparent 10%, rgba(220,38,38,0.3) 50%, transparent 90%)" }} />
 
                 <div className="relative space-y-3">
                 {/* Progress summary */}
@@ -554,13 +563,13 @@ export default function CampaignDetail() {
                 </div>
 
                 {/* Neon progress bar */}
-                <div className="h-1 w-full rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+                <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", boxShadow: "inset 0 0 4px rgba(0,0,0,0.5)" }}>
                   <div
                     className="h-full rounded-full transition-all duration-1000"
                     style={{
                       width: `${percent}%`,
-                      background: "linear-gradient(90deg, #dc2626, #ff4444)",
-                      boxShadow: "0 0 8px rgba(220,38,38,0.9), 0 0 16px rgba(220,38,38,0.5)",
+                      background: "linear-gradient(90deg, #7c0000, #dc2626, #ff6b6b, #00d4ff)",
+                      boxShadow: "0 0 10px rgba(220,38,38,1), 0 0 20px rgba(220,38,38,0.6), 0 0 35px rgba(0,180,255,0.2)",
                     }}
                   />
                 </div>
@@ -573,16 +582,20 @@ export default function CampaignDetail() {
                       <button
                         key={a}
                         onClick={() => setAmount(String(a))}
-                        className="py-1.5 px-2 font-black text-left transition-all duration-200"
+                        className="py-1.5 px-2 font-black text-left transition-all duration-300"
                         style={{
-                          borderRadius: "8px",
-                          border: sel ? "1px solid rgba(255,68,68,0.9)" : "1px solid rgba(255,255,255,0.12)",
+                          borderRadius: "10px",
+                          border: sel ? "1px solid rgba(255,80,80,0.9)" : "1px solid rgba(255,255,255,0.1)",
                           background: sel
-                            ? "linear-gradient(135deg, rgba(220,38,38,0.7), rgba(180,20,20,0.8))"
-                            : "rgba(255,255,255,0.06)",
-                          backdropFilter: "blur(8px)",
-                          boxShadow: sel ? "0 0 14px rgba(220,38,38,0.6), inset 0 0 10px rgba(255,68,68,0.1)" : "none",
-                          color: sel ? "#fff" : "rgba(255,255,255,0.8)",
+                            ? "linear-gradient(135deg, rgba(200,20,20,0.85) 0%, rgba(140,0,80,0.7) 60%, rgba(180,0,50,0.8) 100%)"
+                            : "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
+                          backdropFilter: "blur(12px)",
+                          WebkitBackdropFilter: "blur(12px)",
+                          boxShadow: sel
+                            ? "0 0 18px rgba(220,38,38,0.7), 0 0 40px rgba(180,0,80,0.25), inset 0 1px 0 rgba(255,150,150,0.2)"
+                            : "inset 0 1px 0 rgba(255,255,255,0.07)",
+                          color: sel ? "#fff" : "rgba(255,255,255,0.75)",
+                          transform: sel ? "scale(1.02)" : "scale(1)",
                         }}
                       >
                         <span className="block text-xs" style={{ textShadow: sel ? "0 0 8px rgba(255,150,150,0.8)" : "none" }}>₹{a.toLocaleString("en-IN")}</span>
@@ -821,22 +834,23 @@ export default function CampaignDetail() {
                 {/* Trust badges */}
                 <div className="grid grid-cols-3 gap-1.5">
                   {[
-                    { icon: <CheckCircle className="w-3.5 h-3.5" style={{ color: "#4ade80" }} />, label: "80G Receipt", glow: "rgba(74,222,128,0.3)" },
-                    { icon: <Lock className="w-3.5 h-3.5" style={{ color: "#60a5fa" }} />, label: "Secure Pay", glow: "rgba(96,165,250,0.3)" },
-                    { icon: <Shield className="w-3.5 h-3.5" style={{ color: "#f87171" }} />, label: "Verified NGO", glow: "rgba(248,113,113,0.3)" },
+                    { icon: <CheckCircle className="w-3.5 h-3.5" style={{ color: "#4ade80", filter: "drop-shadow(0 0 4px #4ade80)" }} />, label: "80G Receipt", glow: "rgba(74,222,128,0.25)", border: "rgba(74,222,128,0.3)" },
+                    { icon: <Lock className="w-3.5 h-3.5" style={{ color: "#00d4ff", filter: "drop-shadow(0 0 4px #00d4ff)" }} />, label: "Secure Pay", glow: "rgba(0,212,255,0.25)", border: "rgba(0,212,255,0.3)" },
+                    { icon: <Shield className="w-3.5 h-3.5" style={{ color: "#ff6b9d", filter: "drop-shadow(0 0 4px #ff6b9d)" }} />, label: "Verified NGO", glow: "rgba(255,107,157,0.25)", border: "rgba(255,107,157,0.3)" },
                   ].map(b => (
                     <div
                       key={b.label}
-                      className="flex flex-col items-center gap-1 py-2 px-1"
+                      className="badge-float flex flex-col items-center gap-1 py-2 px-1"
                       style={{
-                        borderRadius: "6px",
-                        border: `1px solid rgba(255,255,255,0.1)`,
-                        background: "rgba(255,255,255,0.04)",
-                        boxShadow: `0 0 8px ${b.glow}`,
+                        borderRadius: "8px",
+                        border: `1px solid ${b.border}`,
+                        background: "linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%)",
+                        backdropFilter: "blur(10px)",
+                        boxShadow: `0 0 12px ${b.glow}, inset 0 1px 0 rgba(255,255,255,0.08)`,
                       }}
                     >
                       {b.icon}
-                      <span className="text-[8px] font-black uppercase tracking-widest text-center leading-tight" style={{ color: "rgba(255,255,255,0.5)" }}>{b.label}</span>
+                      <span className="text-[8px] font-black uppercase tracking-widest text-center leading-tight" style={{ color: "rgba(255,255,255,0.55)" }}>{b.label}</span>
                     </div>
                   ))}
                 </div>
