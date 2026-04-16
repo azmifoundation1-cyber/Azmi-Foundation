@@ -412,8 +412,17 @@ export default function CampaignDetail() {
           className="bg-red-600 text-white py-1.5 px-3"
         >
           <div className="max-w-7xl mx-auto flex flex-nowrap items-center justify-center gap-x-2 text-center">
-            <span className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-tight shrink-0">
-              <AlertTriangle className="w-3 h-3 shrink-0" /> 846 Families — Time Left:
+            <span
+              className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-tight shrink-0"
+              style={{
+                background: "linear-gradient(90deg, #7c0000, #dc2626, #ff6b6b, #d4af37)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                filter: "drop-shadow(0 0 6px rgba(220,38,38,0.6))",
+              }}
+            >
+              <AlertTriangle className="w-3 h-3 shrink-0" style={{ color: "#d4af37", filter: "drop-shadow(0 0 4px #d4af37)", WebkitTextFillColor: "#d4af37" }} /> 846 Families — Time Left:
             </span>
 
             {/* Live countdown blocks */}
