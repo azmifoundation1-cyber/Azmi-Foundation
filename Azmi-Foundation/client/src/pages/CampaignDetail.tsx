@@ -517,59 +517,100 @@ export default function CampaignDetail() {
                 id="mobile-donate"
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="lg:hidden bg-white shadow-md border border-red-100 p-3 space-y-3"
+                className="lg:hidden relative overflow-hidden"
+                style={{
+                  background: "linear-gradient(135deg, rgba(8,0,18,0.96) 0%, rgba(20,0,40,0.94) 50%, rgba(8,0,18,0.96) 100%)",
+                  backdropFilter: "blur(24px)",
+                  WebkitBackdropFilter: "blur(24px)",
+                  border: "1px solid rgba(220,38,38,0.5)",
+                  boxShadow: "0 0 30px rgba(220,38,38,0.25), 0 0 60px rgba(220,38,38,0.12), inset 0 0 40px rgba(220,38,38,0.04)",
+                  borderRadius: "12px",
+                  padding: "14px",
+                }}
               >
+                {/* Animated neon corner accents */}
+                <div className="absolute top-0 left-0 w-8 h-8 pointer-events-none" style={{ background: "radial-gradient(circle at 0% 0%, rgba(220,38,38,0.6) 0%, transparent 70%)" }} />
+                <div className="absolute top-0 right-0 w-8 h-8 pointer-events-none" style={{ background: "radial-gradient(circle at 100% 0%, rgba(220,38,38,0.4) 0%, transparent 70%)" }} />
+                <div className="absolute bottom-0 left-0 w-8 h-8 pointer-events-none" style={{ background: "radial-gradient(circle at 0% 100%, rgba(180,20,20,0.3) 0%, transparent 70%)" }} />
+                <div className="absolute bottom-0 right-0 w-8 h-8 pointer-events-none" style={{ background: "radial-gradient(circle at 100% 100%, rgba(220,38,38,0.4) 0%, transparent 70%)" }} />
+
+                <div className="relative space-y-3">
                 {/* Progress summary */}
                 <div className="flex items-end justify-between">
                   <div>
-                    <p className="text-base font-black text-primary tracking-tighter">
+                    <p className="text-base font-black tracking-tighter" style={{ color: "#fff", textShadow: "0 0 12px rgba(255,100,100,0.8)" }}>
                       ₹{Number(campaign.currentAmount).toLocaleString("en-IN")}
                     </p>
-                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">
+                    <p className="text-[8px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.45)" }}>
                       of ₹{Number(campaign.targetAmount).toLocaleString("en-IN")} goal
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-black text-red-600 tabular-nums">
+                    <p className="text-xs font-black tabular-nums" style={{ color: "#ff4444", textShadow: "0 0 10px rgba(255,68,68,0.9)" }}>
                       {countdown.expired ? "Ended" : `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h left`}
                     </p>
-                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{supporters.length} Supporters</p>
+                    <p className="text-[8px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.45)" }}>{supporters.length} Supporters</p>
                   </div>
                 </div>
-                <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-red-500 rounded-full transition-all duration-1000" style={{ width: `${percent}%` }} />
+
+                {/* Neon progress bar */}
+                <div className="h-1 w-full rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+                  <div
+                    className="h-full rounded-full transition-all duration-1000"
+                    style={{
+                      width: `${percent}%`,
+                      background: "linear-gradient(90deg, #dc2626, #ff4444)",
+                      boxShadow: "0 0 8px rgba(220,38,38,0.9), 0 0 16px rgba(220,38,38,0.5)",
+                    }}
+                  />
                 </div>
 
                 {/* Quick-select amounts — 2 cols */}
                 <div className="grid grid-cols-2 gap-1.5">
-                  {PRESET_AMOUNTS.map(a => (
-                    <button
-                      key={a}
-                      onClick={() => setAmount(String(a))}
-                      className={`py-1.5 px-2 font-black border rounded transition-all text-left ${
-                        amount === String(a)
-                          ? "bg-red-600 border-red-600 text-white"
-                          : "bg-white border-gray-200 text-gray-800 active:bg-red-50"
-                      }`}
-                    >
-                      <span className="block text-xs">₹{a.toLocaleString("en-IN")}</span>
-                      <span className={`block text-[9px] font-medium ${amount === String(a) ? "text-red-100" : "text-gray-400"}`}>
-                        {a === 680 ? "1 family's groceries" : a === 1360 ? "2 families' groceries" : a === 3400 ? "5 families' groceries" : "10 families' groceries"}
-                      </span>
-                    </button>
-                  ))}
+                  {PRESET_AMOUNTS.map(a => {
+                    const sel = amount === String(a);
+                    return (
+                      <button
+                        key={a}
+                        onClick={() => setAmount(String(a))}
+                        className="py-1.5 px-2 font-black text-left transition-all duration-200"
+                        style={{
+                          borderRadius: "8px",
+                          border: sel ? "1px solid rgba(255,68,68,0.9)" : "1px solid rgba(255,255,255,0.12)",
+                          background: sel
+                            ? "linear-gradient(135deg, rgba(220,38,38,0.7), rgba(180,20,20,0.8))"
+                            : "rgba(255,255,255,0.06)",
+                          backdropFilter: "blur(8px)",
+                          boxShadow: sel ? "0 0 14px rgba(220,38,38,0.6), inset 0 0 10px rgba(255,68,68,0.1)" : "none",
+                          color: sel ? "#fff" : "rgba(255,255,255,0.8)",
+                        }}
+                      >
+                        <span className="block text-xs" style={{ textShadow: sel ? "0 0 8px rgba(255,150,150,0.8)" : "none" }}>₹{a.toLocaleString("en-IN")}</span>
+                        <span className="block text-[9px] font-medium" style={{ color: sel ? "rgba(255,200,200,0.85)" : "rgba(255,255,255,0.35)" }}>
+                          {a === 680 ? "1 family's groceries" : a === 1360 ? "2 families' groceries" : a === 3400 ? "5 families' groceries" : "10 families' groceries"}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
 
                 {/* Custom amount */}
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-black text-xs">₹</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 font-black text-xs" style={{ color: "rgba(255,100,100,0.8)" }}>₹</span>
                   <Input
                     type="number"
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
-                    className="pl-6 rounded border border-gray-200 focus:border-red-400 font-bold text-primary h-8 text-sm"
+                    className="pl-6 font-bold h-8 text-sm outline-none"
                     placeholder="Enter custom amount"
                     min="1"
+                    style={{
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(255,255,255,0.15)",
+                      borderRadius: "8px",
+                      color: "#fff",
+                      backdropFilter: "blur(8px)",
+                    }}
                   />
                 </div>
 
@@ -578,9 +619,16 @@ export default function CampaignDetail() {
                   type="text"
                   value={donorName}
                   onChange={e => setDonorName(e.target.value)}
-                  className="rounded border-2 border-gray-200 font-bold text-primary h-12"
+                  className="font-bold h-9 outline-none"
                   placeholder={want80G ? "Full Name (as per PAN)" : "Your Name (optional)"}
                   disabled={isAnon}
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    borderRadius: "8px",
+                    color: "#fff",
+                    backdropFilter: "blur(8px)",
+                  }}
                 />
 
                 {/* Email */}
@@ -588,22 +636,36 @@ export default function CampaignDetail() {
                   type="email"
                   value={donorEmail}
                   onChange={e => setDonorEmail(e.target.value)}
-                  className="rounded border-2 border-gray-200 font-bold text-primary h-12"
+                  className="font-bold h-9 outline-none"
                   placeholder="Email (optional)"
                   disabled={isAnon}
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    borderRadius: "8px",
+                    color: "#fff",
+                    backdropFilter: "blur(8px)",
+                  }}
                 />
 
                 {/* Phone */}
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.4)" }} />
                   <Input
                     type="tel"
                     value={donorPhone}
                     onChange={e => setDonorPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                    className="pl-9 rounded border-2 border-gray-200 font-bold text-primary h-12"
+                    className="pl-8 font-bold h-9 outline-none"
                     placeholder={want80G ? "Mobile (mandatory for 80G)" : "Mobile (optional)"}
                     disabled={isAnon}
                     maxLength={10}
+                    style={{
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(255,255,255,0.15)",
+                      borderRadius: "8px",
+                      color: "#fff",
+                      backdropFilter: "blur(8px)",
+                    }}
                   />
                 </div>
 
@@ -611,21 +673,31 @@ export default function CampaignDetail() {
                 {!isAnon && (
                   <div
                     onClick={() => setWant80G(!want80G)}
-                    className={`flex items-center gap-3 px-4 py-3 cursor-pointer border-2 transition-all duration-300 rounded ${
-                      want80G ? "border-amber-400 bg-amber-50" : "border-gray-200 bg-gray-50 active:bg-amber-50/40"
-                    }`}
+                    className="flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-all duration-300"
+                    style={{
+                      borderRadius: "8px",
+                      border: want80G ? "1px solid rgba(251,191,36,0.7)" : "1px solid rgba(255,255,255,0.12)",
+                      background: want80G ? "rgba(251,191,36,0.12)" : "rgba(255,255,255,0.05)",
+                      boxShadow: want80G ? "0 0 12px rgba(251,191,36,0.3)" : "none",
+                    }}
                   >
-                    <div className={`w-5 h-5 border-2 flex items-center justify-center flex-shrink-0 rounded-sm transition-all ${
-                      want80G ? "border-amber-500 bg-amber-500" : "border-gray-300"
-                    }`}>
-                      {want80G && <Check className="w-3 h-3 text-white" />}
+                    <div
+                      className="w-4 h-4 flex items-center justify-center flex-shrink-0 transition-all"
+                      style={{
+                        borderRadius: "4px",
+                        border: want80G ? "2px solid #fbbf24" : "2px solid rgba(255,255,255,0.3)",
+                        background: want80G ? "#fbbf24" : "transparent",
+                        boxShadow: want80G ? "0 0 8px rgba(251,191,36,0.6)" : "none",
+                      }}
+                    >
+                      {want80G && <Check className="w-2.5 h-2.5 text-black" />}
                     </div>
                     <div className="flex-1">
-                      <p className="text-xs font-black text-primary uppercase tracking-widest">
-                        <IndianRupee className="w-3 h-3 inline mr-1 text-amber-600" />
+                      <p className="text-xs font-black uppercase tracking-widest" style={{ color: want80G ? "#fbbf24" : "rgba(255,255,255,0.7)", textShadow: want80G ? "0 0 8px rgba(251,191,36,0.6)" : "none" }}>
+                        <IndianRupee className="w-3 h-3 inline mr-1" style={{ color: "#fbbf24" }} />
                         I want an 80G Tax Receipt
                       </p>
-                      <p className="text-[10px] text-gray-500 mt-0.5">
+                      <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>
                         Claim income tax deduction under Section 80G
                       </p>
                     </div>
@@ -642,57 +714,62 @@ export default function CampaignDetail() {
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="border-2 border-amber-300 bg-amber-50/60 p-4 space-y-3 rounded">
-                        <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest flex items-center gap-1">
+                      <div className="space-y-3 p-3" style={{ borderRadius: "8px", border: "1px solid rgba(251,191,36,0.3)", background: "rgba(251,191,36,0.06)" }}>
+                        <p className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1" style={{ color: "#fbbf24" }}>
                           <FileText className="w-3 h-3" /> 80G Receipt Details — all fields required
                         </p>
                         <div className="relative">
-                          <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-amber-600" />
+                          <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "#fbbf24" }} />
                           <Input
                             type="text"
                             value={donorPan}
                             onChange={e => setDonorPan(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10))}
-                            className="pl-8 rounded border-2 border-amber-300 font-bold text-primary h-11 bg-white uppercase tracking-widest"
+                            className="pl-8 font-bold h-9 uppercase tracking-widest"
                             placeholder="PAN Number (e.g. ABCDE1234F)"
                             maxLength={10}
+                            style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(251,191,36,0.4)", borderRadius: "6px", color: "#fff" }}
                           />
                         </div>
                         <div className="relative">
-                          <MapPin className="absolute left-3 top-3.5 w-3.5 h-3.5 text-amber-600" />
+                          <MapPin className="absolute left-3 top-3 w-3.5 h-3.5" style={{ color: "#fbbf24" }} />
                           <textarea
                             value={donorAddress}
                             onChange={e => setDonorAddress(e.target.value)}
-                            className="w-full pl-8 pr-3 py-2.5 border-2 border-amber-300 font-bold text-primary bg-white text-sm resize-none rounded outline-none"
+                            className="w-full pl-8 pr-3 py-2 font-bold text-sm resize-none outline-none"
                             placeholder="Full Address"
                             rows={2}
+                            style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(251,191,36,0.4)", borderRadius: "6px", color: "#fff" }}
                           />
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <div className="relative">
-                            <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-amber-600" />
+                            <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "#fbbf24" }} />
                             <Input
                               type="text"
                               value={donorCity}
                               onChange={e => setDonorCity(e.target.value)}
-                              className="pl-8 rounded border-2 border-amber-300 font-bold text-primary h-11 bg-white"
+                              className="pl-8 font-bold h-9"
                               placeholder="City"
+                              style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(251,191,36,0.4)", borderRadius: "6px", color: "#fff" }}
                             />
                           </div>
                           <Input
                             type="text"
                             value={donorState}
                             onChange={e => setDonorState(e.target.value)}
-                            className="rounded border-2 border-amber-300 font-bold text-primary h-11 bg-white"
+                            className="font-bold h-9"
                             placeholder="State"
+                            style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(251,191,36,0.4)", borderRadius: "6px", color: "#fff" }}
                           />
                         </div>
                         <Input
                           type="text"
                           value={donorPincode}
                           onChange={e => setDonorPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                          className="rounded border-2 border-amber-300 font-bold text-primary h-11 bg-white"
+                          className="font-bold h-9"
                           placeholder="PIN Code (6 digits)"
                           maxLength={6}
+                          style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(251,191,36,0.4)", borderRadius: "6px", color: "#fff" }}
                         />
                       </div>
                     </motion.div>
@@ -700,44 +777,69 @@ export default function CampaignDetail() {
                 </AnimatePresence>
 
                 {/* Anonymous toggle */}
-                <label className="flex items-center gap-3 cursor-pointer group">
+                <label className="flex items-center gap-3 cursor-pointer">
                   <div
                     onClick={() => { setIsAnon(!isAnon); if (!isAnon) setWant80G(false); }}
-                    className={`w-4 h-4 border-2 flex items-center justify-center transition-all rounded-sm ${isAnon ? "border-primary bg-primary" : "border-gray-300"}`}
+                    className="w-4 h-4 flex items-center justify-center transition-all"
+                    style={{
+                      borderRadius: "4px",
+                      border: isAnon ? "2px solid rgba(255,100,100,0.8)" : "2px solid rgba(255,255,255,0.25)",
+                      background: isAnon ? "rgba(220,38,38,0.7)" : "transparent",
+                      boxShadow: isAnon ? "0 0 6px rgba(220,38,38,0.5)" : "none",
+                    }}
                   >
                     {isAnon && <Check className="w-2.5 h-2.5 text-white" />}
                   </div>
-                  <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Donate Anonymously</span>
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.45)" }}>Donate Anonymously</span>
                 </label>
 
                 {/* Donate button */}
-                <Button
+                <button
                   onClick={handleDonate}
                   disabled={donating || !amount || Number(amount) < 1}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-[0.2em] rounded-none py-7 text-base shadow-lg shadow-red-200"
+                  className="w-full font-black uppercase tracking-[0.2em] text-sm transition-all duration-200 disabled:opacity-50"
+                  style={{
+                    padding: "14px 0",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(255,68,68,0.7)",
+                    background: "linear-gradient(135deg, rgba(220,38,38,0.9), rgba(180,20,20,0.95))",
+                    color: "#fff",
+                    boxShadow: "0 0 20px rgba(220,38,38,0.5), 0 0 40px rgba(220,38,38,0.2), inset 0 1px 0 rgba(255,255,255,0.15)",
+                    textShadow: "0 0 10px rgba(255,150,150,0.6)",
+                  }}
                 >
                   {donating ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin mx-auto" />
                   ) : (
                     <span className="flex items-center justify-center gap-2">
-                      <Heart className="w-5 h-5" />
+                      <Heart className="w-4 h-4" />
                       Donate ₹{Number(amount || 0).toLocaleString("en-IN")} Now
                     </span>
                   )}
-                </Button>
+                </button>
 
                 {/* Trust badges */}
-                <div className="grid grid-cols-3 gap-2 pt-1">
+                <div className="grid grid-cols-3 gap-1.5">
                   {[
-                    { icon: <CheckCircle className="w-4 h-4 text-green-600" />, label: "80G Receipt" },
-                    { icon: <Lock className="w-4 h-4 text-blue-600" />, label: "Secure Pay" },
-                    { icon: <Shield className="w-4 h-4 text-primary" />, label: "Verified NGO" },
+                    { icon: <CheckCircle className="w-3.5 h-3.5" style={{ color: "#4ade80" }} />, label: "80G Receipt", glow: "rgba(74,222,128,0.3)" },
+                    { icon: <Lock className="w-3.5 h-3.5" style={{ color: "#60a5fa" }} />, label: "Secure Pay", glow: "rgba(96,165,250,0.3)" },
+                    { icon: <Shield className="w-3.5 h-3.5" style={{ color: "#f87171" }} />, label: "Verified NGO", glow: "rgba(248,113,113,0.3)" },
                   ].map(b => (
-                    <div key={b.label} className="flex flex-col items-center gap-1 bg-gray-50 rounded py-2 px-1">
+                    <div
+                      key={b.label}
+                      className="flex flex-col items-center gap-1 py-2 px-1"
+                      style={{
+                        borderRadius: "6px",
+                        border: `1px solid rgba(255,255,255,0.1)`,
+                        background: "rgba(255,255,255,0.04)",
+                        boxShadow: `0 0 8px ${b.glow}`,
+                      }}
+                    >
                       {b.icon}
-                      <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest text-center leading-tight">{b.label}</span>
+                      <span className="text-[8px] font-black uppercase tracking-widest text-center leading-tight" style={{ color: "rgba(255,255,255,0.5)" }}>{b.label}</span>
                     </div>
                   ))}
+                </div>
                 </div>
               </motion.div>
             )}
