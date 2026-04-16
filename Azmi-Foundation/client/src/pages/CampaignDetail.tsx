@@ -374,34 +374,34 @@ export default function CampaignDetail() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-red-600 text-white py-3 px-4"
         >
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-3 text-center">
-            <span className="inline-flex items-center gap-1.5 text-sm sm:text-base font-black uppercase tracking-tight">
-              <AlertTriangle className="w-4 h-4 shrink-0" /> 846 FAMILIES NEED GROCERIES — TIME LEFT:
+          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-center">
+            <span className="inline-flex items-center gap-1 text-[11px] sm:text-sm font-black uppercase tracking-tight">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> 846 Families Need Groceries — Time Left:
             </span>
 
             {/* Live countdown blocks */}
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="flex items-center gap-0.5 shrink-0">
               {[
-                { value: countdown.days,    label: "Days" },
-                { value: countdown.hours,   label: "Hrs"  },
-                { value: countdown.minutes, label: "Min"  },
-                { value: countdown.seconds, label: "Sec"  },
+                { value: countdown.days,    label: "D" },
+                { value: countdown.hours,   label: "H" },
+                { value: countdown.minutes, label: "M" },
+                { value: countdown.seconds, label: "S" },
               ].map(({ value, label }, i) => (
-                <div key={label} className="flex items-center gap-1">
-                  <div className="bg-white/20 backdrop-blur px-2 py-1 min-w-[44px] text-center">
-                    <span className="text-xl font-black tabular-nums leading-none block">
+                <div key={label} className="flex items-center gap-0.5">
+                  <div className="bg-white/20 backdrop-blur px-1.5 py-0.5 min-w-[30px] text-center">
+                    <span className="text-sm font-black tabular-nums leading-none block">
                       {String(value).padStart(2, "0")}
                     </span>
-                    <span className="text-[9px] font-bold uppercase tracking-widest opacity-80">{label}</span>
+                    <span className="text-[8px] font-bold uppercase opacity-80">{label}</span>
                   </div>
-                  {i < 3 && <span className="text-xl font-black opacity-60">:</span>}
+                  {i < 3 && <span className="text-xs font-black opacity-60 mx-0.5">:</span>}
                 </div>
               ))}
             </div>
 
             <a
               href="#mobile-donate"
-              className="shrink-0 bg-white text-red-600 font-black text-xs uppercase tracking-widest px-4 py-2 hover:bg-red-50 transition-colors"
+              className="shrink-0 bg-white text-red-600 font-black text-[10px] uppercase tracking-widest px-3 py-1.5 hover:bg-red-50 transition-colors"
             >
               Donate Now →
             </a>
