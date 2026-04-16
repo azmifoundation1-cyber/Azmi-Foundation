@@ -429,27 +429,65 @@ export default function CampaignDetail() {
               )}
             </motion.div>
 
-            {/* Hero Image */}
+            {/* Hero — Video (campaign 3) or Image (others) */}
             <motion.div
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative rounded-none overflow-hidden aspect-video bg-gray-200"
+              className="relative rounded-none overflow-hidden aspect-video bg-gray-900"
             >
-              <img
-                src={campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"}
-                alt={campaign.title}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/80 to-transparent p-6">
-                <div className="flex items-center gap-2">
-                  <span className="bg-accent text-white text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1">
-                    Active Campaign
-                  </span>
-                  <span className="bg-white/20 text-white text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1 backdrop-blur-sm">
-                    Ahmedabad, Gujarat
-                  </span>
-                </div>
-              </div>
+              {id === 3 && story.localVideo ? (
+                <>
+                  <video
+                    src={story.localVideo}
+                    controls
+                    poster={story.images[0]}
+                    className="w-full h-full object-contain"
+                    preload="metadata"
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+
+                  {/* Milaap watermark cover — blurred Azmi branding overlay */}
+                  <div
+                    className="absolute top-0 left-0 flex items-center gap-2 px-2.5 py-1.5 pointer-events-none"
+                    style={{
+                      backdropFilter: "blur(10px)",
+                      WebkitBackdropFilter: "blur(10px)",
+                      background: "rgba(10,10,30,0.45)",
+                      minWidth: "138px",
+                      height: "46px",
+                    }}
+                  >
+                    <img
+                      src="/logo.png"
+                      alt="Azmi Foundation"
+                      className="h-8 w-auto object-contain shrink-0"
+                      style={{ filter: "brightness(0) invert(1)" }}
+                    />
+                    <span className="text-white font-black text-[9px] uppercase tracking-widest leading-tight whitespace-nowrap">
+                      AZMI<br />FOUNDATION
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <img
+                    src={campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"}
+                    alt={campaign.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/80 to-transparent p-6">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-accent text-white text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1">
+                        Active Campaign
+                      </span>
+                      <span className="bg-white/20 text-white text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1 backdrop-blur-sm">
+                        Ahmedabad, Gujarat
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
             </motion.div>
 
             {/* Share Row */}
@@ -513,7 +551,8 @@ export default function CampaignDetail() {
                       <div key={i} className="space-y-6">
                         <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{para}</p>
 
-                        {i === 0 && story.localVideo && (
+                        {/* Video moved to top hero for campaign 3 — not shown here */}
+                        {i === 0 && story.localVideo && id !== 3 && (
                           <div className="my-4 rounded-none overflow-hidden bg-black">
                             <video
                               src={story.localVideo}
