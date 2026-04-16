@@ -1606,27 +1606,6 @@ export default function CampaignDetail() {
         </section>
       )}
 
-      {/* ── STICKY MOBILE BOTTOM BAR — campaign 3 only ── */}
-      {id === 3 && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
-          <div className="bg-red-600 flex items-center gap-3 px-4 py-3 shadow-2xl shadow-black/30">
-            <div className="flex-1 min-w-0">
-              <p className="text-white font-black text-sm leading-tight truncate">846 families need groceries</p>
-              <p className="text-red-200 text-[10px] font-bold tabular-nums flex items-center gap-1">
-                <Clock className="w-3 h-3 shrink-0" />
-                {countdown.expired ? "Campaign ended" : `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h ${String(countdown.minutes).padStart(2,"0")}m left`}
-              </p>
-            </div>
-            <a
-              href="#mobile-donate"
-              className="shrink-0 bg-white text-red-600 font-black text-sm uppercase tracking-wider px-5 py-3 rounded shadow active:scale-95 transition-transform"
-            >
-              DONATE NOW
-            </a>
-          </div>
-        </div>
-      )}
-
       <Footer />
     </div>
   );
