@@ -409,20 +409,32 @@ export default function CampaignDetail() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-red-600 text-white py-1.5 px-3"
+          className="relative overflow-hidden glass-panel-neon glass-shimmer py-2 px-3"
+          style={{
+            background: "linear-gradient(135deg, rgba(4,0,15,0.97) 0%, rgba(12,0,28,0.96) 40%, rgba(6,0,20,0.97) 100%)",
+            backdropFilter: "blur(32px)",
+            WebkitBackdropFilter: "blur(32px)",
+            borderTop: "none",
+            borderBottom: "1px solid rgba(220,38,38,0.35)",
+          }}
         >
-          <div className="max-w-7xl mx-auto flex flex-nowrap items-center justify-center gap-x-2 text-center">
-            <span
-              className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-tight shrink-0"
-              style={{
+          {/* Orb – crimson left */}
+          <div className="glass-orb-1 absolute pointer-events-none" style={{ top: "-20px", left: "-10px", width: "80px", height: "80px", borderRadius: "50%", background: "radial-gradient(circle, rgba(220,38,38,0.5) 0%, transparent 70%)", filter: "blur(14px)" }} />
+          {/* Orb – gold right */}
+          <div className="glass-orb-2 absolute pointer-events-none" style={{ top: "-15px", right: "-10px", width: "70px", height: "70px", borderRadius: "50%", background: "radial-gradient(circle, rgba(212,175,55,0.3) 0%, transparent 70%)", filter: "blur(12px)" }} />
+
+          <div className="relative max-w-7xl mx-auto flex flex-nowrap items-center justify-center gap-x-2 text-center">
+            {/* Label */}
+            <span className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-tight shrink-0">
+              <AlertTriangle className="w-3 h-3 shrink-0" style={{ color: "#d4af37", filter: "drop-shadow(0 0 4px rgba(212,175,55,0.8))" }} />
+              <span style={{
                 background: "linear-gradient(90deg, #7c0000, #dc2626, #ff6b6b, #d4af37)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
-                filter: "drop-shadow(0 0 6px rgba(220,38,38,0.6))",
-              }}
-            >
-              <AlertTriangle className="w-3 h-3 shrink-0" style={{ color: "#d4af37", filter: "drop-shadow(0 0 4px #d4af37)", WebkitTextFillColor: "#d4af37" }} /> 846 Families — Time Left:
+              }}>
+                846 Families — Time Left:
+              </span>
             </span>
 
             {/* Live countdown blocks */}
@@ -434,20 +446,36 @@ export default function CampaignDetail() {
                 { value: countdown.seconds, label: "S" },
               ].map(({ value, label }, i) => (
                 <div key={label} className="flex items-center gap-2">
-                  <div className="bg-white/20 backdrop-blur px-1.5 py-0.5 min-w-[26px] text-center">
-                    <span className="text-sm font-black tabular-nums leading-none block">
+                  <div
+                    className="px-1.5 py-0.5 min-w-[26px] text-center"
+                    style={{
+                      borderRadius: "4px",
+                      border: "1px solid rgba(220,38,38,0.4)",
+                      background: "rgba(220,38,38,0.15)",
+                      backdropFilter: "blur(8px)",
+                      boxShadow: "0 0 8px rgba(220,38,38,0.2)",
+                    }}
+                  >
+                    <span className="text-sm font-black tabular-nums leading-none block text-white">
                       {String(value).padStart(2, "0")}
                     </span>
-                    <span className="text-[8px] font-bold uppercase opacity-80">{label}</span>
+                    <span className="text-[8px] font-bold uppercase" style={{ color: "rgba(212,175,55,0.8)" }}>{label}</span>
                   </div>
-                  {i < 3 && <span className="text-xs font-black opacity-60">:</span>}
+                  {i < 3 && <span className="text-xs font-black" style={{ color: "rgba(220,38,38,0.6)" }}>:</span>}
                 </div>
               ))}
             </div>
 
             <a
               href="#mobile-donate"
-              className="shrink-0 bg-white text-red-600 font-black text-[10px] uppercase tracking-widest px-2.5 py-1 hover:bg-red-50 transition-colors"
+              className="shrink-0 font-black text-[10px] uppercase tracking-widest px-2.5 py-1 transition-all duration-200"
+              style={{
+                borderRadius: "4px",
+                border: "1px solid rgba(220,38,38,0.7)",
+                background: "linear-gradient(135deg, rgba(200,20,20,0.85), rgba(140,0,0,0.9))",
+                color: "#fff",
+                boxShadow: "0 0 12px rgba(220,38,38,0.5)",
+              }}
             >
               Donate →
             </a>
