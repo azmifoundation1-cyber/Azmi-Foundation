@@ -21,7 +21,7 @@ declare global {
   }
 }
 
-const PRESET_AMOUNTS = [500, 1000, 2000, 5000];
+const PRESET_AMOUNTS = [680, 1360, 3400, 6800];
 
 const PAYMENT_ICONS = [
   { name: "GPay", color: "#4285F4", label: "G" },
@@ -85,7 +85,7 @@ const CAMPAIGN_STORIES: Record<number, {
 export default function CampaignDetail() {
   const [, params] = useRoute("/campaigns/:id");
   const id = Number(params?.id);
-  const [amount, setAmount] = useState("1000");
+  const [amount, setAmount] = useState("1360");
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
   const [donorPhone, setDonorPhone] = useState("");
@@ -456,7 +456,8 @@ export default function CampaignDetail() {
                     <img
                       src="/logo.png"
                       alt="Azmi Foundation"
-                      className="h-8 w-auto object-contain shrink-0 brightness-0 invert"
+                      className="h-8 w-auto object-contain shrink-0"
+                      style={{ filter: "invert(1) drop-shadow(0 0 1px rgba(255,255,255,0.5))" }}
                     />
                     <span className="text-white font-black text-[9px] uppercase tracking-widest leading-tight whitespace-nowrap">
                       AZMI<br />FOUNDATION
@@ -769,7 +770,7 @@ export default function CampaignDetail() {
                             : "border-gray-200 text-gray-600 hover:border-primary hover:text-primary"
                         }`}
                       >
-                        ₹{a >= 1000 ? `${a/1000}K` : a}
+                        ₹{a.toLocaleString("en-IN")}
                       </button>
                     ))}
                   </div>
