@@ -8,7 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Heart, Share2, Users, CheckCircle, ShieldCheck,
   ChevronRight, Loader2, ArrowLeft, Copy, Check,
-  Clock, Bell, Calendar, Facebook, Twitter, FileText, Download, IndianRupee, Phone, MapPin, Building2, Hash
+  Clock, Bell, Calendar, Facebook, Twitter, FileText, Download, IndianRupee, Phone, MapPin, Building2, Hash,
+  AlertTriangle, Lock, Shield
 } from "lucide-react";
 import type { Campaign, Donation, CampaignUpdate } from "@shared/schema";
 import { useState, useEffect } from "react";
@@ -374,8 +375,8 @@ export default function CampaignDetail() {
           className="bg-red-600 text-white py-3 px-4"
         >
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-3 text-center">
-            <span className="text-sm sm:text-base font-black uppercase tracking-tight">
-              ⚠️ 846 FAMILIES NEED GROCERIES — TIME LEFT:
+            <span className="inline-flex items-center gap-1.5 text-sm sm:text-base font-black uppercase tracking-tight">
+              <AlertTriangle className="w-4 h-4 shrink-0" /> 846 FAMILIES NEED GROCERIES — TIME LEFT:
             </span>
 
             {/* Live countdown blocks */}
@@ -718,12 +719,12 @@ export default function CampaignDetail() {
                 {/* Trust badges */}
                 <div className="grid grid-cols-3 gap-2 pt-1">
                   {[
-                    { icon: "✅", label: "80G Receipt" },
-                    { icon: "🔒", label: "Secure Pay" },
-                    { icon: "🛡️", label: "Verified NGO" },
+                    { icon: <CheckCircle className="w-4 h-4 text-green-600" />, label: "80G Receipt" },
+                    { icon: <Lock className="w-4 h-4 text-blue-600" />, label: "Secure Pay" },
+                    { icon: <Shield className="w-4 h-4 text-primary" />, label: "Verified NGO" },
                   ].map(b => (
                     <div key={b.label} className="flex flex-col items-center gap-1 bg-gray-50 rounded py-2 px-1">
-                      <span className="text-base">{b.icon}</span>
+                      {b.icon}
                       <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest text-center leading-tight">{b.label}</span>
                     </div>
                   ))}
@@ -1176,8 +1177,8 @@ export default function CampaignDetail() {
 
                   {/* Urgency countdown near button — campaign 3 only */}
                   {id === 3 && (
-                    <p className="text-center text-[10px] font-bold text-red-600 uppercase tracking-widest tabular-nums">
-                      ⏳{" "}
+                    <p className="text-center text-[10px] font-bold text-red-600 uppercase tracking-widest tabular-nums flex items-center justify-center gap-1">
+                      <Clock className="w-3 h-3 shrink-0" />
                       {countdown.expired
                         ? "Campaign ended"
                         : `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h ${String(countdown.minutes).padStart(2,"0")}m ${String(countdown.seconds).padStart(2,"0")}s left — act now!`
@@ -1392,8 +1393,9 @@ export default function CampaignDetail() {
           <div className="bg-red-600 flex items-center gap-3 px-4 py-3 shadow-2xl shadow-black/30">
             <div className="flex-1 min-w-0">
               <p className="text-white font-black text-sm leading-tight truncate">846 families need groceries</p>
-              <p className="text-red-200 text-[10px] font-bold tabular-nums">
-                ⏳ {countdown.expired ? "Campaign ended" : `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h ${String(countdown.minutes).padStart(2,"0")}m left`}
+              <p className="text-red-200 text-[10px] font-bold tabular-nums flex items-center gap-1">
+                <Clock className="w-3 h-3 shrink-0" />
+                {countdown.expired ? "Campaign ended" : `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h ${String(countdown.minutes).padStart(2,"0")}m left`}
               </p>
             </div>
             <a
