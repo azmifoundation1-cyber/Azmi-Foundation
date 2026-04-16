@@ -399,7 +399,7 @@ export default function CampaignDetail() {
             </div>
 
             <a
-              href="#donate-widget"
+              href="#mobile-donate"
               className="shrink-0 bg-white text-red-600 font-black text-xs uppercase tracking-widest px-4 py-2 hover:bg-red-50 transition-colors"
             >
               Donate Now →
