@@ -517,43 +517,43 @@ export default function CampaignDetail() {
                 id="mobile-donate"
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="lg:hidden bg-white shadow-md border border-red-100 p-5 space-y-4"
+                className="lg:hidden bg-white shadow-md border border-red-100 p-3 space-y-3"
               >
                 {/* Progress summary */}
                 <div className="flex items-end justify-between">
                   <div>
-                    <p className="text-2xl font-black text-primary tracking-tighter">
+                    <p className="text-lg font-black text-primary tracking-tighter">
                       ₹{Number(campaign.currentAmount).toLocaleString("en-IN")}
                     </p>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
                       of ₹{Number(campaign.targetAmount).toLocaleString("en-IN")} goal
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-black text-red-600 tabular-nums">
+                    <p className="text-sm font-black text-red-600 tabular-nums">
                       {countdown.expired ? "Ended" : `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h left`}
                     </p>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{supporters.length} Supporters</p>
+                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{supporters.length} Supporters</p>
                   </div>
                 </div>
-                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
                   <div className="h-full bg-red-500 rounded-full transition-all duration-1000" style={{ width: `${percent}%` }} />
                 </div>
 
-                {/* Quick-select amounts — 2 cols, large tap targets */}
-                <div className="grid grid-cols-2 gap-3">
+                {/* Quick-select amounts — 2 cols */}
+                <div className="grid grid-cols-2 gap-2">
                   {PRESET_AMOUNTS.map(a => (
                     <button
                       key={a}
                       onClick={() => setAmount(String(a))}
-                      className={`py-4 px-3 font-black border-2 rounded transition-all text-left ${
+                      className={`py-2.5 px-2 font-black border-2 rounded transition-all text-left ${
                         amount === String(a)
                           ? "bg-red-600 border-red-600 text-white"
                           : "bg-white border-gray-200 text-gray-800 active:bg-red-50"
                       }`}
                     >
-                      <span className="block text-base">₹{a.toLocaleString("en-IN")}</span>
-                      <span className={`block text-[11px] font-medium mt-0.5 ${amount === String(a) ? "text-red-100" : "text-gray-400"}`}>
+                      <span className="block text-sm">₹{a.toLocaleString("en-IN")}</span>
+                      <span className={`block text-[10px] font-medium mt-0.5 ${amount === String(a) ? "text-red-100" : "text-gray-400"}`}>
                         {a === 680 ? "1 family's groceries" : a === 1360 ? "2 families' groceries" : a === 3400 ? "5 families' groceries" : "10 families' groceries"}
                       </span>
                     </button>
