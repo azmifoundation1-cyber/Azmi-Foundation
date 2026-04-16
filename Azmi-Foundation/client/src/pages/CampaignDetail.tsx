@@ -530,16 +530,16 @@ export default function CampaignDetail() {
                 {/* ── Dynamic floating aurora orbs ── */}
                 {/* Orb 1: Crimson red – top-left */}
                 <div className="glass-orb-1 absolute pointer-events-none" style={{ top: "-30px", left: "-20px", width: "120px", height: "120px", borderRadius: "50%", background: "radial-gradient(circle, rgba(220,38,38,0.55) 0%, rgba(180,0,60,0.2) 50%, transparent 70%)", filter: "blur(18px)" }} />
-                {/* Orb 2: Cyan/teal – top-right */}
-                <div className="glass-orb-2 absolute pointer-events-none" style={{ top: "-20px", right: "-15px", width: "100px", height: "100px", borderRadius: "50%", background: "radial-gradient(circle, rgba(0,200,220,0.4) 0%, rgba(0,120,200,0.15) 50%, transparent 70%)", filter: "blur(16px)" }} />
-                {/* Orb 3: Purple/violet – center */}
-                <div className="glass-orb-3 absolute pointer-events-none" style={{ top: "40%", left: "30%", width: "140px", height: "80px", borderRadius: "50%", background: "radial-gradient(circle, rgba(140,0,220,0.25) 0%, transparent 70%)", filter: "blur(20px)" }} />
-                {/* Orb 4: Pink – bottom-right */}
-                <div className="glass-orb-1 absolute pointer-events-none" style={{ bottom: "-25px", right: "-10px", width: "110px", height: "110px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,40,120,0.3) 0%, rgba(200,0,80,0.12) 50%, transparent 70%)", filter: "blur(18px)", animationDelay: "3.5s" }} />
-                {/* Orb 5: Orange/gold – bottom-left */}
-                <div className="glass-orb-2 absolute pointer-events-none" style={{ bottom: "10%", left: "-10px", width: "80px", height: "80px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,120,0,0.25) 0%, transparent 70%)", filter: "blur(14px)", animationDelay: "2s" }} />
+                {/* Orb 2: Deep gold – top-right */}
+                <div className="glass-orb-2 absolute pointer-events-none" style={{ top: "-20px", right: "-15px", width: "100px", height: "100px", borderRadius: "50%", background: "radial-gradient(circle, rgba(212,175,55,0.35) 0%, rgba(180,130,0,0.12) 50%, transparent 70%)", filter: "blur(16px)" }} />
+                {/* Orb 3: Dark maroon – center */}
+                <div className="glass-orb-3 absolute pointer-events-none" style={{ top: "40%", left: "30%", width: "140px", height: "80px", borderRadius: "50%", background: "radial-gradient(circle, rgba(150,0,20,0.2) 0%, transparent 70%)", filter: "blur(20px)" }} />
+                {/* Orb 4: Crimson – bottom-right */}
+                <div className="glass-orb-1 absolute pointer-events-none" style={{ bottom: "-25px", right: "-10px", width: "110px", height: "110px", borderRadius: "50%", background: "radial-gradient(circle, rgba(200,30,30,0.35) 0%, rgba(160,0,0,0.12) 50%, transparent 70%)", filter: "blur(18px)", animationDelay: "3.5s" }} />
+                {/* Orb 5: Warm amber/gold – bottom-left */}
+                <div className="glass-orb-2 absolute pointer-events-none" style={{ bottom: "10%", left: "-10px", width: "80px", height: "80px", borderRadius: "50%", background: "radial-gradient(circle, rgba(212,175,55,0.2) 0%, transparent 70%)", filter: "blur(14px)", animationDelay: "2s" }} />
                 {/* Glass surface highlight line */}
-                <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: "linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.18) 30%, rgba(0,220,255,0.15) 60%, transparent 95%)" }} />
+                <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: "linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.15) 30%, rgba(212,175,55,0.12) 60%, transparent 95%)" }} />
                 {/* Bottom depth line */}
                 <div className="absolute bottom-0 left-0 right-0 h-px pointer-events-none" style={{ background: "linear-gradient(90deg, transparent 10%, rgba(220,38,38,0.3) 50%, transparent 90%)" }} />
 
@@ -568,8 +568,8 @@ export default function CampaignDetail() {
                     className="h-full rounded-full transition-all duration-1000"
                     style={{
                       width: `${percent}%`,
-                      background: "linear-gradient(90deg, #7c0000, #dc2626, #ff6b6b, #00d4ff)",
-                      boxShadow: "0 0 10px rgba(220,38,38,1), 0 0 20px rgba(220,38,38,0.6), 0 0 35px rgba(0,180,255,0.2)",
+                      background: "linear-gradient(90deg, #7c0000, #dc2626, #ff6b6b, #d4af37)",
+                      boxShadow: "0 0 10px rgba(220,38,38,1), 0 0 20px rgba(220,38,38,0.6), 0 0 35px rgba(212,175,55,0.3)",
                     }}
                   />
                 </div>
@@ -834,9 +834,9 @@ export default function CampaignDetail() {
                 {/* Trust badges */}
                 <div className="grid grid-cols-3 gap-1.5">
                   {[
-                    { icon: <CheckCircle className="w-3.5 h-3.5" style={{ color: "#4ade80", filter: "drop-shadow(0 0 4px #4ade80)" }} />, label: "80G Receipt", glow: "rgba(74,222,128,0.25)", border: "rgba(74,222,128,0.3)" },
-                    { icon: <Lock className="w-3.5 h-3.5" style={{ color: "#00d4ff", filter: "drop-shadow(0 0 4px #00d4ff)" }} />, label: "Secure Pay", glow: "rgba(0,212,255,0.25)", border: "rgba(0,212,255,0.3)" },
-                    { icon: <Shield className="w-3.5 h-3.5" style={{ color: "#ff6b9d", filter: "drop-shadow(0 0 4px #ff6b9d)" }} />, label: "Verified NGO", glow: "rgba(255,107,157,0.25)", border: "rgba(255,107,157,0.3)" },
+                    { icon: <CheckCircle className="w-3.5 h-3.5" style={{ color: "#4ade80", filter: "drop-shadow(0 0 4px #4ade80)" }} />, label: "80G Receipt", glow: "rgba(74,222,128,0.2)", border: "rgba(74,222,128,0.25)" },
+                    { icon: <Lock className="w-3.5 h-3.5" style={{ color: "#d4af37", filter: "drop-shadow(0 0 4px #d4af37)" }} />, label: "Secure Pay", glow: "rgba(212,175,55,0.2)", border: "rgba(212,175,55,0.3)" },
+                    { icon: <Shield className="w-3.5 h-3.5" style={{ color: "#ff4444", filter: "drop-shadow(0 0 4px #ff4444)" }} />, label: "Verified NGO", glow: "rgba(220,38,38,0.25)", border: "rgba(220,38,38,0.35)" },
                   ].map(b => (
                     <div
                       key={b.label}
