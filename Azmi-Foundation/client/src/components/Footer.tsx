@@ -12,7 +12,7 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-6">
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="Azmi Foundation" className="h-14 w-auto brightness-0 invert" />
+              <img src="/logo.png" alt="Azmi Foundation" className="h-14 w-auto" style={{ filter: "invert(1) drop-shadow(0 0 1px rgba(255,255,255,0.3))" }} />
             </div>
             <p className="text-gray-400 text-sm leading-relaxed font-light tracking-wide uppercase">
               Promoting interfaith harmony and sustainable development through unity and compassion.
