@@ -447,13 +447,13 @@ export default function CampaignDetail() {
                     Your browser does not support the video tag.
                   </video>
 
-                  {/* Milaap watermark cover — blurred Azmi branding overlay */}
+                  {/* Milaap watermark cover — blurred Azmi branding overlay (top-right) */}
                   <div
-                    className="absolute top-0 left-0 flex items-center gap-2 px-2.5 py-1.5 pointer-events-none"
+                    className="absolute top-0 right-0 flex items-center gap-2 px-2.5 py-1.5 pointer-events-none"
                     style={{
-                      backdropFilter: "blur(10px)",
-                      WebkitBackdropFilter: "blur(10px)",
-                      background: "rgba(10,10,30,0.45)",
+                      backdropFilter: "blur(12px)",
+                      WebkitBackdropFilter: "blur(12px)",
+                      background: "rgba(10,10,30,0.5)",
                       minWidth: "138px",
                       height: "46px",
                     }}
