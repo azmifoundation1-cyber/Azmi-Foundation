@@ -562,14 +562,142 @@ export default function CampaignDetail() {
                   />
                 </div>
 
-                {/* Name (compact) */}
+                {/* Name */}
                 <Input
                   type="text"
                   value={donorName}
                   onChange={e => setDonorName(e.target.value)}
                   className="rounded border-2 border-gray-200 font-bold text-primary h-12"
-                  placeholder="Your Name (optional)"
+                  placeholder={want80G ? "Full Name (as per PAN)" : "Your Name (optional)"}
+                  disabled={isAnon}
                 />
+
+                {/* Email */}
+                <Input
+                  type="email"
+                  value={donorEmail}
+                  onChange={e => setDonorEmail(e.target.value)}
+                  className="rounded border-2 border-gray-200 font-bold text-primary h-12"
+                  placeholder="Email (optional)"
+                  disabled={isAnon}
+                />
+
+                {/* Phone */}
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    type="tel"
+                    value={donorPhone}
+                    onChange={e => setDonorPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                    className="pl-9 rounded border-2 border-gray-200 font-bold text-primary h-12"
+                    placeholder={want80G ? "Mobile (mandatory for 80G)" : "Mobile (optional)"}
+                    disabled={isAnon}
+                    maxLength={10}
+                  />
+                </div>
+
+                {/* 80G Toggle */}
+                {!isAnon && (
+                  <div
+                    onClick={() => setWant80G(!want80G)}
+                    className={`flex items-center gap-3 px-4 py-3 cursor-pointer border-2 transition-all duration-300 rounded ${
+                      want80G ? "border-amber-400 bg-amber-50" : "border-gray-200 bg-gray-50 active:bg-amber-50/40"
+                    }`}
+                  >
+                    <div className={`w-5 h-5 border-2 flex items-center justify-center flex-shrink-0 rounded-sm transition-all ${
+                      want80G ? "border-amber-500 bg-amber-500" : "border-gray-300"
+                    }`}>
+                      {want80G && <Check className="w-3 h-3 text-white" />}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs font-black text-primary uppercase tracking-widest">
+                        <IndianRupee className="w-3 h-3 inline mr-1 text-amber-600" />
+                        I want an 80G Tax Receipt
+                      </p>
+                      <p className="text-[10px] text-gray-500 mt-0.5">
+                        Claim income tax deduction under Section 80G
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* 80G Fields */}
+                <AnimatePresence>
+                  {want80G && !isAnon && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="border-2 border-amber-300 bg-amber-50/60 p-4 space-y-3 rounded">
+                        <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest flex items-center gap-1">
+                          <FileText className="w-3 h-3" /> 80G Receipt Details — all fields required
+                        </p>
+                        <div className="relative">
+                          <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-amber-600" />
+                          <Input
+                            type="text"
+                            value={donorPan}
+                            onChange={e => setDonorPan(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10))}
+                            className="pl-8 rounded border-2 border-amber-300 font-bold text-primary h-11 bg-white uppercase tracking-widest"
+                            placeholder="PAN Number (e.g. ABCDE1234F)"
+                            maxLength={10}
+                          />
+                        </div>
+                        <div className="relative">
+                          <MapPin className="absolute left-3 top-3.5 w-3.5 h-3.5 text-amber-600" />
+                          <textarea
+                            value={donorAddress}
+                            onChange={e => setDonorAddress(e.target.value)}
+                            className="w-full pl-8 pr-3 py-2.5 border-2 border-amber-300 font-bold text-primary bg-white text-sm resize-none rounded outline-none"
+                            placeholder="Full Address"
+                            rows={2}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="relative">
+                            <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-amber-600" />
+                            <Input
+                              type="text"
+                              value={donorCity}
+                              onChange={e => setDonorCity(e.target.value)}
+                              className="pl-8 rounded border-2 border-amber-300 font-bold text-primary h-11 bg-white"
+                              placeholder="City"
+                            />
+                          </div>
+                          <Input
+                            type="text"
+                            value={donorState}
+                            onChange={e => setDonorState(e.target.value)}
+                            className="rounded border-2 border-amber-300 font-bold text-primary h-11 bg-white"
+                            placeholder="State"
+                          />
+                        </div>
+                        <Input
+                          type="text"
+                          value={donorPincode}
+                          onChange={e => setDonorPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                          className="rounded border-2 border-amber-300 font-bold text-primary h-11 bg-white"
+                          placeholder="PIN Code (6 digits)"
+                          maxLength={6}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Anonymous toggle */}
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <div
+                    onClick={() => { setIsAnon(!isAnon); if (!isAnon) setWant80G(false); }}
+                    className={`w-4 h-4 border-2 flex items-center justify-center transition-all rounded-sm ${isAnon ? "border-primary bg-primary" : "border-gray-300"}`}
+                  >
+                    {isAnon && <Check className="w-2.5 h-2.5 text-white" />}
+                  </div>
+                  <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Donate Anonymously</span>
+                </label>
 
                 {/* Donate button */}
                 <Button
