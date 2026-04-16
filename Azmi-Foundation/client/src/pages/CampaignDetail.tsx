@@ -415,13 +415,13 @@ export default function CampaignDetail() {
             backdropFilter: "blur(32px)",
             WebkitBackdropFilter: "blur(32px)",
             borderTop: "none",
-            borderBottom: "1px solid rgba(220,38,38,0.35)",
+            borderBottom: "1px solid rgba(200,200,215,0.25)",
           }}
         >
-          {/* Orb – crimson left */}
-          <div className="glass-orb-1 absolute pointer-events-none" style={{ top: "-20px", left: "-10px", width: "80px", height: "80px", borderRadius: "50%", background: "radial-gradient(circle, rgba(220,38,38,0.5) 0%, transparent 70%)", filter: "blur(14px)" }} />
-          {/* Orb – gold right */}
-          <div className="glass-orb-2 absolute pointer-events-none" style={{ top: "-15px", right: "-10px", width: "70px", height: "70px", borderRadius: "50%", background: "radial-gradient(circle, rgba(212,175,55,0.3) 0%, transparent 70%)", filter: "blur(12px)" }} />
+          {/* Orb – silver left */}
+          <div className="glass-orb-1 absolute pointer-events-none" style={{ top: "-20px", left: "-10px", width: "80px", height: "80px", borderRadius: "50%", background: "radial-gradient(circle, rgba(200,200,220,0.35) 0%, transparent 70%)", filter: "blur(14px)" }} />
+          {/* Orb – platinum right */}
+          <div className="glass-orb-2 absolute pointer-events-none" style={{ top: "-15px", right: "-10px", width: "70px", height: "70px", borderRadius: "50%", background: "radial-gradient(circle, rgba(210,210,225,0.25) 0%, transparent 70%)", filter: "blur(12px)" }} />
 
           <div className="relative max-w-7xl mx-auto space-y-1.5 px-1">
             {/* Row 1: Headline + CTA */}
@@ -447,10 +447,10 @@ export default function CampaignDetail() {
                 className="shrink-0 font-black text-[10px] uppercase tracking-widest px-3 py-1.5 transition-all duration-200 whitespace-nowrap"
                 style={{
                   borderRadius: "5px",
-                  border: "1px solid rgba(220,38,38,0.75)",
+                  border: "1px solid rgba(210,210,225,0.4)",
                   background: "linear-gradient(135deg, #c01414, #8a0000)",
                   color: "#fff",
-                  boxShadow: "0 0 14px rgba(220,38,38,0.55), inset 0 1px 0 rgba(255,255,255,0.1)",
+                  boxShadow: "0 0 14px rgba(200,200,220,0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
                   textShadow: "0 1px 2px rgba(0,0,0,0.5)",
                 }}
               >
@@ -478,9 +478,9 @@ export default function CampaignDetail() {
                       className="flex flex-col items-center px-2 py-0.5 min-w-[32px]"
                       style={{
                         borderRadius: "5px",
-                        border: "1px solid rgba(212,175,55,0.25)",
-                        background: "rgba(212,175,55,0.07)",
-                        boxShadow: "0 0 6px rgba(212,175,55,0.12)",
+                        border: "1px solid rgba(200,200,215,0.25)",
+                        background: "rgba(200,200,215,0.06)",
+                        boxShadow: "0 0 6px rgba(200,200,215,0.12)",
                       }}
                     >
                       <span
@@ -494,7 +494,7 @@ export default function CampaignDetail() {
                       </span>
                       <span
                         className="text-[7px] font-semibold uppercase tracking-wider mt-0.5"
-                        style={{ color: "rgba(212,175,55,0.75)" }}
+                        style={{ color: "rgba(200,200,215,0.6)" }}
                       >
                         {label}
                       </span>
@@ -502,7 +502,7 @@ export default function CampaignDetail() {
                     {i < 3 && (
                       <span
                         className="text-xs font-black pb-2"
-                        style={{ color: "rgba(220,38,38,0.5)" }}
+                        style={{ color: "rgba(200,200,215,0.4)" }}
                       >
                         :
                       </span>
@@ -591,32 +591,32 @@ export default function CampaignDetail() {
                   background: "linear-gradient(135deg, rgba(4,0,15,0.97) 0%, rgba(12,0,28,0.96) 40%, rgba(6,0,20,0.97) 100%)",
                   backdropFilter: "blur(32px)",
                   WebkitBackdropFilter: "blur(32px)",
-                  border: "1px solid rgba(220,38,38,0.45)",
+                  border: "1px solid rgba(200,200,215,0.3)",
                   borderRadius: "16px",
                   padding: "14px",
                 }}
               >
                 {/* ── Dynamic floating aurora orbs ── */}
-                {/* Orb 1: Crimson red – top-left */}
-                <div className="glass-orb-1 absolute pointer-events-none" style={{ top: "-30px", left: "-20px", width: "120px", height: "120px", borderRadius: "50%", background: "radial-gradient(circle, rgba(220,38,38,0.55) 0%, rgba(180,0,60,0.2) 50%, transparent 70%)", filter: "blur(18px)" }} />
-                {/* Orb 2: Deep gold – top-right */}
-                <div className="glass-orb-2 absolute pointer-events-none" style={{ top: "-20px", right: "-15px", width: "100px", height: "100px", borderRadius: "50%", background: "radial-gradient(circle, rgba(212,175,55,0.35) 0%, rgba(180,130,0,0.12) 50%, transparent 70%)", filter: "blur(16px)" }} />
-                {/* Orb 3: Dark maroon – center */}
-                <div className="glass-orb-3 absolute pointer-events-none" style={{ top: "40%", left: "30%", width: "140px", height: "80px", borderRadius: "50%", background: "radial-gradient(circle, rgba(150,0,20,0.2) 0%, transparent 70%)", filter: "blur(20px)" }} />
-                {/* Orb 4: Crimson – bottom-right */}
-                <div className="glass-orb-1 absolute pointer-events-none" style={{ bottom: "-25px", right: "-10px", width: "110px", height: "110px", borderRadius: "50%", background: "radial-gradient(circle, rgba(200,30,30,0.35) 0%, rgba(160,0,0,0.12) 50%, transparent 70%)", filter: "blur(18px)", animationDelay: "3.5s" }} />
-                {/* Orb 5: Warm amber/gold – bottom-left */}
-                <div className="glass-orb-2 absolute pointer-events-none" style={{ bottom: "10%", left: "-10px", width: "80px", height: "80px", borderRadius: "50%", background: "radial-gradient(circle, rgba(212,175,55,0.2) 0%, transparent 70%)", filter: "blur(14px)", animationDelay: "2s" }} />
+                {/* Orb 1: Silver – top-left */}
+                <div className="glass-orb-1 absolute pointer-events-none" style={{ top: "-30px", left: "-20px", width: "120px", height: "120px", borderRadius: "50%", background: "radial-gradient(circle, rgba(200,200,220,0.4) 0%, rgba(150,150,170,0.12) 50%, transparent 70%)", filter: "blur(18px)" }} />
+                {/* Orb 2: Platinum – top-right */}
+                <div className="glass-orb-2 absolute pointer-events-none" style={{ top: "-20px", right: "-15px", width: "100px", height: "100px", borderRadius: "50%", background: "radial-gradient(circle, rgba(210,210,225,0.3) 0%, rgba(170,170,190,0.1) 50%, transparent 70%)", filter: "blur(16px)" }} />
+                {/* Orb 3: Gunmetal – center */}
+                <div className="glass-orb-3 absolute pointer-events-none" style={{ top: "40%", left: "30%", width: "140px", height: "80px", borderRadius: "50%", background: "radial-gradient(circle, rgba(160,160,180,0.15) 0%, transparent 70%)", filter: "blur(20px)" }} />
+                {/* Orb 4: Silver – bottom-right */}
+                <div className="glass-orb-1 absolute pointer-events-none" style={{ bottom: "-25px", right: "-10px", width: "110px", height: "110px", borderRadius: "50%", background: "radial-gradient(circle, rgba(190,190,210,0.3) 0%, rgba(140,140,160,0.1) 50%, transparent 70%)", filter: "blur(18px)", animationDelay: "3.5s" }} />
+                {/* Orb 5: Cool grey – bottom-left */}
+                <div className="glass-orb-2 absolute pointer-events-none" style={{ bottom: "10%", left: "-10px", width: "80px", height: "80px", borderRadius: "50%", background: "radial-gradient(circle, rgba(180,180,200,0.18) 0%, transparent 70%)", filter: "blur(14px)", animationDelay: "2s" }} />
                 {/* Glass surface highlight line */}
-                <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: "linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.15) 30%, rgba(212,175,55,0.12) 60%, transparent 95%)" }} />
+                <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: "linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.2) 30%, rgba(220,220,235,0.15) 60%, transparent 95%)" }} />
                 {/* Bottom depth line */}
-                <div className="absolute bottom-0 left-0 right-0 h-px pointer-events-none" style={{ background: "linear-gradient(90deg, transparent 10%, rgba(220,38,38,0.3) 50%, transparent 90%)" }} />
+                <div className="absolute bottom-0 left-0 right-0 h-px pointer-events-none" style={{ background: "linear-gradient(90deg, transparent 10%, rgba(200,200,215,0.25) 50%, transparent 90%)" }} />
 
                 <div className="relative space-y-3">
                 {/* Progress summary */}
                 <div className="flex items-end justify-between">
                   <div>
-                    <p className="text-base font-black tracking-tighter" style={{ color: "#fff", textShadow: "0 0 12px rgba(255,100,100,0.8)" }}>
+                    <p className="text-base font-black tracking-tighter" style={{ color: "#fff", textShadow: "0 0 12px rgba(220,220,235,0.5)" }}>
                       ₹{Number(campaign.currentAmount).toLocaleString("en-IN")}
                     </p>
                     <p className="text-[8px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.45)" }}>
@@ -624,7 +624,7 @@ export default function CampaignDetail() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-black tabular-nums" style={{ color: "#ff4444", textShadow: "0 0 10px rgba(255,68,68,0.9)" }}>
+                    <p className="text-xs font-black tabular-nums" style={{ color: "rgba(220,220,235,0.9)", textShadow: "0 0 10px rgba(220,220,235,0.6)" }}>
                       {countdown.expired ? "Ended" : `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h left`}
                     </p>
                     <p className="text-[8px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.45)" }}>{supporters.length} Supporters</p>
@@ -637,8 +637,8 @@ export default function CampaignDetail() {
                     className="h-full rounded-full transition-all duration-1000"
                     style={{
                       width: `${percent}%`,
-                      background: "linear-gradient(90deg, #7c0000, #dc2626, #ff6b6b, #d4af37)",
-                      boxShadow: "0 0 10px rgba(220,38,38,1), 0 0 20px rgba(220,38,38,0.6), 0 0 35px rgba(212,175,55,0.3)",
+                      background: "linear-gradient(90deg, #333340, #888899, #c0c0d0, #e8e8f0)",
+                      boxShadow: "0 0 10px rgba(200,200,220,0.8), 0 0 20px rgba(200,200,220,0.4), 0 0 35px rgba(180,180,200,0.2)",
                     }}
                   />
                 </div>
@@ -654,21 +654,21 @@ export default function CampaignDetail() {
                         className="py-1.5 px-2 font-black text-left transition-all duration-300"
                         style={{
                           borderRadius: "10px",
-                          border: sel ? "1px solid rgba(255,80,80,0.9)" : "1px solid rgba(255,255,255,0.1)",
+                          border: sel ? "1px solid rgba(220,220,235,0.7)" : "1px solid rgba(255,255,255,0.1)",
                           background: sel
-                            ? "linear-gradient(135deg, rgba(200,20,20,0.85) 0%, rgba(140,0,80,0.7) 60%, rgba(180,0,50,0.8) 100%)"
-                            : "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
+                            ? "linear-gradient(135deg, rgba(60,60,75,0.9) 0%, rgba(35,35,50,0.95) 60%, rgba(50,50,65,0.9) 100%)"
+                            : "linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
                           backdropFilter: "blur(12px)",
                           WebkitBackdropFilter: "blur(12px)",
                           boxShadow: sel
-                            ? "0 0 18px rgba(220,38,38,0.7), 0 0 40px rgba(180,0,80,0.25), inset 0 1px 0 rgba(255,150,150,0.2)"
+                            ? "0 0 18px rgba(200,200,220,0.5), 0 0 40px rgba(180,180,205,0.2), inset 0 1px 0 rgba(255,255,255,0.15)"
                             : "inset 0 1px 0 rgba(255,255,255,0.07)",
                           color: sel ? "#fff" : "rgba(255,255,255,0.75)",
                           transform: sel ? "scale(1.02)" : "scale(1)",
                         }}
                       >
-                        <span className="block text-xs" style={{ textShadow: sel ? "0 0 8px rgba(255,150,150,0.8)" : "none" }}>₹{a.toLocaleString("en-IN")}</span>
-                        <span className="block text-[9px] font-medium" style={{ color: sel ? "rgba(255,200,200,0.85)" : "rgba(255,255,255,0.35)" }}>
+                        <span className="block text-xs" style={{ textShadow: sel ? "0 0 8px rgba(220,220,235,0.7)" : "none" }}>₹{a.toLocaleString("en-IN")}</span>
+                        <span className="block text-[9px] font-medium" style={{ color: sel ? "rgba(210,210,230,0.85)" : "rgba(255,255,255,0.35)" }}>
                           {a === 680 ? "1 family's groceries" : a === 1360 ? "2 families' groceries" : a === 3400 ? "5 families' groceries" : "10 families' groceries"}
                         </span>
                       </button>
@@ -678,7 +678,7 @@ export default function CampaignDetail() {
 
                 {/* Custom amount */}
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 font-black text-xs" style={{ color: "rgba(255,100,100,0.8)" }}>₹</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 font-black text-xs" style={{ color: "rgba(200,200,215,0.7)" }}>₹</span>
                   <Input
                     type="number"
                     value={amount}
@@ -865,9 +865,9 @@ export default function CampaignDetail() {
                     className="w-4 h-4 flex items-center justify-center transition-all"
                     style={{
                       borderRadius: "4px",
-                      border: isAnon ? "2px solid rgba(255,100,100,0.8)" : "2px solid rgba(255,255,255,0.25)",
-                      background: isAnon ? "rgba(220,38,38,0.7)" : "transparent",
-                      boxShadow: isAnon ? "0 0 6px rgba(220,38,38,0.5)" : "none",
+                      border: isAnon ? "2px solid rgba(210,210,225,0.8)" : "2px solid rgba(255,255,255,0.25)",
+                      background: isAnon ? "rgba(160,160,180,0.5)" : "transparent",
+                      boxShadow: isAnon ? "0 0 6px rgba(200,200,220,0.5)" : "none",
                     }}
                   >
                     {isAnon && <Check className="w-2.5 h-2.5 text-white" />}
@@ -883,11 +883,11 @@ export default function CampaignDetail() {
                   style={{
                     padding: "14px 0",
                     borderRadius: "8px",
-                    border: "1px solid rgba(255,68,68,0.7)",
+                    border: "1px solid rgba(220,220,235,0.5)",
                     background: "linear-gradient(135deg, rgba(220,38,38,0.9), rgba(180,20,20,0.95))",
                     color: "#fff",
-                    boxShadow: "0 0 20px rgba(220,38,38,0.5), 0 0 40px rgba(220,38,38,0.2), inset 0 1px 0 rgba(255,255,255,0.15)",
-                    textShadow: "0 0 10px rgba(255,150,150,0.6)",
+                    boxShadow: "0 0 20px rgba(200,200,220,0.4), 0 0 40px rgba(180,180,205,0.15), inset 0 1px 0 rgba(255,255,255,0.2)",
+                    textShadow: "0 0 10px rgba(220,220,235,0.5)",
                   }}
                 >
                   {donating ? (
@@ -903,9 +903,9 @@ export default function CampaignDetail() {
                 {/* Trust badges */}
                 <div className="grid grid-cols-3 gap-1.5">
                   {[
-                    { icon: <CheckCircle className="w-3.5 h-3.5" style={{ color: "#4ade80", filter: "drop-shadow(0 0 4px #4ade80)" }} />, label: "80G Receipt", glow: "rgba(74,222,128,0.2)", border: "rgba(74,222,128,0.25)" },
-                    { icon: <Lock className="w-3.5 h-3.5" style={{ color: "#d4af37", filter: "drop-shadow(0 0 4px #d4af37)" }} />, label: "Secure Pay", glow: "rgba(212,175,55,0.2)", border: "rgba(212,175,55,0.3)" },
-                    { icon: <Shield className="w-3.5 h-3.5" style={{ color: "#ff4444", filter: "drop-shadow(0 0 4px #ff4444)" }} />, label: "Verified NGO", glow: "rgba(220,38,38,0.25)", border: "rgba(220,38,38,0.35)" },
+                    { icon: <CheckCircle className="w-3.5 h-3.5" style={{ color: "#d8d8e8", filter: "drop-shadow(0 0 5px rgba(220,220,235,0.9))" }} />, label: "80G Receipt", glow: "rgba(200,200,215,0.18)", border: "rgba(200,200,215,0.28)" },
+                    { icon: <Lock className="w-3.5 h-3.5" style={{ color: "#d8d8e8", filter: "drop-shadow(0 0 5px rgba(220,220,235,0.9))" }} />, label: "Secure Pay", glow: "rgba(200,200,215,0.18)", border: "rgba(200,200,215,0.28)" },
+                    { icon: <Shield className="w-3.5 h-3.5" style={{ color: "#d8d8e8", filter: "drop-shadow(0 0 5px rgba(220,220,235,0.9))" }} />, label: "Verified NGO", glow: "rgba(200,200,215,0.18)", border: "rgba(200,200,215,0.28)" },
                   ].map(b => (
                     <div
                       key={b.label}
