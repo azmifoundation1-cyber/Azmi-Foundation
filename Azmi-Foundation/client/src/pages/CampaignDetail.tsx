@@ -422,11 +422,6 @@ export default function CampaignDetail() {
               <h1 className="text-2xl sm:text-4xl font-black text-primary leading-tight tracking-tight">
                 {campaign.title}
               </h1>
-              {id === 3 && (
-                <p className="mt-4 text-sm sm:text-base text-gray-700 leading-relaxed border-l-4 border-red-500 pl-4 bg-red-50 py-3 pr-3">
-                  We need <strong>₹5,75,280</strong> to provide groceries to <strong>846 poor families</strong> in Ahmedabad. Dr. Shahbaaz is fighting serious illness but still feeding 2000+ people daily. His father's 18-year legacy is at risk. <span className="text-red-600 font-bold">Time is running out.</span>
-                </p>
-              )}
             </motion.div>
 
             {/* Hero — Video (campaign 3) or Image (others) */}
@@ -461,8 +456,7 @@ export default function CampaignDetail() {
                     <img
                       src="/logo.png"
                       alt="Azmi Foundation"
-                      className="h-8 w-auto object-contain shrink-0"
-                      style={{ filter: "brightness(0) invert(1)" }}
+                      className="h-8 w-auto object-contain shrink-0 brightness-0 invert"
                     />
                     <span className="text-white font-black text-[9px] uppercase tracking-widest leading-tight whitespace-nowrap">
                       AZMI<br />FOUNDATION
@@ -489,6 +483,18 @@ export default function CampaignDetail() {
                 </>
               )}
             </motion.div>
+
+            {/* Urgency text — campaign 3 only, shown BELOW the video */}
+            {id === 3 && (
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-sm sm:text-base text-gray-700 leading-relaxed border-l-4 border-red-500 pl-4 bg-red-50 py-3 pr-3"
+              >
+                We need <strong>₹5,75,280</strong> to provide groceries to <strong>846 poor families</strong> in Ahmedabad. Dr. Shahbaaz is fighting serious illness but still feeding 2000+ people daily. His father's 18-year legacy is at risk.{" "}
+                <span className="text-red-600 font-bold">Time is running out.</span>
+              </motion.p>
+            )}
 
             {/* Share Row */}
             <div className="flex flex-wrap gap-2">
