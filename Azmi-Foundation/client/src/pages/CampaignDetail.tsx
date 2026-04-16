@@ -616,7 +616,7 @@ export default function CampaignDetail() {
                 {/* Progress summary */}
                 <div className="flex items-end justify-between">
                   <div>
-                    <p className="text-base font-black tracking-tighter" style={{ color: "#fff", textShadow: "0 0 12px rgba(220,220,235,0.5)" }}>
+                    <p className="text-2xl font-black tracking-tighter" style={{ color: "#fff", textShadow: "0 0 16px rgba(220,220,235,0.5)" }}>
                       ₹{Number(campaign.currentAmount).toLocaleString("en-IN")}
                     </p>
                     <p className="text-[8px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.45)" }}>
@@ -624,10 +624,10 @@ export default function CampaignDetail() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-black tabular-nums" style={{ color: "rgba(220,220,235,0.9)", textShadow: "0 0 10px rgba(220,220,235,0.6)" }}>
+                    <p className="text-sm font-black tabular-nums" style={{ color: "#dc2626", textShadow: "0 0 10px rgba(220,38,38,0.7), 0 0 20px rgba(220,38,38,0.3)" }}>
                       {countdown.expired ? "Ended" : `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h left`}
                     </p>
-                    <p className="text-[8px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.45)" }}>{supporters.length} Supporters</p>
+                    <p className="text-[8px] font-bold uppercase tracking-widest" style={{ color: "#dc2626", textShadow: "0 0 8px rgba(220,38,38,0.5)" }}>{supporters.length} Supporters</p>
                   </div>
                 </div>
 
