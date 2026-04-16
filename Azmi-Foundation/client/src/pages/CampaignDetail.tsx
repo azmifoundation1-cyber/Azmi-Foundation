@@ -522,38 +522,38 @@ export default function CampaignDetail() {
                 {/* Progress summary */}
                 <div className="flex items-end justify-between">
                   <div>
-                    <p className="text-lg font-black text-primary tracking-tighter">
+                    <p className="text-base font-black text-primary tracking-tighter">
                       ₹{Number(campaign.currentAmount).toLocaleString("en-IN")}
                     </p>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">
                       of ₹{Number(campaign.targetAmount).toLocaleString("en-IN")} goal
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-black text-red-600 tabular-nums">
+                    <p className="text-xs font-black text-red-600 tabular-nums">
                       {countdown.expired ? "Ended" : `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h left`}
                     </p>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{supporters.length} Supporters</p>
+                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{supporters.length} Supporters</p>
                   </div>
                 </div>
-                <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
                   <div className="h-full bg-red-500 rounded-full transition-all duration-1000" style={{ width: `${percent}%` }} />
                 </div>
 
                 {/* Quick-select amounts — 2 cols */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-1.5">
                   {PRESET_AMOUNTS.map(a => (
                     <button
                       key={a}
                       onClick={() => setAmount(String(a))}
-                      className={`py-2.5 px-2 font-black border-2 rounded transition-all text-left ${
+                      className={`py-1.5 px-2 font-black border rounded transition-all text-left ${
                         amount === String(a)
                           ? "bg-red-600 border-red-600 text-white"
                           : "bg-white border-gray-200 text-gray-800 active:bg-red-50"
                       }`}
                     >
-                      <span className="block text-sm">₹{a.toLocaleString("en-IN")}</span>
-                      <span className={`block text-[10px] font-medium mt-0.5 ${amount === String(a) ? "text-red-100" : "text-gray-400"}`}>
+                      <span className="block text-xs">₹{a.toLocaleString("en-IN")}</span>
+                      <span className={`block text-[9px] font-medium ${amount === String(a) ? "text-red-100" : "text-gray-400"}`}>
                         {a === 680 ? "1 family's groceries" : a === 1360 ? "2 families' groceries" : a === 3400 ? "5 families' groceries" : "10 families' groceries"}
                       </span>
                     </button>
@@ -562,12 +562,12 @@ export default function CampaignDetail() {
 
                 {/* Custom amount */}
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-black text-sm">₹</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-black text-xs">₹</span>
                   <Input
                     type="number"
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
-                    className="pl-8 rounded border-2 border-gray-200 focus:border-red-400 font-bold text-primary h-12"
+                    className="pl-6 rounded border border-gray-200 focus:border-red-400 font-bold text-primary h-8 text-sm"
                     placeholder="Enter custom amount"
                     min="1"
                   />
