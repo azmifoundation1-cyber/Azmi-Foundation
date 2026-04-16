@@ -423,16 +423,18 @@ export default function CampaignDetail() {
           {/* Orb – gold right */}
           <div className="glass-orb-2 absolute pointer-events-none" style={{ top: "-15px", right: "-10px", width: "70px", height: "70px", borderRadius: "50%", background: "radial-gradient(circle, rgba(212,175,55,0.3) 0%, transparent 70%)", filter: "blur(12px)" }} />
 
-          <div className="relative max-w-7xl mx-auto flex flex-nowrap items-center justify-center gap-x-2 text-center">
+          <div className="relative max-w-7xl mx-auto flex flex-nowrap items-center justify-center gap-x-2 text-center overflow-hidden">
             {/* Label */}
-            <span className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-tight shrink-0">
-              <AlertTriangle className="w-3 h-3 shrink-0" style={{ color: "#d4af37", filter: "drop-shadow(0 0 4px rgba(212,175,55,0.8))" }} />
-              <span style={{
-                background: "linear-gradient(90deg, #7c0000, #dc2626, #ff6b6b, #d4af37)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}>
+            <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-tight shrink min-w-0">
+              <AlertTriangle className="w-2.5 h-2.5 shrink-0" style={{ color: "#d4af37", filter: "drop-shadow(0 0 6px rgba(212,175,55,1))" }} />
+              <span
+                className="truncate"
+                style={{
+                  color: "#d4af37",
+                  textShadow: "0 0 8px rgba(212,175,55,0.9), 0 0 16px rgba(212,175,55,0.5), 0 0 30px rgba(212,175,55,0.3)",
+                  letterSpacing: "0.08em",
+                }}
+              >
                 846 Families — Time Left:
               </span>
             </span>
