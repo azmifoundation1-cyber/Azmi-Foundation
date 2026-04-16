@@ -468,43 +468,16 @@ export default function CampaignDetail() {
               animate={{ opacity: 1, scale: 1 }}
               className="relative rounded-none overflow-hidden aspect-video bg-gray-900"
             >
-              {id === 3 && story.localVideo ? (
-                <>
-                  <video
-                    src={story.localVideo}
-                    controls
-                    autoPlay
-                    muted
-                    playsInline
-                    poster={story.images[0]}
-                    className="w-full h-full object-contain"
-                    preload="auto"
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-
-                  {/* Milaap watermark cover — blurred Azmi branding overlay (top-right) */}
-                  <div
-                    className="absolute top-0 right-0 flex items-center gap-2 px-2.5 py-1.5 pointer-events-none"
-                    style={{
-                      backdropFilter: "blur(12px)",
-                      WebkitBackdropFilter: "blur(12px)",
-                      background: "rgba(10,10,30,0.5)",
-                      minWidth: "138px",
-                      height: "46px",
-                    }}
-                  >
-                    <img
-                      src="/logo.png"
-                      alt="Azmi Foundation"
-                      className="h-8 w-auto object-contain shrink-0"
-                      style={{ filter: "invert(1) drop-shadow(0 0 1px rgba(255,255,255,0.5))" }}
-                    />
-                    <span className="text-white font-black text-[9px] uppercase tracking-widest leading-tight whitespace-nowrap">
-                      AZMI<br />FOUNDATION
-                    </span>
-                  </div>
-                </>
+              {id === 3 ? (
+                <iframe
+                  src="https://www.youtube.com/embed/Z_exh7zMqDs?si=EYyv12VkPHBJn9Vm&start=8&autoplay=1&mute=1&playsinline=1&rel=0"
+                  title="Help Dr. Shahbaaz Feed Needy People Everyday For Free"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
               ) : (
                 <>
                   <img
