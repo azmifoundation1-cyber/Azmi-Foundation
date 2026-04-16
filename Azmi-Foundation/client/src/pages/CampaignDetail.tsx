@@ -412,33 +412,33 @@ export default function CampaignDetail() {
           className="bg-red-600 text-white py-1.5 px-3"
         >
           <div className="max-w-7xl mx-auto flex flex-nowrap items-center justify-center gap-x-2 text-center">
-            <span className="inline-flex items-center gap-0.5 text-[8px] font-black uppercase tracking-tight shrink-0">
-              <AlertTriangle className="w-2.5 h-2.5 shrink-0" /> 846 Families — Time Left:
+            <span className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-tight shrink-0">
+              <AlertTriangle className="w-3 h-3 shrink-0" /> 846 Families — Time Left:
             </span>
 
             {/* Live countdown blocks */}
-            <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
               {[
                 { value: countdown.days,    label: "D" },
                 { value: countdown.hours,   label: "H" },
                 { value: countdown.minutes, label: "M" },
                 { value: countdown.seconds, label: "S" },
               ].map(({ value, label }, i) => (
-                <div key={label} className="flex items-center gap-1.5">
-                  <div className="bg-white/20 backdrop-blur px-1 py-0.5 min-w-[20px] text-center">
-                    <span className="text-[10px] font-black tabular-nums leading-none block">
+                <div key={label} className="flex items-center gap-2">
+                  <div className="bg-white/20 backdrop-blur px-1.5 py-0.5 min-w-[26px] text-center">
+                    <span className="text-sm font-black tabular-nums leading-none block">
                       {String(value).padStart(2, "0")}
                     </span>
-                    <span className="text-[6px] font-bold uppercase opacity-80">{label}</span>
+                    <span className="text-[8px] font-bold uppercase opacity-80">{label}</span>
                   </div>
-                  {i < 3 && <span className="text-[8px] font-black opacity-60">:</span>}
+                  {i < 3 && <span className="text-xs font-black opacity-60">:</span>}
                 </div>
               ))}
             </div>
 
             <a
               href="#mobile-donate"
-              className="shrink-0 bg-white text-red-600 font-black text-[8px] uppercase tracking-widest px-2 py-0.5 hover:bg-red-50 transition-colors"
+              className="shrink-0 bg-white text-red-600 font-black text-[10px] uppercase tracking-widest px-2.5 py-1 hover:bg-red-50 transition-colors"
             >
               Donate →
             </a>
