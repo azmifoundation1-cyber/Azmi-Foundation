@@ -352,7 +352,7 @@ export default function CampaignDetail() {
     : null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
+    <div className="min-h-screen flex flex-col bg-gray-50 font-sans pb-20 lg:pb-0">
       <Navbar />
 
       {/* Breadcrumb */}
@@ -435,9 +435,12 @@ export default function CampaignDetail() {
                   <video
                     src={story.localVideo}
                     controls
+                    autoPlay
+                    muted
+                    playsInline
                     poster={story.images[0]}
                     className="w-full h-full object-contain"
-                    preload="metadata"
+                    preload="auto"
                   >
                     Your browser does not support the video tag.
                   </video>
@@ -495,6 +498,109 @@ export default function CampaignDetail() {
                 We need <strong>₹5,75,280</strong> to provide groceries to <strong>846 poor families</strong> in Ahmedabad. Dr. Shahbaaz is fighting serious illness but still feeding 2000+ people daily. His father's 18-year legacy is at risk.{" "}
                 <span className="text-red-600 font-bold">Time is running out.</span>
               </motion.p>
+            )}
+
+            {/* ── MOBILE-ONLY INLINE DONATION PANEL (hidden on lg+) ── */}
+            {id === 3 && (
+              <motion.div
+                id="mobile-donate"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="lg:hidden bg-white shadow-md border border-red-100 p-5 space-y-4"
+              >
+                {/* Progress summary */}
+                <div className="flex items-end justify-between">
+                  <div>
+                    <p className="text-2xl font-black text-primary tracking-tighter">
+                      ₹{Number(campaign.currentAmount).toLocaleString("en-IN")}
+                    </p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                      of ₹{Number(campaign.targetAmount).toLocaleString("en-IN")} goal
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-black text-red-600 tabular-nums">
+                      {countdown.expired ? "Ended" : `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h left`}
+                    </p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{supporters.length} Supporters</p>
+                  </div>
+                </div>
+                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-red-500 rounded-full transition-all duration-1000" style={{ width: `${percent}%` }} />
+                </div>
+
+                {/* Quick-select amounts — 2 cols, large tap targets */}
+                <div className="grid grid-cols-2 gap-3">
+                  {PRESET_AMOUNTS.map(a => (
+                    <button
+                      key={a}
+                      onClick={() => setAmount(String(a))}
+                      className={`py-4 px-3 font-black border-2 rounded transition-all text-left ${
+                        amount === String(a)
+                          ? "bg-red-600 border-red-600 text-white"
+                          : "bg-white border-gray-200 text-gray-800 active:bg-red-50"
+                      }`}
+                    >
+                      <span className="block text-base">₹{a.toLocaleString("en-IN")}</span>
+                      <span className={`block text-[11px] font-medium mt-0.5 ${amount === String(a) ? "text-red-100" : "text-gray-400"}`}>
+                        {a === 680 ? "1 family's groceries" : a === 1360 ? "2 families' groceries" : a === 3400 ? "5 families' groceries" : "10 families' groceries"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Custom amount */}
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-black text-sm">₹</span>
+                  <Input
+                    type="number"
+                    value={amount}
+                    onChange={e => setAmount(e.target.value)}
+                    className="pl-8 rounded border-2 border-gray-200 focus:border-red-400 font-bold text-primary h-12"
+                    placeholder="Enter custom amount"
+                    min="1"
+                  />
+                </div>
+
+                {/* Name (compact) */}
+                <Input
+                  type="text"
+                  value={donorName}
+                  onChange={e => setDonorName(e.target.value)}
+                  className="rounded border-2 border-gray-200 font-bold text-primary h-12"
+                  placeholder="Your Name (optional)"
+                />
+
+                {/* Donate button */}
+                <Button
+                  onClick={handleDonate}
+                  disabled={donating || !amount || Number(amount) < 1}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-[0.2em] rounded-none py-7 text-base shadow-lg shadow-red-200"
+                >
+                  {donating ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      <Heart className="w-5 h-5" />
+                      Donate ₹{Number(amount || 0).toLocaleString("en-IN")} Now
+                    </span>
+                  )}
+                </Button>
+
+                {/* Trust badges */}
+                <div className="grid grid-cols-3 gap-2 pt-1">
+                  {[
+                    { icon: "✅", label: "80G Receipt" },
+                    { icon: "🔒", label: "Secure Pay" },
+                    { icon: "🛡️", label: "Verified NGO" },
+                  ].map(b => (
+                    <div key={b.label} className="flex flex-col items-center gap-1 bg-gray-50 rounded py-2 px-1">
+                      <span className="text-base">{b.icon}</span>
+                      <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest text-center leading-tight">{b.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
             )}
 
             {/* Share Row */}
@@ -672,8 +778,8 @@ export default function CampaignDetail() {
             </div>
           </div>
 
-          {/* ── RIGHT COLUMN (STICKY DONATION WIDGET) ── */}
-          <div className="lg:col-span-1">
+          {/* ── RIGHT COLUMN (STICKY DONATION WIDGET) — hidden on mobile since inline panel handles it ── */}
+          <div className={`lg:col-span-1 ${id === 3 ? "hidden lg:block" : ""}`}>
             <div className="sticky top-24 space-y-4">
 
               {/* Verified Badge */}
@@ -1150,6 +1256,26 @@ export default function CampaignDetail() {
             </div>
           </div>
         </section>
+      )}
+
+      {/* ── STICKY MOBILE BOTTOM BAR — campaign 3 only ── */}
+      {id === 3 && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
+          <div className="bg-red-600 flex items-center gap-3 px-4 py-3 shadow-2xl shadow-black/30">
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-black text-sm leading-tight truncate">846 families need groceries</p>
+              <p className="text-red-200 text-[10px] font-bold tabular-nums">
+                ⏳ {countdown.expired ? "Campaign ended" : `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h ${String(countdown.minutes).padStart(2,"0")}m left`}
+              </p>
+            </div>
+            <a
+              href="#mobile-donate"
+              className="shrink-0 bg-white text-red-600 font-black text-sm uppercase tracking-wider px-5 py-3 rounded shadow active:scale-95 transition-transform"
+            >
+              DONATE NOW
+            </a>
+          </div>
+        </div>
       )}
 
       <Footer />
