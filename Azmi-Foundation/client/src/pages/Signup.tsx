@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle2, Handshake, Heart, BarChart3 } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export default function Signup() {
   const [, navigate] = useLocation();
@@ -73,12 +73,12 @@ export default function Signup() {
         </div>
         <div className="relative z-10 space-y-6">
           {[
-            { Icon: Handshake, title: "Join Our Community", desc: "Become part of a movement that's changing lives across Ahmedabad and beyond." },
-            { Icon: Heart,     title: "Support Campaigns", desc: "Create or donate to campaigns that align with your values and passions." },
-            { Icon: BarChart3, title: "Track Your Impact", desc: "Watch your contributions grow and see the real-world change you're driving." },
+            { icon: "🤝", title: "Join Our Community", desc: "Become part of a movement that's changing lives across Ahmedabad and beyond." },
+            { icon: "❤️", title: "Support Campaigns", desc: "Create or donate to campaigns that align with your values and passions." },
+            { icon: "📊", title: "Track Your Impact", desc: "Watch your contributions grow and see the real-world change you're driving." },
           ].map((item) => (
             <div key={item.title} className="flex items-start gap-4">
-              <item.Icon className="w-8 h-8 text-white/70 shrink-0 mt-0.5" />
+              <span className="text-3xl">{item.icon}</span>
               <div>
                 <h3 className="text-white font-bold text-base">{item.title}</h3>
                 <p className="text-white/60 text-sm mt-0.5 leading-relaxed">{item.desc}</p>

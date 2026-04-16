@@ -5,7 +5,7 @@ import { CampaignCard } from "@/components/CampaignCard";
 import { useCampaigns } from "@/hooks/use-campaigns";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Search, SlidersHorizontal, X, Filter, ShieldCheck, Scroll, Landmark, Handshake, Flag, Lock, Check } from "lucide-react";
+import { Loader2, Search, SlidersHorizontal, X, Filter, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 
@@ -127,14 +127,14 @@ export default function Campaigns() {
             className="flex flex-wrap justify-center gap-3 mt-6"
           >
             {[
-              { Icon: Scroll,    label: "80G Approved" },
-              { Icon: Landmark,  label: "12A Registered" },
-              { Icon: Handshake, label: "CSR-1 Certified" },
-              { Icon: Flag,      label: "NGO Darpan Verified" },
-              { Icon: Lock,      label: "Razorpay Secured" },
+              { icon: "📜", label: "80G Approved" },
+              { icon: "🏛️", label: "12A Registered" },
+              { icon: "🤝", label: "CSR-1 Certified" },
+              { icon: "🇮🇳", label: "NGO Darpan Verified" },
+              { icon: "🔒", label: "Razorpay Secured" },
             ].map(b => (
               <div key={b.label} className="flex items-center gap-1.5 bg-white/10 border border-white/20 px-3 py-1.5 text-white/80 text-[10px] font-black uppercase tracking-widest">
-                <b.Icon className="w-3.5 h-3.5 shrink-0" />
+                <span>{b.icon}</span>
                 <span>{b.label}</span>
               </div>
             ))}
@@ -145,11 +145,11 @@ export default function Campaigns() {
       {/* Trust strip */}
       <div className="bg-accent/10 border-b border-accent/20 py-3">
         <div className="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-6 text-[11px] font-bold uppercase tracking-widest text-primary/70">
-          <span className="flex items-center gap-1.5"><Check className="w-3 h-3" /> 100% Transparent</span>
-          <span className="flex items-center gap-1.5"><Check className="w-3 h-3" /> Verified NGO</span>
-          <span className="flex items-center gap-1.5"><Check className="w-3 h-3" /> Secure Payments (Razorpay)</span>
-          <span className="flex items-center gap-1.5"><Check className="w-3 h-3" /> 80G Tax Benefit Eligible</span>
-          <span className="flex items-center gap-1.5"><Check className="w-3 h-3" /> Real-time Fund Tracking</span>
+          <span className="flex items-center gap-1.5">✓ 100% Transparent</span>
+          <span className="flex items-center gap-1.5">✓ Verified NGO</span>
+          <span className="flex items-center gap-1.5">✓ Secure Payments (Razorpay)</span>
+          <span className="flex items-center gap-1.5">✓ 80G Tax Benefit Eligible</span>
+          <span className="flex items-center gap-1.5">✓ Real-time Fund Tracking</span>
         </div>
       </div>
 

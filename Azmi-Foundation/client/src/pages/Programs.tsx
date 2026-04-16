@@ -16,7 +16,7 @@ export default function Programs() {
          <div className="max-w-7xl mx-auto px-4 text-center">
             <h1 className="text-5xl font-bold font-serif mb-6">Our Programs</h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-               What we run on the ground — food distribution, healthcare support, education, and community welfare in Ahmedabad.
+               Sustainable initiatives designed to create lasting impact in the communities we serve.
             </p>
          </div>
       </div>

@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Facebook, Twitter, Instagram, Linkedin, MapPin, Heart, Scroll, Landmark, Handshake, Flag, CreditCard, Scale } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, Heart } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
@@ -14,8 +14,8 @@ export function Footer() {
             <div className="flex items-center gap-2">
               <img src="/logo.png" alt="Azmi Foundation" className="h-14 w-auto brightness-0 invert" />
             </div>
-            <p className="text-gray-400 text-sm leading-relaxed font-light tracking-wide">
-              Feeding families, funding education, and supporting healthcare in Ahmedabad — open to everyone, regardless of faith or background.
+            <p className="text-gray-400 text-sm leading-relaxed font-light tracking-wide uppercase">
+              Promoting interfaith harmony and sustainable development through unity and compassion.
             </p>
             <div className="flex space-x-4 pt-4">
               <SocialIcon Icon={Facebook} href="https://facebook.com/azmifoundation" />
@@ -75,15 +75,15 @@ export function Footer() {
           <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 text-center mb-4">Registered & Certified By</p>
           <div className="flex flex-wrap justify-center gap-3">
             {[
-              { Icon: Scroll,   label: "80G", value: "AAGTA9354BF20261" },
-              { Icon: Landmark, label: "12A", value: "AAGTA9354BE2025101" },
-              { Icon: Handshake,label: "CSR-1", value: "CSR00108803" },
-              { Icon: Flag,     label: "NGO Darpan", value: "GJ/2021/0276308" },
-              { Icon: CreditCard,label: "PAN", value: "AAGTA9354B" },
-              { Icon: Scale,    label: "Trust Reg.", value: "E/22280/AHMEDABAD" },
+              { icon: "📜", label: "80G", value: "AAGTA9354BF20261" },
+              { icon: "🏛️", label: "12A", value: "AAGTA9354BE2025101" },
+              { icon: "🤝", label: "CSR-1", value: "CSR00108803" },
+              { icon: "🇮🇳", label: "NGO Darpan", value: "GJ/2021/0276308" },
+              { icon: "🪪", label: "PAN", value: "AAGTA9354B" },
+              { icon: "⚖️", label: "Trust Reg.", value: "E/22280/AHMEDABAD" },
             ].map(c => (
               <div key={c.label} className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5">
-                <c.Icon className="w-3.5 h-3.5 text-white/40 shrink-0" />
+                <span className="text-xs">{c.icon}</span>
                 <div>
                   <p className="text-[8px] font-black text-white/30 uppercase tracking-widest leading-none">{c.label}</p>
                   <p className="text-[9px] font-black text-white/60 tracking-wider leading-none mt-0.5">{c.value}</p>

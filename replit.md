@@ -2,18 +2,7 @@
 
 ## Overview
 
-Azmi Foundation is a professional Islamic nonprofit website comparable to Milaap/Impact Guru — featuring Razorpay live payment integration, campaign management, admin panel, 80G tax receipts, and comprehensive SEO. The platform enables donation campaigns, volunteer applications, program showcases, user dashboards, and a full admin panel.
-
-## SEO Implementation (Completed April 2026)
-
-- **Server-side meta injection** (`server/static.ts`): Per-page title, description, canonical URL, Open Graph, Twitter Card, and JSON-LD schema injected into HTML before serving — Googlebot sees real metadata.
-- **sitemap.xml**: Auto-served at `/sitemap.xml` covering all 16 pages.
-- **robots.txt**: Served at `/robots.txt` with admin/api paths blocked.
-- **JSON-LD Schema**: Organization, NGO, WebSite, and FAQPage schemas on homepage.
-- **New SEO pages**: `/zakat` (Zakat calculator), `/sadaqah`, `/volunteer`, `/blog` (with 4 full articles).
-- **Blog articles**: Zakat calculation guide, Sadaqah Jariyah guide, Islamic education, Ramadan giving guide.
-- **Google Tag Manager**: GTM-WZ3N7F24 in `client/index.html`.
-- **Navbar**: Updated with "Give" dropdown (Donate/Zakat/Sadaqah/Volunteer) and Blog link.
+Azmi Foundation is a professional NGO website built to promote interfaith harmony and sustainable development. The platform enables donation campaigns, volunteer/member/intern registrations, program showcases, user dashboards, and a full admin panel for managing all platform activity.
 
 ## User Preferences
 

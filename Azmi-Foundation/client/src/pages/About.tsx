@@ -21,8 +21,8 @@ export default function About() {
             <h1 className="text-4xl sm:text-7xl lg:text-9xl font-black tracking-tighter text-white uppercase leading-[0.85] mb-8 drop-shadow-2xl">
               About <br /> <span className="text-white/30 italic">AZMI Foundation</span>
             </h1>
-            <p className="text-lg sm:text-2xl text-white/70 max-w-3xl mx-auto font-medium tracking-tight">
-              Feeding families, funding education, and building community in Ahmedabad since 2018.
+            <p className="text-lg sm:text-2xl text-white/70 max-w-3xl mx-auto font-medium tracking-tight uppercase">
+              A beacon of hope and unity in the heart of Ahmedabad, Gujarat.
             </p>
           </motion.div>
         </div>
@@ -43,15 +43,15 @@ export default function About() {
               <h2 className="text-4xl sm:text-6xl font-black text-primary uppercase leading-none tracking-tighter">
                 Our Legacy <br /> of <span className="text-primary/30">Unity</span>
               </h2>
-              <div className="space-y-6 text-primary/70 text-sm sm:text-lg leading-relaxed font-medium">
+              <div className="space-y-6 text-primary/70 text-sm sm:text-lg leading-relaxed font-medium uppercase tracking-tight">
                 <p>
-                  Azmi Foundation is a registered charitable trust (Reg. No. E/22280/AHMEDABAD) based in Gomtipur, Ahmedabad. We started in 2018 with a single purpose: make sure no family in our city goes to bed hungry.
+                  Nestled in the vibrant heart of Ahmedabad, AZMI Foundation stands as a movement of kindness and shared humanity. Founded as a registered non-governmental trust (Reg. No. E/22280/AHMEDABAD), our roots trace back to a profound commitment to interfaith harmony.
                 </p>
                 <p>
-                  We serve everyone — Hindu, Muslim, Christian, Sikh, and every other community. Hunger doesn't ask your religion, and neither do we. Over 18 years, we have directly fed more than 2 lakh individuals across Ahmedabad.
+                  Inspired by timeless symbols of peace—Om for spiritual enlightenment, the Crescent Moon and Star for faith, the Cross for love, and the Khanda for justice—our essence transcends religions and cultures.
                 </p>
                 <p>
-                  Dr. Shahbaaz Azmi took over the foundation at just 18 years old and has been running daily food distributions ever since — funded entirely through donations, with zero administrative fees taken from the public.
+                  Under the visionary leadership of Managing Director Shahbaaz Azmi, who took the helm at just 18 years old, we've transformed lives from our base in Gomtipur, addressing core human needs with unwavering resilience.
                 </p>
               </div>
             </motion.div>
@@ -85,8 +85,8 @@ export default function About() {
             >
               <Target className="w-12 h-12 text-accent" />
               <h2 className="text-4xl sm:text-5xl font-black text-primary uppercase tracking-tighter">Our Mission</h2>
-              <p className="text-primary/60 leading-relaxed font-medium text-sm sm:text-base">
-                To feed, educate, and care for families in Ahmedabad who need it most — openly, without discrimination, and with full transparency on how every rupee is used.
+              <p className="text-primary/60 leading-relaxed font-bold uppercase tracking-widest text-xs sm:text-sm">
+                To bridge divides and build brighter futures by promoting interfaith harmony, eradicating hunger, advancing education, and enhancing health for all, regardless of creed or circumstance.
               </p>
             </motion.div>
 
@@ -96,8 +96,8 @@ export default function About() {
             >
               <Heart className="w-12 h-12 text-accent" />
               <h2 className="text-4xl sm:text-5xl font-black text-primary uppercase tracking-tighter">Our Vision</h2>
-              <p className="text-primary/60 leading-relaxed font-medium text-sm sm:text-base">
-                An Ahmedabad where no child skips a meal, no family is turned away because of their faith, and every person — regardless of where they were born — has access to basic dignity.
+              <p className="text-primary/60 leading-relaxed font-bold uppercase tracking-widest text-xs sm:text-sm">
+                A harmonious society where every individual thrives in dignity. We envision an Ahmedabad where diversity is celebrated, poverty is conquered, and hope illuminates every path.
               </p>
             </motion.div>
           </div>
@@ -108,9 +108,9 @@ export default function About() {
       <section className="py-24 sm:py-40 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-24">
-            <span className="text-accent font-black tracking-[0.5em] uppercase text-[10px]">The People Behind the Work</span>
+            <span className="text-accent font-black tracking-[0.5em] uppercase text-[10px]">Strategic Command</span>
             <h2 className="text-5xl sm:text-8xl font-black text-primary uppercase tracking-tighter mt-4 leading-none">
-              Our <br /> <span className="text-primary/20 italic">Leadership</span>
+              Leadership <br /> <span className="text-primary/20 italic">Visionaries</span>
             </h2>
           </div>
           
@@ -136,7 +136,7 @@ export default function About() {
                     DR AZHAR AZMI • ZEBA AZMI • ZAKIYA AZMI • DR SHAHBAAZ AZMI
                   </p>
                   <p className="text-primary/50 text-[10px] font-bold uppercase tracking-widest leading-relaxed italic">
-                    Serving Ahmedabad since 2018 — running daily distributions, managing field operations, and ensuring every donation reaches the right family.
+                    Leading the movement with visionary leadership and unwavering commitment to interfaith compassion.
                   </p>
                 </div>
                 <div className="flex items-center gap-4 text-primary/40 text-[10px] font-black uppercase tracking-widest pt-4">

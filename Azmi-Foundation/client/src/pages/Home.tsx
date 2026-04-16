@@ -5,7 +5,7 @@ import { CampaignCard } from "@/components/CampaignCard";
 import { LegalCredentials } from "@/components/LegalCredentials";
 import { useCampaigns } from "@/hooks/use-campaigns";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Heart, Globe, Users, Award, Shield, Zap, Target, Search, CreditCard, TrendingUp, CheckCircle, Star, Quote, ShieldCheck, Lock, ClipboardList, BarChart3, Handshake, Receipt } from "lucide-react";
+import { ArrowRight, Heart, Globe, Users, Award, Shield, Zap, Target, Search, CreditCard, TrendingUp, CheckCircle, Star, Quote } from "lucide-react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
 
@@ -128,7 +128,7 @@ export default function Home() {
               transition={{ delay: 1.5 }}
               className="text-sm sm:text-xl md:text-3xl text-primary/70 leading-relaxed max-w-4xl mx-auto font-medium tracking-tight px-4 sm:px-0"
             >
-              For 18 years, we have fed over 2 lakh people in Ahmedabad — <span className="text-primary font-black italic">regardless of religion, caste, or background.</span>
+              Nestled in the vibrant heart of Ahmedabad, pioneering the global evolution of interfaith harmony through <span className="text-primary font-black italic">revolutionary compassion</span>.
             </motion.p>
 
             <motion.div 
@@ -164,7 +164,7 @@ export default function Home() {
           className="absolute bottom-6 sm:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
         >
           <div className="w-0.5 h-16 sm:h-24 bg-gradient-to-b from-primary/0 via-primary/40 to-primary/0" />
-          <span className="text-[6px] sm:text-[8px] font-black tracking-[0.6em] uppercase text-primary/60">Scroll to explore</span>
+          <span className="text-[6px] sm:text-[8px] font-black tracking-[0.6em] uppercase text-primary/60">Explore the Horizon</span>
         </motion.div>
       </section>
 
@@ -190,16 +190,16 @@ export default function Home() {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="text-accent font-black tracking-[0.6em] uppercase text-[10px] sm:text-xs flex items-center justify-center lg:justify-start gap-3"
               >
-                <Target className="w-4 h-4" /> Active Campaigns
+                <Target className="w-4 h-4" /> Strategic Objectives
               </motion.div>
               <h2 className="text-5xl sm:text-7xl md:text-9xl font-black tracking-tighter text-primary uppercase leading-[0.85]">
-                OUR <br /> <span className="text-primary/20 italic">CAMPAIGNS</span>
+                GLOBAL <br /> <span className="text-primary/20 italic">MISSIONS</span>
               </h2>
             </div>
             <Link href="/campaigns">
               <Button variant="link" className="text-primary font-black tracking-[0.4em] uppercase text-xs sm:text-sm group hover:no-underline">
                 <span className="relative">
-                  View All Campaigns
+                  Command Center
                   <span className="absolute -bottom-2 left-0 w-0 h-0.5 bg-accent group-hover:w-full transition-all duration-500" />
                 </span>
                 <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-4 transition-transform duration-500" />
@@ -291,13 +291,13 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
             {[
-              { Icon: ShieldCheck,   label: "NGO Verified", sub: "Govt. Registered" },
-              { Icon: Lock,          label: "Secure Payments", sub: "Razorpay PCI-DSS" },
-              { Icon: ClipboardList, label: "80G Tax Benefit", sub: "Income Tax Exemption" },
-              { Icon: BarChart3,     label: "Full Transparency", sub: "Fund Reports Shared" },
-              { Icon: Handshake,     label: "Direct Impact", sub: "No Middlemen" },
-              { Icon: Star,          label: "5-Star Trust", sub: "Community Endorsed" },
-            ].map(({ Icon, label, sub }) => (
+              { icon: "🛡️", label: "NGO Verified", sub: "Govt. Registered" },
+              { icon: "🔒", label: "Secure Payments", sub: "Razorpay PCI-DSS" },
+              { icon: "📋", label: "80G Tax Benefit", sub: "Income Tax Exemption" },
+              { icon: "📊", label: "Full Transparency", sub: "Fund Reports Shared" },
+              { icon: "🤝", label: "Direct Impact", sub: "No Middlemen" },
+              { icon: "⭐", label: "5-Star Trust", sub: "Community Endorsed" },
+            ].map(({ icon, label, sub }) => (
               <motion.div
                 key={label}
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -305,7 +305,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="flex flex-col items-center text-center p-4 bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
               >
-                <Icon className="w-8 h-8 mb-3 text-primary/70" />
+                <span className="text-3xl mb-3">{icon}</span>
                 <p className="text-[11px] font-black text-primary uppercase tracking-wide">{label}</p>
                 <p className="text-[10px] text-gray-400 mt-1">{sub}</p>
               </motion.div>
@@ -378,7 +378,7 @@ export default function Home() {
       <section className="py-12 bg-accent/10 border-y border-accent/20">
         <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <Receipt className="w-10 h-10 text-primary/60 shrink-0" />
+            <span className="text-4xl">🧾</span>
             <div>
               <p className="font-black text-primary text-base uppercase tracking-tight">Get 80G Tax Exemption on Your Donation</p>
               <p className="text-sm text-gray-500 mt-1">All donations to Azmi Foundation are eligible for income tax deductions under Section 80G of the Income Tax Act.</p>
