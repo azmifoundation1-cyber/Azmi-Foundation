@@ -653,6 +653,11 @@ export default function CampaignDetail() {
                   </div>
                 </div>
 
+                {/* Urgency line above progress bar */}
+                <p className="text-[11px] font-semibold leading-snug" style={{ color: "#b91c1c", textShadow: "0 0 8px rgba(185,28,28,0.5)" }}>
+                  Sirf 7 din bache hain… 846 families ko groceries chahiye. Aapki madad se possible hai.
+                </p>
+
                 {/* Neon progress bar */}
                 <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", boxShadow: "inset 0 0 4px rgba(0,0,0,0.5)" }}>
                   <div
