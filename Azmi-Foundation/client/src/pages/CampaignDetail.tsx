@@ -248,6 +248,18 @@ export default function CampaignDetail() {
             if (!verifyRes.ok) throw new Error("Verification failed");
             const donationData = await verifyRes.json();
 
+            // Meta Pixel — fire Purchase event on confirmed donation
+            try {
+              if (typeof (window as any).fbq === "function") {
+                (window as any).fbq("track", "Purchase", {
+                  value: amt,
+                  currency: "INR",
+                  content_name: campaign?.title || "Donation",
+                  content_type: "donation",
+                });
+              }
+            } catch (_) {}
+
             // Build receipt data if 80G was requested
             if (want80G && !isAnon) {
               const receiptNo = `AF-${new Date().getFullYear()}-${String(donationData.id).padStart(5, "0")}`;

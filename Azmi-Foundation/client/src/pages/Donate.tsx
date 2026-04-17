@@ -101,6 +101,19 @@ export default function Donate() {
               }),
             });
             if (!verifyRes.ok) throw new Error("Verification failed");
+
+            // Meta Pixel — fire Purchase event on confirmed donation
+            try {
+              if (typeof (window as any).fbq === "function") {
+                (window as any).fbq("track", "Purchase", {
+                  value: data.amount,
+                  currency: "INR",
+                  content_name: "Donation",
+                  content_type: "donation",
+                });
+              }
+            } catch (_) {}
+
             toast({ title: "Donation Successful!", description: "Thank you for your generous support." });
             if (campaignId) {
               queryClient.invalidateQueries({ queryKey: ["/api/donations/campaign", campaignId] });
