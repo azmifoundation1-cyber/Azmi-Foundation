@@ -248,16 +248,31 @@ export default function CampaignDetail() {
             if (!verifyRes.ok) throw new Error("Verification failed");
             const donationData = await verifyRes.json();
 
-            // Meta Pixel — fire Purchase event on confirmed donation
+            // ── Meta Pixel + GTM Purchase event — fires only on server-confirmed payment ──
+            const pixelPayload = {
+              value: amt,
+              currency: "INR",
+              content_name: "Grocery Kit for Families",
+              content_type: "donation",
+            };
+            // 1. Direct fbq call
+            if ((window as any).fbq) {
+              (window as any).fbq("track", "Purchase", pixelPayload);
+              console.log("[MetaPixel] Purchase fired", pixelPayload);
+            }
+            // 2. GTM dataLayer fallback (Meta Pixel tag in GTM can pick this up)
+            if ((window as any).dataLayer) {
+              (window as any).dataLayer.push({
+                event: "purchase",
+                ecommerce: { value: amt, currency: "INR" },
+              });
+            }
+            // 3. Script-tag injection fallback for strict CSP environments
             try {
-              if (typeof (window as any).fbq === "function") {
-                (window as any).fbq("track", "Purchase", {
-                  value: amt,
-                  currency: "INR",
-                  content_name: campaign?.title || "Donation",
-                  content_type: "donation",
-                });
-              }
+              const s = document.createElement("script");
+              s.text = `window.fbq && window.fbq('track','Purchase',${JSON.stringify(pixelPayload)});`;
+              document.head.appendChild(s);
+              document.head.removeChild(s);
             } catch (_) {}
 
             // Build receipt data if 80G was requested
