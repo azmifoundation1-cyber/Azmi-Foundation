@@ -102,32 +102,26 @@ export default function Donate() {
             });
             if (!verifyRes.ok) throw new Error("Verification failed");
 
-            // ── Meta Pixel + GTM Purchase event — fires only on server-confirmed payment ──
+            // ── Meta Pixel Purchase event — fires only after server-confirmed payment ──
             const pixelPayload = {
               value: data.amount,
               currency: "INR",
-              content_name: "Grocery Kit for Families",
+              content_name: "Grocery Kits for 846 Families - 8 Days Campaign",
               content_type: "donation",
             };
-            // 1. Direct fbq call
-            if ((window as any).fbq) {
+            console.log("[MetaPixel] Attempting Purchase fire, fbq:", !!(window as any).fbq, pixelPayload);
+            try {
               (window as any).fbq("track", "Purchase", pixelPayload);
-              console.log("[MetaPixel] Purchase fired", pixelPayload);
+              console.log("[MetaPixel] Purchase fired successfully", pixelPayload);
+            } catch (pixelErr) {
+              console.error("[MetaPixel] fbq call failed:", pixelErr);
             }
-            // 2. GTM dataLayer fallback
             if ((window as any).dataLayer) {
               (window as any).dataLayer.push({
                 event: "purchase",
                 ecommerce: { value: data.amount, currency: "INR" },
               });
             }
-            // 3. Script-tag injection fallback
-            try {
-              const s = document.createElement("script");
-              s.text = `window.fbq && window.fbq('track','Purchase',${JSON.stringify(pixelPayload)});`;
-              document.head.appendChild(s);
-              document.head.removeChild(s);
-            } catch (_) {}
 
             toast({ title: "Donation Successful!", description: "Thank you for your generous support." });
             if (campaignId) {
@@ -137,7 +131,8 @@ export default function Donate() {
             queryClient.invalidateQueries({ queryKey: ["/api/campaigns/featured"] });
             setDonating(false);
             form.reset();
-          } catch {
+          } catch (err) {
+            console.error("[Payment] Verification/handler error:", err);
             toast({ title: "Payment recorded", description: "Thank you! Our team will confirm shortly.", variant: "destructive" });
             setDonating(false);
           }
