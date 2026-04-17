@@ -46,11 +46,11 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Instagram className="w-4 h-4 text-white/50 shrink-0" />
-                <span>@azmi_foundation</span>
+                <a href="https://www.instagram.com/azmi_foundation" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">@azmi_foundation</a>
               </li>
               <li className="flex items-center gap-3">
                 <Facebook className="w-4 h-4 text-white/50 shrink-0" />
-                <span>facebook.com/azmifoundation</span>
+                <a href="https://www.facebook.com/azmifoundation" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">facebook.com/azmifoundation</a>
               </li>
             </ul>
           </div>
