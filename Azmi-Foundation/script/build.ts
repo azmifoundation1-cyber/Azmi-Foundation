@@ -41,14 +41,17 @@ async function buildAll() {
   console.log("building client...");
   await viteBuild();
 
-  // Remove 'crossorigin' from CSS stylesheet links — it triggers CORS preflight
-  // on mobile networks that fail silently, leaving the page completely unstyled.
-  // JS module scripts keep crossorigin (required for ES modules).
+  // Remove 'crossorigin' from all link/script tags that reference same-origin assets.
+  // Instagram WebView and old Android WebViews mishandle CORS preflight for same-origin
+  // resources — stripping crossorigin avoids the issue entirely. All assets are served
+  // with Access-Control-Allow-Origin: * from static.ts so nothing breaks.
   const htmlPath = path.resolve("dist/public/index.html");
   let html = await readFile(htmlPath, "utf-8");
   html = html.replace(/<link rel="stylesheet" crossorigin/g, '<link rel="stylesheet"');
+  html = html.replace(/<link rel="modulepreload" crossorigin/g, '<link rel="modulepreload"');
+  html = html.replace(/<script type="module" crossorigin/g, '<script type="module"');
   await writeFile(htmlPath, html);
-  console.log("patched index.html: removed crossorigin from CSS link");
+  console.log("patched index.html: removed crossorigin from all same-origin tags");
 
   console.log("building server...");
   const pkg = JSON.parse(await readFile("package.json", "utf-8"));
