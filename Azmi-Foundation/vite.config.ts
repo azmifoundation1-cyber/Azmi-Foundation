@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import legacy from "@vitejs/plugin-legacy";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
@@ -7,6 +8,17 @@ export default defineConfig({
   plugins: [
     react(),
     runtimeErrorOverlay(),
+    // Legacy ES5 bundle — makes the site work in Instagram WebView, older Android
+    // WebViews, and any browser that doesn't support <script type="module">.
+    // @vitejs/plugin-legacy@5.4.3 works fine with Vite 7 despite peer dep mismatch;
+    // .npmrc sets legacy-peer-deps=true so deployment accepts it.
+    ...(process.env.NODE_ENV === "production"
+      ? [
+          legacy({
+            targets: ["defaults", "Android >= 5", "iOS >= 10", "not IE 11"],
+          }),
+        ]
+      : []),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
       ? [
@@ -30,8 +42,6 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-    // Target broadly compatible JS — covers Android 5+, iOS 10+, Instagram WebView
-    target: ["es2015", "chrome58", "firefox57", "safari11", "edge18"],
     rollupOptions: {
       output: {
         manualChunks: {
