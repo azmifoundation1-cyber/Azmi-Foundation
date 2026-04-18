@@ -672,7 +672,10 @@ export default function CampaignDetail() {
 
                 {/* Urgency line above progress bar */}
                 <p className="text-[11px] font-semibold leading-snug" style={{ color: "#b91c1c", textShadow: "0 0 8px rgba(185,28,28,0.5)" }}>
-                  Sirf 7 din bache hain… 846 families ko groceries chahiye. Aapki madad se possible hai.
+                  {id === 4
+                    ? "Anwar needs daily physio, medicines & nursing. Without your help, his recovery may never happen."
+                    : "Sirf 7 din bache hain… 846 families ko groceries chahiye. Aapki madad se possible hai."
+                  }
                 </p>
 
                 {/* Neon progress bar */}

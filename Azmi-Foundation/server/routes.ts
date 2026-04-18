@@ -726,23 +726,23 @@ async function seedDatabase() {
     await storage.createCampaign({
       title: "Save Anwar — A Father Fighting to Survive After Traumatic Brain Injury",
       description: "Anwar (49) suffered a severe traumatic brain injury — emergency craniotomy, ICU, fractures. Hospital bills wiped out Rs. 1.05 crore in family savings. He now needs Rs. 50,000 to Rs. 2 lakh every month for physiotherapy, medicines and home nursing. His daughter Alqama is fighting for one more chance to save her father.",
-      story: `Mera naam Alqama hai. Aur yeh likhte waqt meri aankhon mein aansu hain — kyunki jo main share karne waali hoon, woh sirf meri kahani nahi, mere poore khandan ki zindagi ki baat hai.
+      story: `My name is Alqma, and I am writing this with a heavy, shattered heart — tears blurring my vision as I beg the world to help save my father, my hero, Anwar (49 years old). Papa was our entire world: the strong, smiling man who woke at dawn every day for his car repair work, sweating through long hours to give us everything — my studies, our home, my mother's gentle smiles, my little siblings' innocent dreams. He would wrap me in his arms and say, "Beta, Papa is always here. No storm can touch us." That promise kept us alive.
 
-Papa — Anwar (49 saal) — woh insaan jo fajar ki namaz ke baad apne haath se gaadi marammat karta, ghar chalata, humari padhai ka kharch uthata, aur raat ko thaka-haara ghar aata — par muskuraata hamesha. Unhone humein har toofaan se bachaaya. Aaj woh khud toofaan mein hain.
+Then came the nightmare no one saw coming — a horrific accident that crushed his skull and stole his strength. Severe head injury: blood flooding his brain, fractures everywhere, unbearable suffering. Doctors at Meera Hospital rushed him into emergency care, warning that immediate craniotomy (brain surgery) was critical. He battled in ICU, machines keeping him alive, while we watched in helpless agony. We poured in every last rupee — our savings wiped out, relatives drained dry with loans — but it was not enough.
 
-Ek haadse ne sab kuch badal diya. Papa ke sar par gehri chot lagi — khoon brain mein, fractures, ICU, emergency craniotomy. Hospital ka estimate: Rs. 1.05 crore. Hamari jama-poonji khatam. Rishtedar thak gaye. Humne unhe ghar lana pada — kyunki paisa nahi tha.
+The hospital handed us an official estimate letter: approximately Rs. 1 crore 5 lakh (Rs. 1.05 crore) for the full treatment — craniotomy surgery, extended ICU days (possibly months), daily medicines, repeated CT/MRI scans, and ongoing recovery care. That number felt like a death sentence. We had no way to pay. With broken hearts and endless tears, we had no choice but to discharge Papa and bring him home on basic home care — because staying longer would have meant abandoning him to fate.
 
-Aaj papa usi kamre mein letey hain jahan woh hum se haste aur khelate the. Bol nahi paate. Hilna mushkil hai. Lekin unki aankhein mujhe dekhti hain aur kehti hain — beta, himmat mat haarna.
+Now he is here, in the same room where he used to laugh and play with us, but he is a shadow of himself. He struggles to speak even a word, his body barely moves, his eyes look straight into mine with silent pain, as if begging, "Beta, please do not give up on me." Every single morning, I sit beside his bed, hold his trembling hand, and cry until I cannot breathe — terrified that without proper funds, complications could take him from us forever. My mother weeps quietly through the night, praying endlessly. My younger siblings ask in scared whispers, "When will Papa hug us again?" We are completely shattered, helpless, and utterly alone.
 
-Meri ammi raat bhar rooti hain. Chhote bhai-behen darate hain — papa kab gale lagayenge? Main har subah unka haath thamti hoon aur khud se puchti hoon — kya main unhe bacha sakti hoon?
+Doctors insist that for any real chance at recovery, Papa needs urgent, continuous home care right now: daily specialized physiotherapy to rebuild strength and movement, powerful medicines to protect his brain, trained nurse visits to handle wounds and medication monitoring, and possible future hospital follow-ups and scans. Without this, his condition could worsen any moment. Monthly costs alone run Rs. 50,000 to 2 lakh+ (physio sessions Rs. 500 to 3,000 each, home nursing even higher), and we have nothing left after the hospital estimate crushed us.
 
-Doctors kehte hain recovery possible hai — agar abhi sahi care mile. Daily physiotherapy, medicines, home nursing. Lekin har mahina Rs. 50,000 se Rs. 2 lakh chahiye. Hamare paas kuch nahi bacha.
+Papa saved us from every hardship life threw at us. Now I am on my knees, alone and desperate, pleading for a miracle. Your compassion could be the light that brings my father back — lets him call my name again, walk to embrace his family, smile like the hero he is. Even the smallest amount — Rs. 100, Rs. 500, or just sharing this story — could cover a day of nursing, a week of physio, or a month of hope.
 
-Main aapke saamne jhuktay hue, haath failaate hue, sirf ek cheez maangnay aayi hoon — apne papa ke liye ek aur chance.
+With tear-soaked gratitude and endless prayers, thank you for being our only hope in this darkness. Every rupee, every share, every dua keeps Papa fighting.
 
-Papa... thoda aur ruko. Aapki beti duniya se dua maang rahi hai.`,
+Papa... hold on just a little longer. Your beta is begging the world for you.`,
       category: "health",
-      targetAmount: "2500000",
+      targetAmount: "10500000",
       imageUrl: "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=800",
       status: "active",
       featured: true,
