@@ -37,13 +37,20 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
           <div className="relative h-64 sm:h-80 overflow-hidden bg-black">
             {youtubeId ? (
               <>
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
-                  className="absolute inset-0 w-full h-full pointer-events-none"
-                  style={{ border: "none", transform: "scale(1.05)" }}
-                  allow="autoplay; encrypted-media"
+                <img
+                  src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
+                  alt={campaign.title}
+                  className="w-full h-full object-cover"
                   loading="lazy"
+                  decoding="async"
                 />
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-14 h-14 rounded-full bg-black/60 flex items-center justify-center shadow-2xl backdrop-blur-sm border border-white/20">
+                    <svg className="w-6 h-6 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                </div>
               </>
             ) : (
               <motion.img
@@ -52,6 +59,8 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
                 src={campaign.imageUrl || `https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80`}
                 alt={campaign.title}
                 className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/40 to-transparent opacity-90" />

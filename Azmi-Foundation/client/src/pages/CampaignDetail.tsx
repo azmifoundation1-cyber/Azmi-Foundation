@@ -1129,6 +1129,8 @@ export default function CampaignDetail() {
                               src={story.images[i + 1]}
                               alt={`Campaign image ${i + 2}`}
                               className="w-full h-full object-cover"
+                              loading="lazy"
+                              decoding="async"
                             />
                           </div>
                         )}
