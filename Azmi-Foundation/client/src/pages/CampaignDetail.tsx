@@ -570,7 +570,7 @@ export default function CampaignDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-12 items-start">
 
           {/* ── LEFT COLUMN ── */}
-          <div className="lg:col-span-2 space-y-4 lg:space-y-8">
+          <div className={`${(id === 3 || id === 4) ? "lg:col-span-3" : "lg:col-span-2"} space-y-4 lg:space-y-8`}>
 
             {/* Campaign Title */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -644,13 +644,13 @@ export default function CampaignDetail() {
               </motion.p>
             )}
 
-            {/* ── MOBILE-ONLY INLINE DONATION PANEL (hidden on lg+) ── */}
+            {/* ── INLINE DONATION PANEL (all devices) ── */}
             {(id === 3 || id === 4) && (
               <motion.div
                 id="mobile-donate"
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="lg:hidden relative overflow-hidden glass-panel-neon glass-shimmer"
+                className="relative overflow-hidden glass-panel-neon glass-shimmer lg:max-w-3xl lg:mx-auto"
                 style={{
                   background: "linear-gradient(135deg, rgba(4,0,15,0.97) 0%, rgba(12,0,28,0.96) 40%, rgba(6,0,20,0.97) 100%)",
                   backdropFilter: "blur(32px)",
@@ -1261,8 +1261,8 @@ export default function CampaignDetail() {
             </div>
           </div>
 
-          {/* ── RIGHT COLUMN (STICKY DONATION WIDGET) — hidden on mobile since inline panel handles it ── */}
-          <div className={`lg:col-span-1 ${(id === 3 || id === 4) ? "hidden lg:block" : ""}`}>
+          {/* ── RIGHT COLUMN (STICKY DONATION WIDGET) — hidden for campaigns 3 & 4 since inline panel handles it ── */}
+          <div className={`lg:col-span-1 ${(id === 3 || id === 4) ? "hidden" : ""}`}>
             <div className="sticky top-24 space-y-4">
 
               {/* Verified Badge */}
