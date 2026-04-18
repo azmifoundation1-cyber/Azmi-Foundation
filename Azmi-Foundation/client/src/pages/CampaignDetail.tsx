@@ -22,7 +22,10 @@ declare global {
   }
 }
 
-const PRESET_AMOUNTS = [680, 1360, 3400, 6800];
+const PRESET_AMOUNTS_MAP: Record<number, number[]> = {
+  3: [680, 1360, 3400, 6800],
+  4: [1000, 2500, 5000, 10000],
+};
 
 const PAYMENT_ICONS = [
   { name: "GPay", color: "#4285F4", label: "G" },
@@ -86,7 +89,8 @@ const CAMPAIGN_STORIES: Record<number, {
 export default function CampaignDetail() {
   const [, params] = useRoute("/campaigns/:id");
   const id = Number(params?.id);
-  const [amount, setAmount] = useState("1360");
+  const PRESET_AMOUNTS = PRESET_AMOUNTS_MAP[id] || [500, 1000, 2500, 5000];
+  const [amount, setAmount] = useState(() => String(PRESET_AMOUNTS_MAP[id]?.[1] ?? 1000));
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
   const [donorPhone, setDonorPhone] = useState("");
@@ -141,7 +145,7 @@ export default function CampaignDetail() {
       // Fallback hardcoded date for campaign 3 if DB end_date isn't set yet
       const rawEnd = campaign?.endDate
         ? campaign.endDate
-        : (id === 3 ? "2026-04-24T18:29:59.000Z" : null);
+        : (id === 3 ? "2026-04-24T18:29:59.000Z" : (id === 4 ? "2026-05-18T23:59:59.000Z" : null));
       const endDate = rawEnd ? new Date(rawEnd).getTime() : null;
       if (!endDate) return;
       const diff = endDate - Date.now();
@@ -426,8 +430,8 @@ export default function CampaignDetail() {
         </div>
       </div>
 
-      {/* URGENT BANNER — campaign 3 only */}
-      {id === 3 && (
+      {/* URGENT BANNER — campaign 3 and 4 */}
+      {(id === 3 || id === 4) && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -461,7 +465,7 @@ export default function CampaignDetail() {
                     letterSpacing: "0.1em",
                   }}
                 >
-                  846 Families Need Your Help
+                  {id === 4 ? "Help Anwar Recover — Father Needs Daily Care" : "846 Families Need Your Help"}
                 </span>
               </span>
               <a
@@ -590,20 +594,29 @@ export default function CampaignDetail() {
               )}
             </motion.div>
 
-            {/* Urgency text — campaign 3 only, shown BELOW the video */}
-            {id === 3 && (
+            {/* Urgency text — campaigns 3 & 4, shown BELOW the video/image */}
+            {(id === 3 || id === 4) && (
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-xs sm:text-sm text-gray-700 leading-relaxed border-l-4 border-red-500 pl-3 bg-red-50 py-2 pr-3"
               >
-                We need <strong>₹5,75,280</strong> to provide groceries to <strong>846 poor families</strong> in Ahmedabad. Dr. Shahbaaz is fighting serious illness but still feeding 2000+ people daily. His father's 18-year legacy is at risk.{" "}
-                <span className="text-red-600 font-bold">Time is running out.</span>
+                {id === 4 ? (
+                  <>
+                    Anwar needs <strong>Rs. 50,000–2 lakh every month</strong> for physiotherapy, medicines and home nursing. Family savings exhausted after <strong>Rs. 1.05 crore</strong> hospital bill. His daughter Alqama is begging for one more chance.{" "}
+                    <span className="text-red-600 font-bold">Time is running out.</span>
+                  </>
+                ) : (
+                  <>
+                    We need <strong>₹5,75,280</strong> to provide groceries to <strong>846 poor families</strong> in Ahmedabad. Dr. Shahbaaz is fighting serious illness but still feeding 2000+ people daily. His father's 18-year legacy is at risk.{" "}
+                    <span className="text-red-600 font-bold">Time is running out.</span>
+                  </>
+                )}
               </motion.p>
             )}
 
             {/* ── MOBILE-ONLY INLINE DONATION PANEL (hidden on lg+) ── */}
-            {id === 3 && (
+            {(id === 3 || id === 4) && (
               <motion.div
                 id="mobile-donate"
                 initial={{ opacity: 0, y: 16 }}
@@ -1154,7 +1167,7 @@ export default function CampaignDetail() {
           </div>
 
           {/* ── RIGHT COLUMN (STICKY DONATION WIDGET) — hidden on mobile since inline panel handles it ── */}
-          <div className={`lg:col-span-1 ${id === 3 ? "hidden lg:block" : ""}`}>
+          <div className={`lg:col-span-1 ${(id === 3 || id === 4) ? "hidden lg:block" : ""}`}>
             <div className="sticky top-24 space-y-4">
 
               {/* Verified Badge */}
@@ -1196,7 +1209,7 @@ export default function CampaignDetail() {
                       {supporters.length} Supporters
                     </div>
                     {daysLeft !== null && (
-                      id === 3 ? (
+                      (id === 3 || id === 4) ? (
                         <div className="flex items-center gap-1 font-black text-red-500">
                           <Clock className="w-3 h-3 shrink-0" />
                           <span className="tabular-nums text-xs">
@@ -1216,16 +1229,21 @@ export default function CampaignDetail() {
                   </div>
                 </div>
 
-                {/* IMPACT TABLE — campaign 3 only */}
-                {id === 3 && (
+                {/* IMPACT TABLE — campaigns 3 & 4 */}
+                {(id === 3 || id === 4) && (
                   <div className="border border-red-100 bg-red-50 p-4 space-y-2">
                     <p className="text-[10px] font-black text-red-700 uppercase tracking-widest mb-3">Your Donation Impact</p>
-                    {[
+                    {(id === 4 ? [
+                      { amount: "₹1,000",  impact: "2 days of essential medicines" },
+                      { amount: "₹2,500",  impact: "1 week of physiotherapy session" },
+                      { amount: "₹5,000",  impact: "10 days of home nursing care" },
+                      { amount: "₹10,000", impact: "Full month of basic medications" },
+                    ] : [
                       { amount: "₹680",   impact: "1 grocery kit for 1 family" },
                       { amount: "₹1,360", impact: "Grocery kits for 2 families" },
                       { amount: "₹3,400", impact: "Grocery kits for 5 families" },
                       { amount: "₹6,800", impact: "Grocery kits for 10 families" },
-                    ].map((row) => (
+                    ]).map((row) => (
                       <div key={row.amount} className="flex items-center gap-3 py-1.5 border-b border-red-100 last:border-0">
                         <span className="text-sm font-black text-red-600 w-16 shrink-0">{row.amount}</span>
                         <span className="text-xs text-gray-700 font-medium">=&nbsp;{row.impact}</span>
@@ -1421,8 +1439,8 @@ export default function CampaignDetail() {
                     <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Donate Anonymously</span>
                   </label>
 
-                  {/* Urgency countdown near button — campaign 3 only */}
-                  {id === 3 && (
+                  {/* Urgency countdown near button — campaigns 3 & 4 */}
+                  {(id === 3 || id === 4) && (
                     <p className="text-center text-[10px] font-bold text-red-600 uppercase tracking-widest tabular-nums flex items-center justify-center gap-1">
                       <Clock className="w-3 h-3 shrink-0" />
                       {countdown.expired
@@ -1437,7 +1455,7 @@ export default function CampaignDetail() {
                     onClick={handleDonate}
                     disabled={donating || !amount || Number(amount) < 1}
                     className={`w-full text-white font-black uppercase tracking-[0.3em] rounded-none transition-all duration-500 relative overflow-hidden group ${
-                      id === 3
+                      (id === 3 || id === 4)
                         ? "bg-red-600 hover:bg-red-700 text-white py-7 text-base shadow-lg shadow-red-200"
                         : "bg-primary hover:bg-black py-6 text-sm gold-edge"
                     }`}
@@ -1446,15 +1464,15 @@ export default function CampaignDetail() {
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                       <span className="flex items-center justify-center gap-2">
-                        <Heart className={`${id === 3 ? "w-5 h-5" : "w-4 h-4"}`} />
+                        <Heart className={`${(id === 3 || id === 4) ? "w-5 h-5" : "w-4 h-4"}`} />
                         {want80G && !isAnon ? "Donate & Get 80G Receipt" : "Donate Now"}
                       </span>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                   </Button>
 
-                  {/* Trust text — campaign 3 only */}
-                  {id === 3 && (
+                  {/* Trust text — campaigns 3 & 4 */}
+                  {(id === 3 || id === 4) && (
                     <p className="text-center text-[10px] text-gray-500 font-medium">
                       Every rupee helps. &nbsp;80G tax receipt available. &nbsp;Fully transparent.
                     </p>
