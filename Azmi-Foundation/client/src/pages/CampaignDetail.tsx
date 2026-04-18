@@ -27,6 +27,11 @@ const PRESET_AMOUNTS_MAP: Record<number, number[]> = {
   4: [1000, 2500, 5000, 10000],
 };
 
+const PRESET_LABELS_MAP: Record<number, string[]> = {
+  3: ["1 family's groceries", "2 families' groceries", "5 families' groceries", "10 families' groceries"],
+  4: ["2 days of medicines", "1 week of physio", "10 days nursing", "1 month of meds"],
+};
+
 const PAYMENT_ICONS = [
   { name: "GPay", color: "#4285F4", label: "G" },
   { name: "PhonePe", color: "#5f259f", label: "₱" },
@@ -90,6 +95,7 @@ export default function CampaignDetail() {
   const [, params] = useRoute("/campaigns/:id");
   const id = Number(params?.id);
   const PRESET_AMOUNTS = PRESET_AMOUNTS_MAP[id] || [500, 1000, 2500, 5000];
+  const PRESET_LABELS = PRESET_LABELS_MAP[id] || PRESET_LABELS_MAP[3];
   const [amount, setAmount] = useState(() => String(PRESET_AMOUNTS_MAP[id]?.[1] ?? 1000));
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
@@ -256,7 +262,9 @@ export default function CampaignDetail() {
             const pixelPayload = {
               value: amt,
               currency: "INR",
-              content_name: "Grocery Kits for 846 Families - 8 Days Campaign",
+              content_name: id === 4
+                ? "Save Anwar Medical Emergency - 30 Days Campaign"
+                : "Grocery Kits for 846 Families - 8 Days Campaign",
               content_type: "donation",
             };
             console.log("[MetaPixel] Attempting Purchase fire, fbq:", !!(window as any).fbq, pixelPayload);
@@ -716,7 +724,7 @@ export default function CampaignDetail() {
                       >
                         <span className="block text-xs" style={{ textShadow: sel ? "0 0 8px rgba(220,220,235,0.7)" : "none" }}>₹{a.toLocaleString("en-IN")}</span>
                         <span className="block text-[9px] font-medium" style={{ color: sel ? "rgba(210,210,230,0.85)" : "rgba(255,255,255,0.35)" }}>
-                          {a === 680 ? "1 family's groceries" : a === 1360 ? "2 families' groceries" : a === 3400 ? "5 families' groceries" : "10 families' groceries"}
+                          {PRESET_LABELS[PRESET_AMOUNTS.indexOf(a)] ?? ""}
                         </span>
                       </button>
                     );
