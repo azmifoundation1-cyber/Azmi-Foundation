@@ -105,6 +105,7 @@ const CAMPAIGN_STORIES: Record<number, {
       "/anwar-before-work.jpeg",
       "/anwar-before-formal.jpeg",
     ],
+    localVideo: "/anwar-video.mp4",
   },
 };
 
@@ -1102,11 +1103,13 @@ export default function CampaignDetail() {
                             <video
                               src={story.localVideo}
                               controls
-                              poster={story.images[0]}
-                              className="w-full max-h-[480px] object-contain"
+                              playsInline
                               preload="metadata"
+                              className="w-full max-h-[560px] object-contain"
+                              style={{ WebkitPlaysinline: true } as React.CSSProperties}
                             >
-                              Your browser does not support the video tag.
+                              <source src={story.localVideo} type="video/mp4" />
+                              Your browser does not support video playback.
                             </video>
                           </div>
                         )}
