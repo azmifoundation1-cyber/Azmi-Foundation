@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Target, HeartPulse, GraduationCap, Leaf, Users, Building2, Flame } from "lucide-react";
 import { motion } from "framer-motion";
 
+const CAMPAIGN_YOUTUBE_IDS: Record<number, string> = {
+  3: "Z_exh7zMqDs",
+  4: "NfYQeSsNQrg",
+};
+
 const CATEGORY_CONFIG: Record<string, { label: string; Icon: React.ElementType; color: string }> = {
   health:      { label: "Medical Emergency",   Icon: HeartPulse,    color: "bg-red-600" },
   education:   { label: "Education",           Icon: GraduationCap, color: "bg-blue-700" },
@@ -18,6 +23,7 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
   const percent = Math.min(100, Math.round((Number(campaign.currentAmount) / Number(campaign.targetAmount)) * 100));
   const cat = CATEGORY_CONFIG[campaign.category] ?? CATEGORY_CONFIG.other;
   const { label, Icon, color } = cat;
+  const youtubeId = CAMPAIGN_YOUTUBE_IDS[campaign.id];
 
   return (
     <Link href={`/campaigns/${campaign.id}`} className="block h-full cursor-pointer">
@@ -28,14 +34,26 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
         className="h-full perspective-1000"
       >
         <Card className="group overflow-hidden border-none metallic-card flex flex-col h-full bg-white rounded-none shadow-[0_30px_60px_rgba(0,0,0,0.1)] hover:shadow-[0_50px_100px_rgba(0,0,0,0.2)] transform-gpu transition-all duration-700">
-          <div className="relative h-64 sm:h-80 overflow-hidden">
-            <motion.img
-              whileHover={{ scale: 1.15 }}
-              transition={{ duration: 1.2 }}
-              src={campaign.imageUrl || `https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80`}
-              alt={campaign.title}
-              className="w-full h-full object-cover"
-            />
+          <div className="relative h-64 sm:h-80 overflow-hidden bg-black">
+            {youtubeId ? (
+              <>
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
+                  className="absolute inset-0 w-full h-full pointer-events-none"
+                  style={{ border: "none", transform: "scale(1.05)" }}
+                  allow="autoplay; encrypted-media"
+                  loading="lazy"
+                />
+              </>
+            ) : (
+              <motion.img
+                whileHover={{ scale: 1.15 }}
+                transition={{ duration: 1.2 }}
+                src={campaign.imageUrl || `https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80`}
+                alt={campaign.title}
+                className="w-full h-full object-cover"
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/40 to-transparent opacity-90" />
             <motion.div
               initial={{ x: 50, opacity: 0 }}
