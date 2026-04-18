@@ -24,12 +24,12 @@ declare global {
 
 const PRESET_AMOUNTS_MAP: Record<number, number[]> = {
   3: [680, 1360, 3400, 6800],
-  4: [1000, 2500, 5000, 10000],
+  4: [500, 3500, 5000, 10000],
 };
 
 const PRESET_LABELS_MAP: Record<number, string[]> = {
   3: ["1 family's groceries", "2 families' groceries", "5 families' groceries", "10 families' groceries"],
-  4: ["2 days of medicines", "1 week of physio", "10 days nursing", "1 month of meds"],
+  4: ["1 physio session", "Week of medicines", "Home nurse visit", "1 month physio"],
 };
 
 const PAYMENT_ICONS = [
@@ -95,7 +95,7 @@ const CAMPAIGN_STORIES: Record<number, {
       "Then came the nightmare no one saw coming — a horrific accident that crushed his skull and stole his strength. Severe traumatic brain injury: blood flooding his brain, fractures everywhere, unbearable suffering. Doctors at Meera Hospital rushed him into emergency care, warning that immediate craniotomy (brain surgery) was critical. He battled in the ICU, machines keeping him alive, while we watched in helpless agony — praying every second, promising God anything, just to hear his voice once more.",
       "We poured in every last rupee — our savings wiped out, relatives drained dry, jewellery sold. The hospital handed us an official estimate: approximately ₹1 crore 5 lakh (₹1.05 crore) for full treatment — craniotomy, extended ICU days, daily medicines, repeated CT/MRI scans, and ongoing recovery. That number felt like a death sentence. With broken hearts and no money left, we had no choice but to discharge Papa and bring him home on basic care — because staying longer would have meant abandoning him to fate. We carried him home, praying every step of the way.",
       "Now he's here, in the same room where he used to laugh and play with us — but he's a shadow of himself. He struggles to speak even a word. His body barely moves. His eyes look straight into mine with silent pain, as if begging, \"Beta, please don't give up on me.\" Doctors insist that for any real chance at recovery, Papa needs urgent continuous home care: daily specialised physiotherapy (₹500–₹3,000/session), trained nurse visits, powerful brain medicines, and follow-up scans. Without this, his condition could worsen at any moment.",
-      "Papa saved us from every hardship life threw at us. Now I'm on my knees, alone and desperate, pleading for a miracle. Your compassion could be the light that brings my father back — lets him call my name again, walk to embrace his family, smile like the hero he is. Even ₹1,000 covers two days of essential medicines. ₹2,500 funds a full week of physiotherapy. ₹5,000 pays for 10 days of home nursing care. Please donate whatever your heart can give — or simply share this story. Every rupee, every share, every dua keeps Papa fighting. 🤲❤️",
+      "Papa saved us from every hardship life threw at us. Now I'm on my knees, alone and desperate, pleading for a miracle. Your compassion could be the light that brings my father back — lets him call my name again, walk to embrace his family, smile like the hero he is. Even ₹500 covers one full physiotherapy session. ₹3,500 funds a week of medicines. ₹5,000 pays for a home nurse visit. ₹10,000 gives Papa a full month of physiotherapy. Please donate whatever your heart can give — or simply share this story. Every rupee, every share, every dua keeps Papa fighting. 🤲❤️",
     ],
     images: [
       "",
@@ -1327,10 +1327,10 @@ export default function CampaignDetail() {
                   <div className="border border-red-100 bg-red-50 p-4 space-y-2">
                     <p className="text-[10px] font-black text-red-700 uppercase tracking-widest mb-3">Your Donation Impact</p>
                     {(id === 4 ? [
-                      { amount: "₹1,000",  impact: "2 days of essential medicines" },
-                      { amount: "₹2,500",  impact: "1 week of physiotherapy session" },
-                      { amount: "₹5,000",  impact: "10 days of home nursing care" },
-                      { amount: "₹10,000", impact: "Full month of basic medications" },
+                      { amount: "₹500",    impact: "1 physiotherapy session" },
+                      { amount: "₹3,500",  impact: "1 week of medicines" },
+                      { amount: "₹5,000",  impact: "Home nurse visit" },
+                      { amount: "₹10,000", impact: "1 full month of physio" },
                     ] : [
                       { amount: "₹680",   impact: "1 grocery kit for 1 family" },
                       { amount: "₹1,360", impact: "Grocery kits for 2 families" },
