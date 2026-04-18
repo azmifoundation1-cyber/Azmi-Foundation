@@ -120,7 +120,7 @@ export default function CampaignDetail() {
   const [isAnon, setIsAnon] = useState(false);
   const [copied, setCopied] = useState(false);
   const [donating, setDonating] = useState(false);
-  const [activeTab, setActiveTab] = useState<"story" | "updates" | "supporters">("story");
+  const [activeTab, setActiveTab] = useState<"story" | "updates" | "supporters" | "documents">("story");
 
   // 80G Receipt fields
   const [want80G, setWant80G] = useState(false);
@@ -1074,6 +1074,18 @@ export default function CampaignDetail() {
                     {tab === "supporters" && `Supporters (${supporters.length})`}
                   </button>
                 ))}
+                {id === 4 && (
+                  <button
+                    onClick={() => setActiveTab("documents")}
+                    className={`flex-1 py-4 text-[10px] font-black uppercase tracking-[0.3em] transition-all border-b-2 ${
+                      activeTab === "documents"
+                        ? "border-primary text-primary"
+                        : "border-transparent text-gray-400 hover:text-gray-600"
+                    }`}
+                  >
+                    Documents
+                  </button>
+                )}
               </div>
 
               <div className="p-6 sm:p-10">
@@ -1192,6 +1204,55 @@ export default function CampaignDetail() {
                         )}
                       </>
                     )}
+                  </div>
+                )}
+
+                {/* Documents Tab — campaign 4 only */}
+                {activeTab === "documents" && id === 4 && (
+                  <div className="space-y-8">
+                    <div>
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/40 mb-1">Verified Medical Document</h3>
+                      <h2 className="text-xl font-black text-primary uppercase tracking-tight">Official Hospital Estimation Letter</h2>
+                      <p className="text-xs text-gray-400 mt-1">Issued by Meera Hospital, Alwar, Rajasthan — 27 November 2025</p>
+                    </div>
+
+                    <div className="border border-gray-100 rounded-none overflow-hidden shadow-sm">
+                      <div className="bg-gray-50 px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+                        <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center shrink-0">
+                          <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-xs font-black text-primary uppercase tracking-wider">Meera Hospital — Estimation Letter</p>
+                          <p className="text-[10px] text-gray-400">Patient: Anwar (49 yrs) · Total Estimate: ₹1,05,80,000</p>
+                        </div>
+                      </div>
+                      <a href="/anwar-estimate-letter.jpeg" target="_blank" rel="noopener noreferrer" className="block group">
+                        <img
+                          src="/anwar-estimate-letter.jpeg"
+                          alt="Meera Hospital Official Estimation Letter for Anwar — ₹1.05 Crore medical expenses"
+                          className="w-full object-contain bg-white group-hover:opacity-95 transition-opacity"
+                        />
+                        <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                          <span className="text-[10px] text-gray-500 font-medium">Tap to view full size</span>
+                          <span className="text-[10px] font-black text-accent uppercase tracking-widest">Open Document →</span>
+                        </div>
+                      </a>
+                    </div>
+
+                    <div className="bg-amber-50 border border-amber-200 rounded-none p-4 space-y-2">
+                      <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Expense Breakdown</p>
+                      <div className="space-y-2 text-sm text-amber-900">
+                        <div className="flex justify-between"><span>Emergency brain surgery (craniotomy, tracheostomy, ICU)</span><span className="font-black shrink-0 ml-4">₹45,00,000</span></div>
+                        <div className="flex justify-between"><span>Medicines, nursing, physio &amp; rehabilitation (24 months)</span><span className="font-black shrink-0 ml-4">₹40,80,000</span></div>
+                        <div className="flex justify-between"><span>Neuro-ICU stay (15–30 days), ventilator, CT/MRI scans</span><span className="font-black shrink-0 ml-4">₹15–20,00,000</span></div>
+                        <div className="flex justify-between border-t border-amber-300 pt-2 mt-2">
+                          <span className="font-black uppercase tracking-wide">Total Estimated Cost</span>
+                          <span className="font-black text-red-700 shrink-0 ml-4">₹1,05,80,000</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
