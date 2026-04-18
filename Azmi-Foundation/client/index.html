@@ -9,13 +9,27 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-WZ3N7F24');</script>
 <!-- End Google Tag Manager -->
-<!-- Microsoft Clarity -->
-<script type="text/javascript">
-(function(c,l,a,r,i,t,y){
-c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-})(window, document, "clarity", "script", "wcimextcx8");
+<!-- Microsoft Clarity — deferred until after page load, not on Instagram WebView -->
+<script>
+(function(){
+  var ua = navigator.userAgent||'';
+  var isInstagram = ua.indexOf('Instagram')!==-1;
+  if(isInstagram) return; // skip entirely on Instagram in-app browser
+  function loadClarity(){
+    try{
+      (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window,document,"clarity","script","wcimextcx8");
+    }catch(e){}
+  }
+  if(document.readyState==='complete'){
+    setTimeout(loadClarity,3000);
+  } else {
+    window.addEventListener('load',function(){ setTimeout(loadClarity,3000); });
+  }
+})();
 </script>
 <!-- End Microsoft Clarity -->
 <!-- Meta Pixel Code — script only in head -->
