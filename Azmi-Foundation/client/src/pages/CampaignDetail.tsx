@@ -100,9 +100,10 @@ const CAMPAIGN_STORIES: Record<number, {
     images: [
       "",
       "",
-      "/anwar-story-icu.png",
-      "/anwar-story-family.png",
-      "/anwar-story-physio.png",
+      "/anwar-icu-bed.jpeg",
+      "/anwar-head-bandage.jpeg",
+      "/anwar-before-work.jpeg",
+      "/anwar-before-formal.jpeg",
     ],
   },
 };
