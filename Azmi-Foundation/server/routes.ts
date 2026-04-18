@@ -721,6 +721,37 @@ async function seedDatabase() {
     });
   }
 
+  const anwarExists = campaigns.some(c => c.title.includes("Anwar"));
+  if (!anwarExists) {
+    await storage.createCampaign({
+      title: "Save Anwar — A Father Fighting to Survive After Traumatic Brain Injury",
+      description: "Anwar (49) suffered a severe traumatic brain injury — emergency craniotomy, ICU, fractures. Hospital bills wiped out Rs. 1.05 crore in family savings. He now needs Rs. 50,000 to Rs. 2 lakh every month for physiotherapy, medicines and home nursing. His daughter Alqama is fighting for one more chance to save her father.",
+      story: `Mera naam Alqama hai. Aur yeh likhte waqt meri aankhon mein aansu hain — kyunki jo main share karne waali hoon, woh sirf meri kahani nahi, mere poore khandan ki zindagi ki baat hai.
+
+Papa — Anwar (49 saal) — woh insaan jo fajar ki namaz ke baad apne haath se gaadi marammat karta, ghar chalata, humari padhai ka kharch uthata, aur raat ko thaka-haara ghar aata — par muskuraata hamesha. Unhone humein har toofaan se bachaaya. Aaj woh khud toofaan mein hain.
+
+Ek haadse ne sab kuch badal diya. Papa ke sar par gehri chot lagi — khoon brain mein, fractures, ICU, emergency craniotomy. Hospital ka estimate: Rs. 1.05 crore. Hamari jama-poonji khatam. Rishtedar thak gaye. Humne unhe ghar lana pada — kyunki paisa nahi tha.
+
+Aaj papa usi kamre mein letey hain jahan woh hum se haste aur khelate the. Bol nahi paate. Hilna mushkil hai. Lekin unki aankhein mujhe dekhti hain aur kehti hain — beta, himmat mat haarna.
+
+Meri ammi raat bhar rooti hain. Chhote bhai-behen darate hain — papa kab gale lagayenge? Main har subah unka haath thamti hoon aur khud se puchti hoon — kya main unhe bacha sakti hoon?
+
+Doctors kehte hain recovery possible hai — agar abhi sahi care mile. Daily physiotherapy, medicines, home nursing. Lekin har mahina Rs. 50,000 se Rs. 2 lakh chahiye. Hamare paas kuch nahi bacha.
+
+Main aapke saamne jhuktay hue, haath failaate hue, sirf ek cheez maangnay aayi hoon — apne papa ke liye ek aur chance.
+
+Papa... thoda aur ruko. Aapki beti duniya se dua maang rahi hai.`,
+      category: "health",
+      targetAmount: "2500000",
+      imageUrl: "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=800",
+      status: "active",
+      featured: true,
+      endDate: new Date("2026-05-18T23:59:59.000Z"),
+      upiId: "8320218861@okbizaxis",
+      upiName: "Azmi Foundation",
+    });
+  }
+
   const programs = await storage.getPrograms();
   if (programs.length === 0) {
     await storage.createProgram({
