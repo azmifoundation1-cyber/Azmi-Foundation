@@ -1,0 +1,20 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "roUiW5cTZsdaFWEDV36zU"
+uri = "file://Azmi-Foundation/client/public/anwar-story-icu.png"
+type = "image"
+title = "anwar icu hospital scene"
+
+[[generated]]
+id = "jabg51oGw20JBdkVi_zBn"
+uri = "file://Azmi-Foundation/client/public/anwar-story-family.png"
+type = "image"
+title = "daughter caring for father"
+
+[[generated]]
+id = "B8XEys9pVeW8hEoUlz0PO"
+uri = "file://Azmi-Foundation/client/public/anwar-story-physio.png"
+type = "image"
+title = "physiotherapy rehabilitation session"

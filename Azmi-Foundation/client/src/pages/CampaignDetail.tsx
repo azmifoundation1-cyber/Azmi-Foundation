@@ -90,7 +90,6 @@ const CAMPAIGN_STORIES: Record<number, {
     ],
   },
   4: {
-    youtubeId: "NfYQeSsNQrg",
     story: [
       "My name is Alqma, and I'm writing this with a heavy, shattered heart — tears blurring my vision as I beg the world to help save my father, my hero, Anwar (49 years old). Papa was our entire world: the strong, smiling man who woke at dawn every day for his car repair work, sweating through long hours to give us everything — my studies, our home, my mother's gentle smiles, my little siblings' innocent dreams. He'd wrap me in his arms and say, \"Beta, Papa is always here. No matter what, I won't let anything happen to you.\" He was our shield. Our provider. Our everything.",
       "Then came the nightmare no one saw coming — a horrific accident that crushed his skull and stole his strength. Severe traumatic brain injury: blood flooding his brain, fractures everywhere, unbearable suffering. Doctors at Meera Hospital rushed him into emergency care, warning that immediate craniotomy (brain surgery) was critical. He battled in the ICU, machines keeping him alive, while we watched in helpless agony — praying every second, promising God anything, just to hear his voice once more.",
@@ -101,9 +100,9 @@ const CAMPAIGN_STORIES: Record<number, {
     images: [
       "",
       "",
-      "",
-      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80",
-      "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&q=80",
+      "/anwar-story-icu.png",
+      "/anwar-story-family.png",
+      "/anwar-story-physio.png",
     ],
   },
 };
