@@ -552,7 +552,7 @@ export default function CampaignDetail() {
               <Link href="/campaigns" className="inline-flex items-center gap-2 text-xs text-gray-400 font-bold uppercase tracking-widest mb-2 hover:text-primary transition-colors">
                 <ArrowLeft className="w-3 h-3" /> All Campaigns
               </Link>
-              <h1 className="text-lg sm:text-3xl font-black text-primary leading-tight tracking-tight">
+              <h1 className={`text-lg sm:text-3xl font-black leading-tight tracking-tight ${id === 4 ? "text-red-700" : "text-primary"}`}>
                 {campaign.title}
               </h1>
             </motion.div>
