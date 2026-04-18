@@ -81,12 +81,29 @@ const CAMPAIGN_STORIES: Record<number, {
       "846 families in Ahmedabad need groceries right now. Just ₹680 provides one complete grocery kit for a family. Please help us carry this legacy forward — before it is too late."
     ],
     images: [
-      "/shahbaaz-thumb.jpg",   // [0] — video poster
-      "/azmi-img3.jpg",        // [1] — (index offset placeholder)
-      "/azmi-img3.jpg",        // [2] — shown after paragraph 2 (elderly woman being fed)
-      "/azmi-img4.jpg",        // [3] — shown after paragraph 3 (large crowd distribution)
-      "/azmi-img1.jpg",        // [4] — shown after paragraph 4 (food tray handout)
-      "/azmi-img2.jpg",        // [5] — shown after paragraph 5 (women sharing a meal)
+      "/shahbaaz-thumb.jpg",
+      "/azmi-img3.jpg",
+      "/azmi-img3.jpg",
+      "/azmi-img4.jpg",
+      "/azmi-img1.jpg",
+      "/azmi-img2.jpg",
+    ],
+  },
+  4: {
+    youtubeId: "NfYQeSsNQrg",
+    story: [
+      "My name is Alqma, and I'm writing this with a heavy, shattered heart — tears blurring my vision as I beg the world to help save my father, my hero, Anwar (49 years old). Papa was our entire world: the strong, smiling man who woke at dawn every day for his car repair work, sweating through long hours to give us everything — my studies, our home, my mother's gentle smiles, my little siblings' innocent dreams. He'd wrap me in his arms and say, \"Beta, Papa is always here. No matter what, I won't let anything happen to you.\" He was our shield. Our provider. Our everything.",
+      "Then came the nightmare no one saw coming — a horrific accident that crushed his skull and stole his strength. Severe traumatic brain injury: blood flooding his brain, fractures everywhere, unbearable suffering. Doctors at Meera Hospital rushed him into emergency care, warning that immediate craniotomy (brain surgery) was critical. He battled in the ICU, machines keeping him alive, while we watched in helpless agony — praying every second, promising God anything, just to hear his voice once more.",
+      "We poured in every last rupee — our savings wiped out, relatives drained dry, jewellery sold. The hospital handed us an official estimate: approximately ₹1 crore 5 lakh (₹1.05 crore) for full treatment — craniotomy, extended ICU days, daily medicines, repeated CT/MRI scans, and ongoing recovery. That number felt like a death sentence. With broken hearts and no money left, we had no choice but to discharge Papa and bring him home on basic care — because staying longer would have meant abandoning him to fate. We carried him home, praying every step of the way.",
+      "Now he's here, in the same room where he used to laugh and play with us — but he's a shadow of himself. He struggles to speak even a word. His body barely moves. His eyes look straight into mine with silent pain, as if begging, \"Beta, please don't give up on me.\" Doctors insist that for any real chance at recovery, Papa needs urgent continuous home care: daily specialised physiotherapy (₹500–₹3,000/session), trained nurse visits, powerful brain medicines, and follow-up scans. Without this, his condition could worsen at any moment.",
+      "Papa saved us from every hardship life threw at us. Now I'm on my knees, alone and desperate, pleading for a miracle. Your compassion could be the light that brings my father back — lets him call my name again, walk to embrace his family, smile like the hero he is. Even ₹1,000 covers two days of essential medicines. ₹2,500 funds a full week of physiotherapy. ₹5,000 pays for 10 days of home nursing care. Please donate whatever your heart can give — or simply share this story. Every rupee, every share, every dua keeps Papa fighting. 🤲❤️",
+    ],
+    images: [
+      "",
+      "",
+      "",
+      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80",
+      "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&q=80",
     ],
   },
 };
