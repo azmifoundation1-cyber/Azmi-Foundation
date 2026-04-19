@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, decimal, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -146,6 +146,25 @@ export const registrationsRelations = relations(registrations, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+// CAF Signatures Table
+export const cafSignatures = pgTable("caf_signatures", {
+  id: serial("id").primaryKey(),
+  campaignId: integer("campaign_id").references(() => campaigns.id),
+  campaignTitle: text("campaign_title"),
+  campaignerName: text("campaigner_name").notNull(),
+  campaignerPhone: text("campaigner_phone").notNull(),
+  beneficiaryName: text("beneficiary_name"),
+  purpose: text("purpose"),
+  targetAmount: text("target_amount"),
+  hospital: text("hospital"),
+  signatureDataUrl: text("signature_data_url").notNull(),
+  ipAddress: text("ip_address"),
+  otpVerified: boolean("otp_verified").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type CafSignature = typeof cafSignatures.$inferSelect;
 
 // Schemas
 export const insertCampaignSchema = createInsertSchema(campaigns).omit({ id: true, createdAt: true, updatedAt: true, currentAmount: true });

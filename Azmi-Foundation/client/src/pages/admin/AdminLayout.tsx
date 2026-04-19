@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, LayoutDashboard, Megaphone, Heart, Users, BookOpen, MessageSquare, ClipboardList, LogOut, ChevronRight, Shield, Settings } from "lucide-react";
+import { Loader2, LayoutDashboard, Megaphone, Heart, Users, BookOpen, MessageSquare, ClipboardList, LogOut, ChevronRight, Shield, Settings, FileText } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", path: "/admin", icon: LayoutDashboard },
@@ -10,6 +10,7 @@ const navItems = [
   { label: "Programs", path: "/admin/programs", icon: BookOpen },
   { label: "Users", path: "/admin/users", icon: Users },
   { label: "Messages", path: "/admin/messages", icon: MessageSquare },
+  { label: "Signed CAFs", path: "/admin/caf", icon: FileText },
   { label: "Settings", path: "/admin/settings", icon: Settings },
 ];
 

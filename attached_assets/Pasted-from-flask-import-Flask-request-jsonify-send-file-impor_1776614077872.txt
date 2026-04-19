@@ -1,0 +1,135 @@
+from flask import Flask, request, jsonify, send_file
+import base64, os, random, smtplib
+from datetime import datetime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+
+app = Flask(__name__)
+os.makedirs('signed_pdfs', exist_ok=True)
+os.makedirs('signatures', exist_ok=True)
+
+# ================== SMS OTP (Use MSG91 / Fast2SMS / Twilio in production) ==================
+OTP_STORE = {}  # In production, use Redis or database
+
+@app.route('/send-otp', methods=['POST'])
+def send_otp():
+    data = request.json
+    mobile = data.get('mobile')
+    otp = str(random.randint(100000, 999999))
+    OTP_STORE[mobile] = otp
+    
+    # TODO: Integrate real SMS gateway here (MSG91 recommended for India)
+    print(f"🔐 OTP for {mobile}: {otp}")   # For testing only
+    
+    return jsonify({"success": True, "message": "OTP sent"})
+
+@app.route('/verify-otp', methods=['POST'])
+def verify_otp():
+    data = request.json
+    if OTP_STORE.get(data['mobile']) == data['otp']:
+        return jsonify({"success": True})
+    return jsonify({"success": False, "message": "Invalid OTP"})
+
+# ================== Generate Beautiful PDF + Email ==================
+@app.route('/generate-signed-caf', methods=['POST'])
+def generate_signed_caf():
+    data = request.json
+    signature_b64 = data['signature'].split(',')[1]
+    
+    sig_filename = f"signatures/{data['campaignId']}.png"
+    with open(sig_filename, 'wb') as f:
+        f.write(base64.b64decode(signature_b64))
+
+    pdf_filename = f"signed_pdfs/{data['campaignId']}_CAF_Signed.pdf"
+    
+    doc = SimpleDocTemplate(pdf_filename, pagesize=A4, rightMargin=40, leftMargin=40, topMargin=40, bottomMargin=40)
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='Title', fontSize=16, alignment=1, spaceAfter=20, textColor=colors.darkblue))
+    styles.add(ParagraphStyle(name='Heading', fontSize=13, spaceBefore=15, spaceAfter=8, textColor=colors.black))
+    
+    story = []
+    
+    story.append(Paragraph("<b>CONSENT AGREEMENT FOR FUNDRAISING (CAF)</b>", styles['Title']))
+    story.append(Paragraph(f"Azmi Foundation • Campaign ID: {data['campaignId']}", styles['Normal']))
+    story.append(Paragraph(f"Date: {datetime.now().strftime('%d %B %Y at %I:%M %p')}", styles['Normal']))
+    story.append(Spacer(1, 20))
+
+    # === Full Agreement Text (Neatly Formatted) ===
+    full_text = """
+    BETWEEN<br/>
+    AZMI FOUNDATION, a Public Charitable Trust... [Paste your complete CAF text here]<br/><br/>
+    
+    1. The campaign shall be started on...<br/>
+    2. The funds raised shall be utilised only for...<br/>
+    ... [All 23 clauses]
+    
+    Annexure – A ... [Include full table]
+    """
+    
+    story.append(Paragraph(full_text, styles['Normal']))
+    story.append(Spacer(1, 30))
+
+    # Signature Section
+    story.append(Paragraph("<b>Signature of Campaigner</b>", styles['Heading']))
+    story.append(Paragraph(f"Name: {data['campaignerName']}", styles['Normal']))
+    story.append(Paragraph(f"Mobile: {data.get('mobile', 'N/A')}", styles['Normal']))
+    story.append(Paragraph(f"Date & Time: {datetime.now().strftime('%d %B %Y, %I:%M %p')}", styles['Normal']))
+    
+    sig_img = Image(sig_filename, width=280, height=110)
+    story.append(sig_img)
+    
+    story.append(Paragraph("<br/>I confirm this is my electronic signature. Signed with consent and OTP verification under the Information Technology Act, 2000.", styles['Normal']))
+
+    doc.build(story)
+
+    # === Send Email with PDF Attachment ===
+    send_email_with_pdf(data['campaignerName'], pdf_filename)
+
+    return jsonify({
+        "success": True,
+        "pdf_url": f"/download/{data['campaignId']}_CAF_Signed.pdf"
+    })
+
+def send_email_with_pdf(name, pdf_path):
+    from_email = "your-email@gmail.com"      # Change this
+    password = "your-app-password"           # Use App Password for Gmail
+    to_email = "campaigner-email@example.com"  # Get from form in real app
+
+    msg = MIMEMultipart()
+    msg['From'] = from_email
+    msg['To'] = to_email
+    msg['Subject'] = f"Azmi Foundation - Signed Consent Agreement (CAF)"
+
+    body = f"Dear {name},\n\nYour Consent Agreement has been successfully signed and verified.\nPlease find the attached signed PDF.\n\nThank you,\nAzmi Foundation"
+    msg.attach(MIMEText(body, 'plain'))
+
+    with open(pdf_path, "rb") as attachment:
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', f"attachment; filename=CAF_Signed.pdf")
+        msg.attach(part)
+
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(from_email, password)
+        server.send_message(msg)
+        server.quit()
+        print("📧 Email sent successfully")
+    except Exception as e:
+        print("Email failed:", e)
+
+@app.route('/download/<filename>')
+def download_file(filename):
+    return send_file(f'signed_pdfs/{filename}', as_attachment=True)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)

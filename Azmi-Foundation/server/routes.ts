@@ -755,6 +755,84 @@ export async function registerRoutes(
     }
   });
 
+  // ─── CAF: OTP & Signing ────────────────────────────────────────────────────
+  // In-memory OTP store (production: use Redis or DB with expiry)
+  const otpStore: Map<string, { otp: string; expiresAt: number }> = new Map();
+
+  app.post("/api/caf/send-otp", async (req, res) => {
+    try {
+      const { phone } = z.object({ phone: z.string().min(10).max(15) }).parse(req.body);
+      const otp = String(Math.floor(100000 + Math.random() * 900000));
+      otpStore.set(phone, { otp, expiresAt: Date.now() + 10 * 60 * 1000 }); // 10 min
+
+      // ── TODO: replace with real SMS gateway (MSG91 / Fast2SMS) ──
+      // await fetch("https://api.msg91.com/api/v5/otp", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json", "authkey": process.env.MSG91_KEY! },
+      //   body: JSON.stringify({ template_id: "...", mobile: phone, otp }),
+      // });
+      console.log(`[CAF OTP] Phone: ${phone} | OTP: ${otp}`);
+
+      const isDev = process.env.NODE_ENV !== "production";
+      res.json({ success: true, message: "OTP sent successfully", ...(isDev ? { devOtp: otp } : {}) });
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: "Invalid phone number" });
+      res.status(500).json({ message: "Failed to send OTP" });
+    }
+  });
+
+  app.post("/api/caf/verify-otp", async (req, res) => {
+    try {
+      const { phone, otp } = z.object({ phone: z.string(), otp: z.string() }).parse(req.body);
+      const record = otpStore.get(phone);
+      if (!record || record.otp !== otp.trim()) return res.status(400).json({ success: false, message: "Invalid OTP" });
+      if (Date.now() > record.expiresAt) {
+        otpStore.delete(phone);
+        return res.status(400).json({ success: false, message: "OTP expired. Please request a new one." });
+      }
+      otpStore.delete(phone);
+      res.json({ success: true, message: "OTP verified" });
+    } catch (err) {
+      res.status(400).json({ success: false, message: "Verification failed" });
+    }
+  });
+
+  app.post("/api/caf/save", async (req, res) => {
+    try {
+      const { cafSignatures: cafTable } = await import("@shared/schema");
+      const { db } = await import("./db");
+      const body = z.object({
+        campaignId: z.number().optional(),
+        campaignTitle: z.string().optional(),
+        campaignerName: z.string().min(1),
+        campaignerPhone: z.string().min(10),
+        beneficiaryName: z.string().optional(),
+        purpose: z.string().optional(),
+        targetAmount: z.string().optional(),
+        hospital: z.string().optional(),
+        signatureDataUrl: z.string().min(10),
+      }).parse(req.body);
+      const ip = req.ip || req.headers["x-forwarded-for"] as string || "unknown";
+      const [saved] = await db.insert(cafTable).values({ ...body, ipAddress: ip, otpVerified: true }).returning();
+      res.json({ success: true, cafId: `CAF-${String(saved.id).padStart(6, "0")}`, id: saved.id });
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Failed to save CAF" });
+    }
+  });
+
+  app.get("/api/admin/caf", isAdmin, async (_req, res) => {
+    try {
+      const { cafSignatures: cafTable } = await import("@shared/schema");
+      const { db } = await import("./db");
+      const { desc } = await import("drizzle-orm");
+      const rows = await db.select().from(cafTable).orderBy(desc(cafTable.createdAt));
+      res.json(rows);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch CAFs" });
+    }
+  });
+
   // Seed Data
   await seedDatabase();
 

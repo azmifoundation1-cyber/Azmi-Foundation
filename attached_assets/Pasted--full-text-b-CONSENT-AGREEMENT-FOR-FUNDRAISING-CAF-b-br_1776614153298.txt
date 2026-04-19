@@ -1,0 +1,63 @@
+    full_text = """
+    <b>CONSENT AGREEMENT FOR FUNDRAISING (CAF)</b><br/><br/>
+    
+    This Consent Agreement for Fundraising (“CAF”) is signed and executed on <b>[Date]</b> in Ahmedabad, Gujarat, India.<br/><br/>
+    
+    <b>BETWEEN</b><br/>
+    <b>AZMI FOUNDATION</b>, a Public Charitable Trust registered under the Bombay Public Trusts Act, 1950, having Registration No. <b>E/22280/AHMEDABAD</b> dated 23-07-2018, PAN <b>AAGTA9354B</b>, 80G and 12A registered, with its registered office at Gomtipur Bridge East-End, Opp. Kamdar Maidan, Gomtipur, Ahmedabad – 380021, Gujarat (hereinafter referred to as “<b>AZMI</b>” or “the Platform”)<br/><br/>
+    
+    <b>AND</b><br/>
+    <b>[Full Name of the Campaigner]</b>, acting as the Beneficiary / Patient or Legal Guardian or authorised Family Member / Representative (hereinafter referred to as the “<b>CAMPAIGNER</b>”).<br/><br/>
+    
+    <b>WHEREAS</b> AZMI is a crowdfunding platform providing services for raising funds for Medical, Educational, Hunger Relief, Disaster Relief and other Social Causes.<br/><br/>
+    
+    <b>WHEREAS</b> the Campaigner has approached AZMI to start a fundraising campaign for the following purpose:<br/><br/>
+    
+    <b>Campaign Details:</b><br/>
+    Campaign Title: [_______________________________]<br/>
+    Beneficiary Name: [_______________________________]<br/>
+    Purpose: [_______________________________]<br/>
+    Target Amount: ₹ [_______________________________]<br/>
+    Hospital / Institution: [_______________________________]<br/><br/>
+    
+    <b>NOW THIS AGREEMENT WITNESSETH AS FOLLOWS:</b><br/><br/>
+    
+    1. The campaign shall commence on or after [Start Date] with a target amount of ₹ [Target Amount]. AZMI does not guarantee achievement of the target.<br/><br/>
+    
+    2. The funds raised shall be used <b>only</b> for the purpose mentioned above.<br/><br/>
+    
+    3. AZMI shall have exclusive rights to all personal information, photographs, videos, medical records, KYC documents etc. provided by the Campaigner.<br/><br/>
+    
+    4. The Campaigner grants AZMI perpetual rights to use the above information on the platform, social media, and promotional materials for fundraising.<br/><br/>
+    
+    5. AZMI charges <b>zero platform fee</b>. Only actual third-party charges (payment gateway, marketing, GST) shall be deducted as per Annexure A.<br/><br/>
+    
+    6. AZMI may communicate with the Campaigner via email, SMS, WhatsApp or calls for campaign updates.<br/><br/>
+    
+    7. AZMI shall provide periodic updates on funds raised and balance available.<br/><br/>
+    
+    8. Any dispute shall first be resolved through AZMI’s two-tier escalation matrix.<br/><br/>
+    
+    9. AZMI shall release funds only after verification of proper invoices and documents.<br/><br/>
+    
+    10. In case of excess funds or campaign termination, AZMI may refund to donors or use for similar charitable causes with transparency.<br/><br/>
+    
+    11. Any misrepresentation or fraud by the Campaigner shall lead to immediate termination of the campaign and possible legal action.<br/><br/>
+    
+    12. The Campaigner agrees to indemnify AZMI against any claims arising due to incorrect information provided.<br/><br/>
+    
+    13. The Campaigner has read, understood and voluntarily agreed to all terms of this agreement.<br/><br/>
+    
+    14. This agreement is governed by the laws of India. Any dispute shall be subject to the exclusive jurisdiction of courts at Ahmedabad, Gujarat.<br/><br/>
+    
+    <b>Annexure – A : Indicative Expense Break-up</b><br/><br/>
+    
+    <b>Target Amount :</b> ₹ [Amount]<br/>
+    Platform Fee by AZMI : <b>0%</b><br/>
+    Payment Gateway Charges : Approx 2%<br/>
+    Marketing Charges (if any) : Up to __ %<br/>
+    GST & Taxes : 18% on applicable charges<br/>
+    <b>Net Amount Available :</b> ₹ [Calculated Amount]<br/><br/>
+    
+    I have read and understood all the terms. I voluntarily give my consent and electronically sign this document after successful OTP verification.
+    """

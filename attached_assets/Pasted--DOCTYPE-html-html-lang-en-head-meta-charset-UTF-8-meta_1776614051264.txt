@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign CAF - Azmi Foundation</title>
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@5.1.3/dist/signature_pad.umd.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; background:#f8f9fa; padding:15px; }
+    .card { background:white; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.1); padding:25px; max-width:850px; margin:auto; }
+    canvas { border:3px solid #0d6efd; border-radius:12px; background:#fff; width:100%; height:340px; touch-action:none; }
+    button { padding:12px 24px; margin:5px; border-radius:8px; font-weight:600; cursor:pointer; }
+    .btn-primary { background:#0d6efd; color:white; border:none; }
+    .btn-secondary { background:#6c757d; color:white; border:none; }
+    .declaration { background:#f0f8ff; padding:18px; border-radius:10px; margin:20px 0; }
+    input, select { padding:10px; margin:5px 0; width:100%; border-radius:6px; border:1px solid #ccc; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>🖋️ Electronic Signature - Consent Agreement for Fundraising</h2>
+  <p><strong>Campaigner:</strong> <span id="name">[Full Name]</span> | <strong>Date:</strong> <span id="date"></span></p>
+
+  <div class="declaration">
+    <input type="checkbox" id="consent" required>
+    <label for="consent">
+      I have read the entire Consent Agreement for Fundraising (CAF). 
+      I voluntarily consent to electronically sign this document under the Information Technology Act, 2000.
+    </label>
+  </div>
+
+  <!-- OTP Section -->
+  <div id="otp-section">
+    <label><strong>Mobile Number (for OTP verification):</strong></label>
+    <input type="tel" id="mobile" placeholder="Enter 10-digit mobile number" maxlength="10">
+    <button onclick="sendOTP()" class="btn-primary" id="send-otp-btn">📱 Send OTP</button>
+    
+    <div id="otp-input" style="display:none; margin-top:15px;">
+      <label><strong>Enter OTP:</strong></label>
+      <input type="text" id="otp" maxlength="6" placeholder="6-digit OTP">
+      <button onclick="verifyOTP()" class="btn-primary">✅ Verify OTP</button>
+    </div>
+  </div>
+
+  <div id="signature-section" style="display:none;">
+    <label><strong>Draw your signature below:</strong></label>
+    <canvas id="signature-pad"></canvas>
+
+    <div style="margin-top:15px;">
+      <button onclick="undo()" class="btn-secondary">↩️ Undo</button>
+      <button onclick="clearSig()" class="btn-secondary">🗑️ Clear</button>
+      <button onclick="saveAndGeneratePDF()" class="btn-primary" id="saveBtn" disabled>✅ Sign & Generate PDF</button>
+    </div>
+
+    <div id="preview" style="margin-top:20px; border:2px dashed #0d6efd; padding:10px; border-radius:12px; text-align:center; min-height:150px;"></div>
+  </div>
+</div>
+
+<script>
+  let signaturePad;
+  const canvas = document.getElementById('signature-pad');
+
+  function initSignaturePad() {
+    signaturePad = new SignaturePad(canvas, {
+      backgroundColor: 'rgb(255,255,255)',
+      penColor: 'rgb(0,0,0)',
+      minWidth: 1.5,
+      maxWidth: 4
+    });
+    resizeCanvas();
+  }
+
+  function resizeCanvas() {
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    canvas.width = canvas.offsetWidth * ratio;
+    canvas.height = 340 * ratio;
+    canvas.getContext('2d').scale(ratio, ratio);
+    if (signaturePad) signaturePad.clear();
+  }
+  window.addEventListener("resize", resizeCanvas);
+
+  document.getElementById('date').textContent = new Date().toLocaleDateString('en-IN');
+
+  function sendOTP() {
+    const mobile = document.getElementById('mobile').value.trim();
+    if (mobile.length !== 10) return alert("Enter valid 10-digit mobile number");
+
+    fetch('/send-otp', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ mobile: mobile })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('otp-input').style.display = 'block';
+        alert("OTP sent successfully!");
+      } else {
+        alert(data.message || "Failed to send OTP");
+      }
+    });
+  }
+
+  function verifyOTP() {
+    const mobile = document.getElementById('mobile').value.trim();
+    const otp = document.getElementById('otp').value.trim();
+
+    fetch('/verify-otp', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ mobile: mobile, otp: otp })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("✅ OTP Verified Successfully!");
+        document.getElementById('otp-section').style.display = 'none';
+        document.getElementById('signature-section').style.display = 'block';
+        initSignaturePad();
+      } else {
+        alert("Invalid OTP. Please try again.");
+      }
+    });
+  }
+
+  function undo() { /* same as before */ }
+  function clearSig() { /* same as before */ }
+
+  async function saveAndGeneratePDF() {
+    if (signaturePad.isEmpty()) return alert("Please draw your signature");
+
+    const dataURL = signaturePad.toDataURL('image/png');
+
+    document.getElementById('preview').innerHTML = `<img src="${dataURL}" style="max-width:100%; max-height:200px;">`;
+
+    const payload = {
+      signature: dataURL,
+      campaignerName: document.getElementById('name').textContent,
+      campaignId: "CAF-" + Date.now(),
+      timestamp: new Date().toISOString(),
+      mobile: document.getElementById('mobile').value,
+      consent: true
+    };
+
+    const res = await fetch('/generate-signed-caf', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+
+    const result = await res.json();
+    if (result.success) {
+      alert("✅ CAF PDF Generated & Sent to your email!");
+      window.location.href = result.pdf_url;
+    }
+  }
+</script>
+</body>
+</html>
