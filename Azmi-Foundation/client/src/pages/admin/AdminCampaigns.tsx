@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, Star, Loader2, RefreshCw, AlertCircle, CheckCircle, Upload, Link as LinkIcon, Play, Pause, EyeOff, CheckSquare, Copy, Users, IndianRupee, ExternalLink } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, Loader2, RefreshCw, AlertCircle, CheckCircle, Upload, Link as LinkIcon, Play, Pause, EyeOff, Eye, CheckSquare, Copy, Users, IndianRupee, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Campaign } from "@shared/schema";
 
@@ -279,11 +279,19 @@ export default function AdminCampaigns() {
                             onClick={() => statusMutation.mutate({ id: c.id, status: "paused" })}>
                             <Pause className="w-3 h-3" /> Pause
                           </Button>
-                          <Button size="sm" variant="outline" disabled={c.status === "hidden" || statusMutation.isPending}
-                            className="h-7 text-xs gap-1 border-gray-400 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
-                            onClick={() => statusMutation.mutate({ id: c.id, status: "hidden" })}>
-                            <EyeOff className="w-3 h-3" /> Hide
-                          </Button>
+                          {c.status === "hidden" ? (
+                            <Button size="sm" variant="outline" disabled={statusMutation.isPending}
+                              className="h-7 text-xs gap-1 border-green-400 text-green-700 bg-green-50 hover:bg-green-100"
+                              onClick={() => statusMutation.mutate({ id: c.id, status: "active" })}>
+                              <Eye className="w-3 h-3" /> Unhide
+                            </Button>
+                          ) : (
+                            <Button size="sm" variant="outline" disabled={statusMutation.isPending}
+                              className="h-7 text-xs gap-1 border-gray-400 text-gray-600 hover:bg-gray-100"
+                              onClick={() => statusMutation.mutate({ id: c.id, status: "hidden" })}>
+                              <EyeOff className="w-3 h-3" /> Hide
+                            </Button>
+                          )}
                           <Button size="sm" variant="outline" disabled={c.status === "completed" || statusMutation.isPending}
                             className="h-7 text-xs gap-1 border-blue-400 text-blue-700 hover:bg-blue-50 disabled:opacity-40"
                             onClick={() => statusMutation.mutate({ id: c.id, status: "completed" })}>
