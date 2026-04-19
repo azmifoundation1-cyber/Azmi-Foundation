@@ -131,14 +131,22 @@ export default function About() {
                   <h3 className="text-4xl font-black text-primary tracking-tighter uppercase leading-none">Leadership</h3>
                   <p className="text-accent font-black uppercase tracking-[0.3em] text-[10px] mt-2">Managing Trustees & Directors</p>
                 </div>
-                <div className="space-y-4">
-                  <p className="text-primary/70 text-sm font-bold uppercase tracking-widest leading-relaxed">
-                    DR AZHAR AZMI • ZEBA AZMI • ZAKIYA AZMI • DR SHAHBAAZ AZMI
-                  </p>
-                  <p className="text-primary/50 text-[10px] font-bold uppercase tracking-widest leading-relaxed italic">
-                    Leading the movement with visionary leadership and unwavering commitment to interfaith compassion.
-                  </p>
+                <div className="space-y-2">
+                  {[
+                    { name: "Dr Shahbaaz Azmi", role: "Trustee" },
+                    { name: "Zeba Azmi", role: "Managing Director & Trustee" },
+                    { name: "Dr Azhar Azmi", role: "Founder & Trustee" },
+                    { name: "Zakiya Azmi", role: "Trustee" },
+                  ].map(({ name, role }) => (
+                    <div key={name} className="flex items-baseline gap-3">
+                      <span className="text-sm font-black text-primary uppercase tracking-wider whitespace-nowrap">{name}</span>
+                      <span className="text-[9px] font-bold text-accent uppercase tracking-[0.2em] whitespace-nowrap">{role}</span>
+                    </div>
+                  ))}
                 </div>
+                <p className="text-primary/50 text-[10px] font-bold uppercase tracking-widest leading-relaxed italic">
+                  Leading the movement with visionary leadership and unwavering commitment to interfaith compassion.
+                </p>
                 <div className="flex items-center gap-4 text-primary/40 text-[10px] font-black uppercase tracking-widest pt-4">
                   <MapPin className="w-4 h-4" /> Gomtipur, Ahmedabad
                 </div>
