@@ -121,9 +121,9 @@ export default function About() {
             >
               <div className="h-[400px] md:h-auto overflow-hidden">
                 <img 
-                  src="https://images.unsplash.com/photo-1556157382-97eda2d62296?w=600&q=80" 
-                  alt="Shahbaaz Azmi" 
-                  className="w-full h-full object-cover" 
+                  src="/shahbaaz-photo.jpg" 
+                  alt="Dr Shahbaaz Azmi" 
+                  className="w-full h-full object-cover object-top" 
                 />
               </div>
               <div className="p-12 sm:p-16 flex flex-col justify-center space-y-6">
