@@ -441,6 +441,17 @@ export async function registerRoutes(
     }
   });
 
+  app.patch("/api/admin/campaigns/:id/status", isAdmin, async (req, res) => {
+    try {
+      const { status } = z.object({ status: z.enum(["active", "paused", "completed", "hidden"]) }).parse(req.body);
+      const campaign = await storage.updateCampaign(Number(req.params.id), { status });
+      res.json(campaign);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.delete("/api/admin/campaigns/:id", isAdmin, async (req, res) => {
     await storage.deleteCampaign(Number(req.params.id));
     res.json({ success: true });

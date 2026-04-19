@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, Star, Loader2, RefreshCw, AlertCircle, CheckCircle, Upload, Link as LinkIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, Loader2, RefreshCw, AlertCircle, CheckCircle, Upload, Link as LinkIcon, Play, Pause, EyeOff, CheckSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Campaign } from "@shared/schema";
 
@@ -77,6 +77,21 @@ export default function AdminCampaigns() {
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
+  const statusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) =>
+      fetch(`/api/admin/campaigns/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      }).then(r => r.json()),
+    onSuccess: (_data, { status }) => {
+      qc.invalidateQueries({ queryKey: ["/api/campaigns"] });
+      const labels: Record<string, string> = { active: "Live", paused: "Paused", hidden: "Hidden", completed: "Completed" };
+      toast({ title: `Campaign set to ${labels[status] || status}` });
+    },
+    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
   const addUpdateMutation = useMutation({
     mutationFn: async ({ campaignId, data }: any) => {
       const res = await fetch(`/api/admin/campaigns/${campaignId}/updates`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
@@ -109,7 +124,7 @@ export default function AdminCampaigns() {
     setDialogOpen(true);
   }
 
-  const statusColor: Record<string, string> = { active: "bg-green-100 text-green-700", completed: "bg-blue-100 text-blue-700", paused: "bg-yellow-100 text-yellow-700" };
+  const statusColor: Record<string, string> = { active: "bg-green-100 text-green-700", completed: "bg-blue-100 text-blue-700", paused: "bg-yellow-100 text-yellow-700", hidden: "bg-gray-100 text-gray-500" };
 
   const pendingCampaigns = (campaigns || []).filter(c => c.status === "paused" && c.createdBy);
   const activeCampaigns = (campaigns || []).filter(c => !(c.status === "paused" && c.createdBy));
@@ -185,7 +200,7 @@ export default function AdminCampaigns() {
                         </div>
                         <p className="text-xs text-gray-500 mt-1 line-clamp-2">{c.description}</p>
                       </div>
-                      <div className="flex items-center justify-between mt-3">
+                      <div className="mt-3 space-y-2">
                         <div className="text-xs text-gray-500">
                           <span className="font-bold text-gray-800">₹{Number(c.currentAmount).toLocaleString()}</span>
                           <span className="mx-1">of</span>
@@ -194,7 +209,29 @@ export default function AdminCampaigns() {
                             {Math.min(100, Math.round((Number(c.currentAmount) / Number(c.targetAmount)) * 100))}%
                           </span>
                         </div>
-                        <div className="flex gap-2">
+                        {/* Quick status row */}
+                        <div className="flex flex-wrap gap-1.5">
+                          <Button size="sm" disabled={c.status === "active" || statusMutation.isPending}
+                            className="h-7 text-xs gap-1 bg-green-600 hover:bg-green-700 text-white disabled:opacity-40"
+                            onClick={() => statusMutation.mutate({ id: c.id, status: "active" })}>
+                            <Play className="w-3 h-3" /> Live
+                          </Button>
+                          <Button size="sm" variant="outline" disabled={c.status === "paused" || statusMutation.isPending}
+                            className="h-7 text-xs gap-1 border-yellow-400 text-yellow-700 hover:bg-yellow-50 disabled:opacity-40"
+                            onClick={() => statusMutation.mutate({ id: c.id, status: "paused" })}>
+                            <Pause className="w-3 h-3" /> Pause
+                          </Button>
+                          <Button size="sm" variant="outline" disabled={c.status === "hidden" || statusMutation.isPending}
+                            className="h-7 text-xs gap-1 border-gray-400 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+                            onClick={() => statusMutation.mutate({ id: c.id, status: "hidden" })}>
+                            <EyeOff className="w-3 h-3" /> Hide
+                          </Button>
+                          <Button size="sm" variant="outline" disabled={c.status === "completed" || statusMutation.isPending}
+                            className="h-7 text-xs gap-1 border-blue-400 text-blue-700 hover:bg-blue-50 disabled:opacity-40"
+                            onClick={() => statusMutation.mutate({ id: c.id, status: "completed" })}>
+                            <CheckSquare className="w-3 h-3" /> Complete
+                          </Button>
+                          <div className="flex-1" />
                           <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => setUpdateDialog(c.id)}>
                             <RefreshCw className="w-3 h-3" /> Update
                           </Button>

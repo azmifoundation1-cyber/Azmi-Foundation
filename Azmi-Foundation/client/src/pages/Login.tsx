@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Mail, Lock, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Lock, AlertCircle, User } from "lucide-react";
 
 function formatAmount(n: number) {
   if (n >= 10000000) return `₹${(n / 10000000).toFixed(1)} Cr+`;
@@ -103,18 +103,18 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email address</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email or Phone Number</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   id="email"
-                  type="email"
-                  autoComplete="email"
+                  type="text"
+                  autoComplete="username"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10 h-11 border-gray-200 focus:border-primary focus:ring-primary"
-                  placeholder="you@example.com"
+                  placeholder="you@example.com or 9876543210"
                 />
               </div>
             </div>

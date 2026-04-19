@@ -18,7 +18,7 @@ export const campaigns = pgTable("campaigns", {
   currentAmount: decimal("current_amount").default("0").notNull(),
   imageUrl: text("image_url"),
   videoUrl: text("video_url"),
-  status: text("status", { enum: ["active", "completed", "paused"] }).default("active").notNull(),
+  status: text("status", { enum: ["active", "completed", "paused", "hidden"] }).default("active").notNull(),
   featured: boolean("featured").default(false),
   endDate: timestamp("end_date"),
   createdBy: text("created_by").references(() => users.id),
