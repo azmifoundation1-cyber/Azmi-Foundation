@@ -400,6 +400,96 @@ export async function registerRoutes(
     res.json(stats);
   });
 
+  // --- Admin Analytics: Donation trend (last 30 days) ---
+  app.get("/api/admin/analytics/donations", isAdmin, async (req, res) => {
+    try {
+      const { donations: allDonations } = await import("@shared/schema");
+      const { gte, sql: sqlFn, and, eq: eqFn } = await import("drizzle-orm");
+      const { db } = await import("./db");
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 29);
+      const rows = await db
+        .select({
+          day: sqlFn<string>`DATE(${allDonations.createdAt})`,
+          total: sqlFn<number>`COALESCE(SUM(${allDonations.amount}), 0)`,
+          count: sqlFn<number>`COUNT(*)`,
+        })
+        .from(allDonations)
+        .where(and(gte(allDonations.createdAt, cutoff), eqFn(allDonations.status, "completed")))
+        .groupBy(sqlFn`DATE(${allDonations.createdAt})`)
+        .orderBy(sqlFn`DATE(${allDonations.createdAt})`);
+      // Fill in missing days
+      const map: Record<string, { total: number; count: number }> = {};
+      rows.forEach(r => { map[r.day] = { total: Number(r.total), count: Number(r.count) }; });
+      const result = [];
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(); d.setDate(d.getDate() - i);
+        const key = d.toISOString().slice(0, 10);
+        result.push({ date: key, label: d.toLocaleDateString("en-IN", { day: "2-digit", month: "short" }), total: map[key]?.total ?? 0, count: map[key]?.count ?? 0 });
+      }
+      res.json(result);
+    } catch (err) {
+      res.status(500).json({ message: "Analytics error" });
+    }
+  });
+
+  // --- Admin Analytics: Per-campaign stats ---
+  app.get("/api/admin/analytics/campaigns", isAdmin, async (req, res) => {
+    try {
+      const { campaigns: campaignsTable, donations: donationsTable } = await import("@shared/schema");
+      const { sql: sqlFn, eq: eqFn } = await import("drizzle-orm");
+      const { db } = await import("./db");
+      const rows = await db
+        .select({
+          campaignId: donationsTable.campaignId,
+          total: sqlFn<number>`COALESCE(SUM(${donationsTable.amount}), 0)`,
+          count: sqlFn<number>`COUNT(*)`,
+        })
+        .from(donationsTable)
+        .where(eqFn(donationsTable.status, "completed"))
+        .groupBy(donationsTable.campaignId);
+      const stats: Record<number, { total: number; count: number }> = {};
+      rows.forEach(r => { if (r.campaignId) stats[r.campaignId] = { total: Number(r.total), count: Number(r.count) }; });
+      res.json(stats);
+    } catch (err) {
+      res.status(500).json({ message: "Analytics error" });
+    }
+  });
+
+  // --- Admin: Update campaign current amount manually ---
+  app.patch("/api/admin/campaigns/:id/amount", isAdmin, async (req, res) => {
+    try {
+      const { amount } = z.object({ amount: z.number().min(0) }).parse(req.body);
+      const campaign = await storage.updateCampaign(Number(req.params.id), { currentAmount: String(amount) });
+      res.json(campaign);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // --- Admin: Change password ---
+  app.patch("/api/admin/change-password", isAdmin, async (req: any, res) => {
+    try {
+      const { currentPassword, newPassword } = z.object({ currentPassword: z.string().min(1), newPassword: z.string().min(8) }).parse(req.body);
+      const { users } = await import("@shared/models/auth");
+      const { db } = await import("./db");
+      const { eq } = await import("drizzle-orm");
+      const bcrypt = await import("bcrypt");
+      const userId = req.user.localUser ? req.user.id : req.user.claims?.sub;
+      const [user] = await db.select().from(users).where(eq(users.id, userId));
+      if (!user || !user.passwordHash) return res.status(400).json({ message: "No password set on this account" });
+      const valid = await bcrypt.compare(currentPassword, user.passwordHash);
+      if (!valid) return res.status(401).json({ message: "Current password is incorrect" });
+      const hash = await bcrypt.hash(newPassword, 12);
+      await db.update(users).set({ passwordHash: hash }).where(eq(users.id, userId));
+      res.json({ message: "Password updated successfully" });
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // --- Admin: Users ---
   app.get("/api/admin/users", isAdmin, async (req, res) => {
     const usersList = await storage.getAllUsers();

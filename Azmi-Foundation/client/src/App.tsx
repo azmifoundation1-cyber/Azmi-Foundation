@@ -25,6 +25,7 @@ import AdminRegistrations from "@/pages/admin/AdminRegistrations";
 import AdminPrograms from "@/pages/admin/AdminPrograms";
 import AdminUsers from "@/pages/admin/AdminUsers";
 import AdminMessages from "@/pages/admin/AdminMessages";
+import AdminSettings from "@/pages/admin/AdminSettings";
 
 function Router() {
   return (
@@ -49,6 +50,7 @@ function Router() {
       <Route path="/admin/programs" component={AdminPrograms} />
       <Route path="/admin/users" component={AdminUsers} />
       <Route path="/admin/messages" component={AdminMessages} />
+      <Route path="/admin/settings" component={AdminSettings} />
 
       <Route component={NotFound} />
     </Switch>

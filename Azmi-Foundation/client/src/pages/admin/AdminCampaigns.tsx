@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, Star, Loader2, RefreshCw, AlertCircle, CheckCircle, Upload, Link as LinkIcon, Play, Pause, EyeOff, CheckSquare } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, Loader2, RefreshCw, AlertCircle, CheckCircle, Upload, Link as LinkIcon, Play, Pause, EyeOff, CheckSquare, Copy, Users, IndianRupee, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Campaign } from "@shared/schema";
 
@@ -39,11 +39,19 @@ export default function AdminCampaigns() {
   const [updateForm, setUpdateForm] = useState({ title: "", content: "" });
   const [uploading, setUploading] = useState(false);
   const [useUrlInput, setUseUrlInput] = useState(false);
+  const [amountDialog, setAmountDialog] = useState<Campaign | null>(null);
+  const [amountValue, setAmountValue] = useState("");
+  const [savingAmount, setSavingAmount] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: campaigns, isLoading } = useQuery<Campaign[]>({
     queryKey: ["/api/campaigns"],
     queryFn: () => fetch("/api/campaigns").then(r => r.json()),
+  });
+
+  const { data: campaignStats } = useQuery<Record<number, { total: number; count: number }>>({
+    queryKey: ["/api/admin/analytics/campaigns"],
+    queryFn: () => fetch("/api/admin/analytics/campaigns").then(r => r.json()),
   });
 
   const saveMutation = useMutation({
@@ -100,6 +108,43 @@ export default function AdminCampaigns() {
     },
     onSuccess: () => { setUpdateDialog(null); setUpdateForm({ title: "", content: "" }); toast({ title: "Update posted" }); },
   });
+
+  const featuredMutation = useMutation({
+    mutationFn: ({ id, featured }: { id: number; featured: boolean }) =>
+      fetch(`/api/admin/campaigns/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ featured }),
+      }).then(r => r.json()),
+    onSuccess: (_data, { featured }) => {
+      qc.invalidateQueries({ queryKey: ["/api/campaigns"] });
+      toast({ title: featured ? "Campaign marked as featured" : "Removed from featured" });
+    },
+  });
+
+  async function handleAmountUpdate() {
+    if (!amountDialog || isNaN(Number(amountValue))) return;
+    setSavingAmount(true);
+    try {
+      const res = await fetch(`/api/admin/campaigns/${amountDialog.id}/amount`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: Number(amountValue) }),
+      });
+      if (!res.ok) throw new Error("Failed to update amount");
+      qc.invalidateQueries({ queryKey: ["/api/campaigns"] });
+      toast({ title: "Amount updated", description: `₹${Number(amountValue).toLocaleString("en-IN")} saved for "${amountDialog.title}"` });
+      setAmountDialog(null);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+    setSavingAmount(false);
+  }
+
+  function copyLink(id: number) {
+    const url = `${window.location.origin}/campaigns/${id}`;
+    navigator.clipboard.writeText(url).then(() => toast({ title: "Link copied!", description: url }));
+  }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -201,13 +246,26 @@ export default function AdminCampaigns() {
                         <p className="text-xs text-gray-500 mt-1 line-clamp-2">{c.description}</p>
                       </div>
                       <div className="mt-3 space-y-2">
-                        <div className="text-xs text-gray-500">
-                          <span className="font-bold text-gray-800">₹{Number(c.currentAmount).toLocaleString()}</span>
-                          <span className="mx-1">of</span>
-                          <span>₹{Number(c.targetAmount).toLocaleString()}</span>
-                          <span className="ml-2 text-green-600 font-medium">
-                            {Math.min(100, Math.round((Number(c.currentAmount) / Number(c.targetAmount)) * 100))}%
-                          </span>
+                        {/* Progress + analytics */}
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1 text-xs text-gray-500">
+                              <span className="font-bold text-gray-800">₹{Number(c.currentAmount).toLocaleString("en-IN")}</span>
+                              <span>of ₹{Number(c.targetAmount).toLocaleString("en-IN")}</span>
+                              <span className="text-green-600 font-semibold">
+                                ({Math.min(100, Math.round((Number(c.currentAmount) / Number(c.targetAmount)) * 100))}%)
+                              </span>
+                            </div>
+                            <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                              <div className="h-full bg-green-500 rounded-full" style={{ width: `${Math.min(100, Math.round((Number(c.currentAmount) / Number(c.targetAmount)) * 100))}%` }} />
+                            </div>
+                          </div>
+                          {campaignStats?.[c.id] && (
+                            <div className="flex gap-3 text-xs text-gray-500 flex-shrink-0">
+                              <span className="flex items-center gap-1"><Users className="w-3 h-3" />{campaignStats[c.id].count} donors</span>
+                              <span className="flex items-center gap-1"><IndianRupee className="w-3 h-3" />₹{campaignStats[c.id].total.toLocaleString("en-IN")}</span>
+                            </div>
+                          )}
                         </div>
                         {/* Quick status row */}
                         <div className="flex flex-wrap gap-1.5">
@@ -232,6 +290,27 @@ export default function AdminCampaigns() {
                             <CheckSquare className="w-3 h-3" /> Complete
                           </Button>
                           <div className="flex-1" />
+                          {/* Featured star toggle */}
+                          <Button size="sm" variant="outline"
+                            className={`h-7 text-xs gap-1 ${c.featured ? "border-yellow-400 text-yellow-600 bg-yellow-50" : "text-gray-400"}`}
+                            onClick={() => featuredMutation.mutate({ id: c.id, featured: !c.featured })}
+                            title={c.featured ? "Remove from featured" : "Mark as featured"}>
+                            <Star className={`w-3 h-3 ${c.featured ? "fill-yellow-400 text-yellow-500" : ""}`} />
+                            {c.featured ? "Featured" : "Feature"}
+                          </Button>
+                          {/* Copy campaign link */}
+                          <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => copyLink(c.id)} title="Copy campaign link">
+                            <Copy className="w-3 h-3" /> Link
+                          </Button>
+                          {/* View live */}
+                          <a href={`/campaigns/${c.id}`} target="_blank" rel="noopener noreferrer">
+                            <Button size="sm" variant="outline" className="h-7 text-xs gap-1">
+                              <ExternalLink className="w-3 h-3" /> View
+                            </Button>
+                          </a>
+                          <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => { setAmountDialog(c); setAmountValue(String(Number(c.currentAmount))); }}>
+                            <IndianRupee className="w-3 h-3" /> Adjust
+                          </Button>
                           <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => setUpdateDialog(c.id)}>
                             <RefreshCw className="w-3 h-3" /> Update
                           </Button>
@@ -360,6 +439,38 @@ export default function AdminCampaigns() {
               <Button variant="outline" onClick={() => setDeleteId(null)}>Cancel</Button>
               <Button variant="destructive" onClick={() => deleteMutation.mutate(deleteId!)} disabled={deleteMutation.isPending}>
                 {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Delete"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Adjust Raised Amount Dialog */}
+        <Dialog open={!!amountDialog} onOpenChange={() => setAmountDialog(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2"><IndianRupee className="w-5 h-5 text-green-600" /> Adjust Raised Amount</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <p className="text-sm text-gray-500">Manually set the displayed raised amount for <strong>{amountDialog?.title}</strong>. This overrides the automatically calculated total.</p>
+              <div>
+                <Label>New Amount (₹)</Label>
+                <Input
+                  type="number"
+                  value={amountValue}
+                  onChange={e => setAmountValue(e.target.value)}
+                  placeholder="e.g. 250000"
+                  min={0}
+                />
+              </div>
+              <div className="text-xs text-gray-400 flex gap-4">
+                <span>Current: <strong>₹{Number(amountDialog?.currentAmount ?? 0).toLocaleString("en-IN")}</strong></span>
+                <span>Target: <strong>₹{Number(amountDialog?.targetAmount ?? 0).toLocaleString("en-IN")}</strong></span>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setAmountDialog(null)}>Cancel</Button>
+              <Button className="bg-green-600 hover:bg-green-700" disabled={savingAmount} onClick={handleAmountUpdate}>
+                {savingAmount ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Amount"}
               </Button>
             </DialogFooter>
           </DialogContent>

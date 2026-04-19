@@ -33,6 +33,9 @@ export default function AdminDonations() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [receiptFilter, setReceiptFilter] = useState("all");
+  const [campaignFilter, setCampaignFilter] = useState("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [generatingPdf, setGeneratingPdf] = useState<number | null>(null);
   const [showDialog, setShowDialog] = useState(false);
@@ -155,7 +158,12 @@ export default function AdminDonations() {
     const matchReceipt = receiptFilter === "all" ||
       (receiptFilter === "80g" && d.taxReceiptRequested) ||
       (receiptFilter === "no80g" && !d.taxReceiptRequested);
-    return matchSearch && matchStatus && matchReceipt;
+    const matchCampaign = campaignFilter === "all" ||
+      (campaignFilter === "general" ? !d.campaignId : String(d.campaignId) === campaignFilter);
+    const donationDate = new Date(d.createdAt!);
+    const matchFrom = !dateFrom || donationDate >= new Date(dateFrom);
+    const matchTo = !dateTo || donationDate <= new Date(dateTo + "T23:59:59");
+    return matchSearch && matchStatus && matchReceipt && matchCampaign && matchFrom && matchTo;
   });
 
   const totalAmount = filtered.filter(d => d.status === "completed").reduce((s, d) => s + Number(d.amount), 0);
@@ -251,8 +259,8 @@ export default function AdminDonations() {
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap gap-3 mb-5">
+        {/* Filters Row 1 */}
+        <div className="flex flex-wrap gap-3 mb-2">
           <div className="relative flex-1 min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
@@ -286,6 +294,30 @@ export default function AdminDonations() {
               <SelectItem value="no80g">No 80G</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        {/* Filters Row 2 — date range + campaign */}
+        <div className="flex flex-wrap gap-3 mb-5 items-center">
+          <Select value={campaignFilter} onValueChange={setCampaignFilter}>
+            <SelectTrigger className="w-52">
+              <SelectValue placeholder="All Campaigns" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Campaigns</SelectItem>
+              <SelectItem value="general">General (no campaign)</SelectItem>
+              {(campaigns || []).map((c: any) => (
+                <SelectItem key={c.id} value={String(c.id)}>{c.title.slice(0, 36)}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <span>From</span>
+            <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="w-36 h-9" />
+            <span>to</span>
+            <Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="w-36 h-9" />
+            {(dateFrom || dateTo) && (
+              <button onClick={() => { setDateFrom(""); setDateTo(""); }} className="text-xs text-red-500 hover:underline">Clear</button>
+            )}
+          </div>
         </div>
 
         {isLoading ? (
