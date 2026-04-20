@@ -20,7 +20,7 @@ export interface CafPdfOptions {
     language?: string;
     timezone?: string;
   };
-  // Campaign Manager (admin) details
+  // Campaign Manager (admin) details — always show block; admin fields populate when available
   generatedByAdmin?: boolean;
   adminName?: string;
   adminSignedAt?: string;
@@ -46,6 +46,16 @@ async function loadImg(src: string): Promise<string | null> {
   } catch { return null; }
 }
 
+function deviceStr(d?: CafPdfOptions["deviceInfo"]): string {
+  if (!d) return "";
+  const parts: string[] = [];
+  if (d.platform) parts.push(d.platform);
+  if (d.screenSize) parts.push(d.screenSize);
+  if (d.language) parts.push(d.language);
+  if (d.timezone) parts.push(d.timezone);
+  return parts.join("  ·  ");
+}
+
 export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   const [sealUrl, authSigUrl, logoUrl] = await Promise.all([
     loadImg("/trust-seal.png"),
@@ -55,27 +65,34 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
 
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const W = 210;
-  const M = 14;
-  const CW = W - M * 2;
+  const M = 14;           // left/right margin
+  const CW = W - M * 2;  // content width = 182mm
   const HDR = 22;
   let y = HDR + 5;
 
-  const chk = (need = 8) => {
-    if (y + need > 283) { doc.addPage(); y = HDR + 5; hdr(); }
-  };
+  // ── helpers ──────────────────────────────────────────────────────────────────
 
   function hdr() {
     doc.setFillColor(10, 36, 99);
     doc.rect(0, 0, W, HDR, "F");
-    if (logoUrl) { try { doc.addImage(logoUrl, "PNG", M, 2, 18, 18); } catch (_) {} }
+    if (logoUrl) {
+      try { doc.addImage(logoUrl, "PNG", M, 2, 18, 18); } catch (_) {}
+    }
     const tx = logoUrl ? M + 21 : M;
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold"); doc.setFontSize(13);
     doc.text("AZMI FOUNDATION", tx, 10);
     doc.setFont("helvetica", "normal"); doc.setFontSize(6.5);
-    doc.text("Reg. No: E/22280/AHMEDABAD  |  PAN: AAGTA9354B  |  80G & 12A Registered  |  Gomtipur, Ahmedabad 380021", tx, 17);
+    doc.text(
+      "Reg. No: E/22280/AHMEDABAD  |  PAN: AAGTA9354B  |  80G & 12A Registered  |  Gomtipur, Ahmedabad 380021",
+      tx, 17,
+    );
     doc.setTextColor(0, 0, 0);
   }
+
+  const chk = (need = 8) => {
+    if (y + need > 283) { doc.addPage(); y = HDR + 5; hdr(); }
+  };
 
   function sec(title: string) {
     chk(10);
@@ -87,8 +104,8 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
     y += 5;
   }
 
-  function txt(t: string, sz = 7.5, indent = 0, color = [40, 40, 40] as [number,number,number]) {
-    doc.setFont("helvetica", "normal"); doc.setFontSize(sz); doc.setTextColor(...color);
+  function txt(t: string, sz = 7.5, indent = 0) {
+    doc.setFont("helvetica", "normal"); doc.setFontSize(sz); doc.setTextColor(40, 40, 40);
     const lines = doc.splitTextToSize(t, CW - indent);
     chk(lines.length * 4);
     doc.text(lines, M + indent, y);
@@ -100,36 +117,27 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
     chk(5); doc.text(t, M, y); y += 4.5;
   }
 
-  function row(label: string, value: string | undefined, x = M, w = CW, yOffset?: number) {
-    if (!value) return;
-    const curY = yOffset !== undefined ? yOffset : y;
-    doc.setFont("helvetica", "bold"); doc.setFontSize(7); doc.setTextColor(90, 90, 90);
-    doc.text(label + ":", x, curY);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(7.5); doc.setTextColor(20, 20, 20);
-    const lines = doc.splitTextToSize(value, w - 38);
-    doc.text(lines, x + 38, curY);
-    if (yOffset === undefined) y += lines.length * 4.2 + 0.5;
-    return lines.length;
-  }
-
   function div() {
-    doc.setDrawColor(210, 210, 210); doc.line(M, y, W - M, y); y += 3;
+    doc.setDrawColor(210, 210, 210);
+    doc.setLineWidth(0.3);
+    doc.line(M, y, W - M, y);
+    y += 3;
   }
 
-  function deviceStr(d?: CafPdfOptions["deviceInfo"]) {
-    if (!d) return "";
-    const parts: string[] = [];
-    if (d.platform) parts.push(d.platform);
-    if (d.screenSize) parts.push(d.screenSize);
-    if (d.language) parts.push(d.language);
-    if (d.timezone) parts.push(d.timezone);
-    return parts.join("  ·  ");
+  // Inline meta row: label in grey bold, value in black
+  function metaLine(lbl: string, val: string, x: number, maxW: number, curY: number): number {
+    doc.setFont("helvetica", "bold"); doc.setFontSize(6.5); doc.setTextColor(90, 90, 90);
+    doc.text(lbl + ":", x, curY);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(20, 20, 20);
+    const lines = doc.splitTextToSize(val, maxW - 24);
+    doc.text(lines, x + 24, curY);
+    return lines.length * 3.8 + 0.8;
   }
 
   // ── PAGE 1 ──────────────────────────────────────────────────────────────────
   hdr();
 
-  // Title
+  // Document title
   doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(10, 36, 99);
   doc.text("CONSENT AGREEMENT FOR FUNDRAISING (CAF)", M, y);
   y += 5;
@@ -140,43 +148,73 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
 
   // Parties
   sec("PARTIES TO THIS AGREEMENT");
-  txt('This CAF is signed and executed in Ahmedabad, Gujarat, India between:');
+  txt("This CAF is signed and executed in Ahmedabad, Gujarat, India between:");
   y += 1;
   bld("AZMI FOUNDATION (Platform)");
-  txt('Public Charitable Trust | Reg. No. E/22280/AHMEDABAD | PAN: AAGTA9354B | 80G & 12A | Gomtipur, Ahmedabad 380021. ("AZMI" / "Platform")');
-  y += 1; bld("AND");
-  txt(`${opts.campaignerName} — acting as Beneficiary / Patient / Legal Guardian / authorised Representative. ("CAMPAIGNER")`);
-  y += 2; div();
+  txt(
+    'Public Charitable Trust | Reg. No. E/22280/AHMEDABAD | PAN: AAGTA9354B | 80G & 12A | Gomtipur, Ahmedabad 380021. ("AZMI" / "Platform")',
+  );
+  y += 1;
+  bld("AND");
+  txt(
+    `${opts.campaignerName} — acting as Beneficiary / Patient / Legal Guardian / authorised Representative. ("CAMPAIGNER")`,
+  );
+  y += 2;
+  div();
 
-  // Campaign Details (seal overlaps top-right corner of this block)
-  const detailStartY = y;
+  // ── CAMPAIGN DETAILS — with seal in the right column content area ──────────
   sec("CAMPAIGN DETAILS");
-  const col2 = M + CW / 2 + 2;
-  const cw2 = CW / 2 - 6;
-  const detRows: [string, string | undefined, string, string | undefined][] = [
-    ["Campaign Title", opts.campaignTitle || opts.purpose, "Beneficiary Name", opts.beneficiaryName],
-    ["Purpose", opts.purpose, "Target Amount", opts.targetAmount ? `Rs. ${Number(opts.targetAmount).toLocaleString("en-IN")}` : undefined],
-    ["Hospital", opts.hospital, "Campaigner Phone", opts.campaignerPhone],
-  ];
-  for (const [l1, v1, l2, v2] of detRows) {
-    chk(8);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(7); doc.setTextColor(90, 90, 90);
-    doc.text(l1 + ":", M, y);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(7.5); doc.setTextColor(20, 20, 20);
-    const ll1 = doc.splitTextToSize(v1 || "—", cw2); doc.text(ll1, M, y + 4);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(7); doc.setTextColor(90, 90, 90);
-    doc.text(l2 + ":", col2, y);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(7.5); doc.setTextColor(20, 20, 20);
-    const ll2 = doc.splitTextToSize(v2 || "—", cw2); doc.text(ll2, col2, y + 4);
-    y += Math.max(ll1.length, ll2.length) * 4 + 8;
-  }
-  // Seal overlapping campaign details top-right
-  if (sealUrl) {
-    try { doc.addImage(sealUrl, "PNG", W - M - 27, detailStartY - 2, 25, 25); } catch (_) {}
-  }
-  y += 1; div();
+  // Record Y right after the section header (first content row)
+  const detContentY = y;
 
-  // Agreement Clauses
+  // Left col = M to M+CW/2-4; Right col = M+CW/2+2 to M+CW-1
+  // We reserve a 27mm wide zone in the top-right for the seal
+  const sealW = 27;
+  const sealH = 27;
+  const sealX = W - M - sealW;          // 169mm from left
+  const sealY = detContentY - 1;        // flush with first content row
+
+  // 2-column campaign detail grid
+  const col1X = M;
+  const col2X = M + CW / 2 + 2;
+  const colW = CW / 2 - 6;             // each column text width
+
+  const detRows: [string, string, string, string][] = [
+    ["Campaign Title", opts.campaignTitle || opts.purpose || "—",
+      "Beneficiary Name", opts.beneficiaryName || "—"],
+    ["Purpose", opts.purpose || "—",
+      "Target Amount", opts.targetAmount
+        ? `Rs. ${Number(opts.targetAmount).toLocaleString("en-IN")}`
+        : "—"],
+    ["Hospital / Venue", opts.hospital || "—",
+      "Campaigner Phone", opts.campaignerPhone],
+  ];
+
+  for (const [l1, v1, l2, v2] of detRows) {
+    chk(10);
+    // Label row
+    doc.setFont("helvetica", "bold"); doc.setFontSize(7); doc.setTextColor(90, 90, 90);
+    doc.text(l1 + ":", col1X, y);
+    doc.text(l2 + ":", col2X, y);
+    y += 4;
+    // Value row
+    doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(15, 15, 15);
+    const l1Lines = doc.splitTextToSize(v1, colW);
+    const l2Lines = doc.splitTextToSize(v2, colW);
+    doc.text(l1Lines, col1X, y);
+    doc.text(l2Lines, col2X, y);
+    y += Math.max(l1Lines.length, l2Lines.length) * 4.5 + 4;
+  }
+
+  // Stamp seal — placed in the content area top-right of Campaign Details
+  if (sealUrl) {
+    try { doc.addImage(sealUrl, "PNG", sealX, sealY, sealW, sealH); } catch (_) {}
+  }
+
+  y += 1;
+  div();
+
+  // Agreement clauses
   sec("AGREEMENT CLAUSES");
   const clauses = [
     "1. Campaign commences on signing. AZMI does not guarantee achievement of the target amount.",
@@ -201,56 +239,73 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
     doc.text(ls, M + 3, y);
     y += ls.length * 3.8 + 0.8;
   }
-  y += 2; div();
+  y += 2;
+  div();
 
-  // Annexure A
+  // Annexure A table
   sec("Annexure A — Indicative Expense Break-up");
+  const tCols = [130, 44];
+  let tY = y + 1;
+  doc.setFillColor(10, 36, 99);
+  doc.rect(M, tY - 4, tCols[0], 6, "F");
+  doc.rect(M + tCols[0], tY - 4, tCols[1], 6, "F");
+  doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); doc.setTextColor(255, 255, 255);
+  doc.text("Description", M + 2, tY);
+  doc.text("Rate", M + tCols[0] + 2, tY);
+  tY += 6;
   const tRows = [
     ["Platform Fee by AZMI", "0% (Zero)"],
     ["Payment Gateway Charges", "~2%"],
     ["Marketing Charges", "As applicable"],
     ["GST & Taxes", "18% on applicable charges"],
   ];
-  const tc = [130, 44];
-  let tY = y + 1;
-  doc.setFillColor(10, 36, 99); doc.rect(M, tY - 4, tc[0], 6, "F"); doc.rect(M + tc[0], tY - 4, tc[1], 6, "F");
-  doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); doc.setTextColor(255, 255, 255);
-  doc.text("Description", M + 2, tY); doc.text("Rate", M + tc[0] + 2, tY); tY += 6;
   tRows.forEach((r, i) => {
     doc.setFillColor(i % 2 === 0 ? 245 : 255, i % 2 === 0 ? 248 : 255, 255);
-    doc.rect(M, tY - 4, tc[0], 6, "F"); doc.rect(M + tc[0], tY - 4, tc[1], 6, "F");
+    doc.rect(M, tY - 4, tCols[0], 6, "F");
+    doc.rect(M + tCols[0], tY - 4, tCols[1], 6, "F");
     doc.setFont("helvetica", "normal"); doc.setFontSize(7.5); doc.setTextColor(30, 30, 30);
-    doc.text(r[0], M + 2, tY); doc.text(r[1], M + tc[0] + 2, tY); tY += 6;
+    doc.text(r[0], M + 2, tY);
+    doc.text(r[1], M + tCols[0] + 2, tY);
+    tY += 6;
   });
-  y = tY + 3; doc.setTextColor(0, 0, 0);
+  y = tY + 4;
+  doc.setTextColor(0, 0, 0);
 
-  // ── PAGE 2: Signatures ──────────────────────────────────────────────────────
+  // ── PAGE 2: SIGNATURES ───────────────────────────────────────────────────────
   chk(120);
   div();
   sec("DIGITAL SIGNATURE & VERIFICATION");
-  txt("I have read and understood all the above terms and voluntarily give my electronic consent under the Information Technology Act, 2000.");
+  txt("I have read, understood and voluntarily give electronic consent to all terms above under the Information Technology Act, 2000.");
   y += 3;
 
-  // ── Campaigner signature box
-  const sigY = y;
+  // ── CAMPAIGNER: signature box (left) + details (right) ─────────────────────
+  const sigBlockY = y;
+  const sigBoxW = 74;
+  const sigBoxH = 32;
+
+  // Signature box border
   doc.setDrawColor(10, 36, 99); doc.setLineWidth(0.4);
-  doc.rect(M, sigY, 74, 30);
-  doc.setFont("helvetica", "bold"); doc.setFontSize(6.5); doc.setTextColor(120, 120, 120);
-  doc.text("Campaigner Signature", M + 2, sigY + 5);
+  doc.rect(M, sigBlockY, sigBoxW, sigBoxH);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(6.5); doc.setTextColor(130, 130, 130);
+  doc.text("CAMPAIGNER SIGNATURE", M + 2, sigBlockY + 5);
+
+  // Signature image inside box
   try {
     if (opts.signatureDataUrl && opts.signatureDataUrl.length > 50) {
-      doc.addImage(opts.signatureDataUrl, "PNG", M + 1, sigY + 7, 72, 21);
+      doc.addImage(opts.signatureDataUrl, "PNG", M + 2, sigBlockY + 7, sigBoxW - 4, sigBoxH - 9);
     }
   } catch (_) {}
 
-  // Campaigner meta — right column
-  const rx = M + 80;
-  const rw = CW - 80;
-  doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); doc.setTextColor(10, 36, 99);
-  doc.text("CAMPAIGNER DETAILS", rx, sigY + 4);
-  doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(40, 40, 40);
+  // Campaigner details — right column
+  const detX = M + sigBoxW + 6;   // 94mm
+  const detW = CW - sigBoxW - 6;  // 102mm
 
-  const campMeta: [string, string | undefined][] = [
+  doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(10, 36, 99);
+  doc.text("CAMPAIGNER DETAILS", detX, sigBlockY + 5);
+  doc.setDrawColor(10, 36, 99); doc.setLineWidth(0.3);
+  doc.line(detX, sigBlockY + 7, detX + detW, sigBlockY + 7);
+
+  const campFields: [string, string | undefined][] = [
     ["Name", opts.campaignerName],
     ["Phone", opts.campaignerPhone],
     ["CAF ID", opts.cafId],
@@ -258,79 +313,142 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
     ["IP Address", opts.ipAddress],
     ["Device", deviceStr(opts.deviceInfo) || undefined],
   ];
-  let metaY = sigY + 9;
-  for (const [lbl, val] of campMeta) {
+  let cdY = sigBlockY + 10;
+  for (const [lbl, val] of campFields) {
     if (!val) continue;
-    doc.setFont("helvetica", "bold"); doc.setFontSize(6.5); doc.setTextColor(90, 90, 90);
-    doc.text(lbl + ":", rx, metaY);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(20, 20, 20);
-    const vLines = doc.splitTextToSize(val, rw - 22);
-    doc.text(vLines, rx + 22, metaY);
-    metaY += vLines.length * 3.8 + 0.5;
+    cdY += metaLine(lbl, val, detX, detW, cdY);
   }
 
-  y = Math.max(sigY + 33, metaY + 2);
-  y += 2;
+  y = Math.max(sigBlockY + sigBoxH + 4, cdY + 4);
 
-  // ── Campaign Manager block (only for admin-generated)
-  if (opts.generatedByAdmin) {
-    chk(30);
-    doc.setFillColor(255, 248, 235);
-    const cmBlockH = 28;
-    doc.rect(M, y, CW, cmBlockH, "F");
-    doc.setDrawColor(200, 150, 50); doc.setLineWidth(0.3);
-    doc.rect(M, y, CW, cmBlockH);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); doc.setTextColor(150, 90, 0);
-    doc.text("CAMPAIGN MANAGER DETAILS", M + 3, y + 5);
+  // ── CAMPAIGN MANAGER BLOCK — ALWAYS SHOWN ────────────────────────────────────
+  chk(36);
+  const cmBgColors: [number, number, number] = [255, 249, 237];
+  const cmBorderColor: [number, number, number] = [180, 120, 20];
+  const cmTitleColor: [number, number, number] = [130, 75, 0];
+  const cmLabelColor: [number, number, number] = [110, 70, 0];
+  const cmValueColor: [number, number, number] = [50, 30, 0];
 
-    const cmMeta: [string, string | undefined][] = [
-      ["Name", opts.adminName || "Azmi Foundation Admin"],
-      ["Timestamp", opts.adminSignedAt || opts.signedAt],
-      ["IP Address", opts.adminIpAddress || opts.ipAddress],
-      ["Device", deviceStr(opts.adminDeviceInfo) || undefined],
-    ];
-    const half = CW / 2;
-    let cmY = y + 10;
-    let col = 0;
-    for (const [lbl, val] of cmMeta) {
-      if (!val) continue;
-      const cx = M + 3 + col * half;
-      doc.setFont("helvetica", "bold"); doc.setFontSize(6.5); doc.setTextColor(120, 80, 0);
-      doc.text(lbl + ":", cx, cmY);
-      doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(60, 40, 0);
-      const vl = doc.splitTextToSize(val, half - 28);
-      doc.text(vl, cx + 26, cmY);
-      col = col === 0 ? 1 : 0;
-      if (col === 0) cmY += vl.length * 3.8 + 1;
-    }
-    y += cmBlockH + 4;
+  // Determine CM fields — if admin data available use it; else show Azmi Foundation defaults
+  const hasAdminData = !!(opts.generatedByAdmin && (opts.adminName || opts.adminSignedAt || opts.adminIpAddress));
+  const cmName      = opts.adminName      || "Azmi Foundation (support@azmifoundation.com)";
+  const cmTimestamp = opts.adminSignedAt  || opts.signedAt;
+  const cmIp        = opts.adminIpAddress || "—";
+  const cmDevice    = deviceStr(opts.adminDeviceInfo) || (hasAdminData ? "—" : "Azmi Foundation Server");
+
+  const cmFields: [string, string][] = [
+    ["Name", cmName],
+    ["Timestamp", cmTimestamp],
+    ["IP Address", cmIp],
+    ["Device", cmDevice],
+  ];
+
+  // Measure required height for the CM block
+  const cmPad = 4;
+  const cmTitleH = 7;
+  let cmContentH = 0;
+  for (const [, val] of cmFields) {
+    const lines = doc.splitTextToSize(val, CW / 2 - 30);
+    cmContentH = Math.max(cmContentH, lines.length * 3.8 + 1);
+  }
+  // Two-column layout: left pair + right pair
+  const cmBlockH = cmTitleH + cmPad + Math.max(
+    (() => {
+      let h = 0;
+      for (const [, val] of [cmFields[0], cmFields[2]]) {
+        h += doc.splitTextToSize(val, CW / 2 - 30).length * 3.8 + 1;
+      }
+      return h;
+    })(),
+    (() => {
+      let h = 0;
+      for (const [, val] of [cmFields[1], cmFields[3]]) {
+        h += doc.splitTextToSize(val, CW / 2 - 30).length * 3.8 + 1;
+      }
+      return h;
+    })(),
+  ) + cmPad;
+
+  doc.setFillColor(...cmBgColors);
+  doc.rect(M, y, CW, Math.max(cmBlockH, 30), "F");
+  doc.setDrawColor(...cmBorderColor); doc.setLineWidth(0.4);
+  doc.rect(M, y, CW, Math.max(cmBlockH, 30));
+
+  // CM section title
+  doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(...cmTitleColor);
+  doc.text("CAMPAIGN MANAGER DETAILS", M + cmPad, y + 6);
+  doc.setDrawColor(...cmBorderColor); doc.setLineWidth(0.25);
+  doc.line(M + cmPad, y + 8, M + CW - cmPad, y + 8);
+
+  // Two-column layout inside CM block
+  const cmHalf = CW / 2;
+  const cmLCol = M + cmPad;
+  const cmRCol = M + cmHalf + cmPad;
+  const cmColW = cmHalf - cmPad * 2 - 4;
+  let cmLY = y + 12;
+  let cmRY = y + 12;
+
+  // Left column: Name, IP Address
+  for (const [lbl, val] of [cmFields[0], cmFields[2]]) {
+    doc.setFont("helvetica", "bold"); doc.setFontSize(6.5); doc.setTextColor(...cmLabelColor);
+    doc.text(lbl + ":", cmLCol, cmLY);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(...cmValueColor);
+    const vl = doc.splitTextToSize(val, cmColW - 22);
+    doc.text(vl, cmLCol + 22, cmLY);
+    cmLY += vl.length * 3.8 + 2;
   }
 
-  // Authorised signature
+  // Right column: Timestamp, Device
+  for (const [lbl, val] of [cmFields[1], cmFields[3]]) {
+    doc.setFont("helvetica", "bold"); doc.setFontSize(6.5); doc.setTextColor(...cmLabelColor);
+    doc.text(lbl + ":", cmRCol, cmRY);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(...cmValueColor);
+    const vl = doc.splitTextToSize(val, cmColW - 22);
+    doc.text(vl, cmRCol + 22, cmRY);
+    cmRY += vl.length * 3.8 + 2;
+  }
+
+  y += Math.max(cmBlockH, 30) + 5;
+
+  // Authorised signatory image
   chk(26);
   if (authSigUrl) {
-    try { doc.addImage(authSigUrl, "PNG", M, y, 62, 22); } catch (_) {}
+    try { doc.addImage(authSigUrl, "PNG", M, y, 65, 23); } catch (_) {}
   }
-  y += 24;
+  doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(80, 80, 80);
+  doc.text("Authorised Signatory — Azmi Foundation", M, y + 26);
+  y += 32;
   div();
 
-  // User agent (if available)
+  // Campaigner User Agent (tech audit trail)
   const ua = opts.deviceInfo?.userAgent;
   if (ua) {
-    chk(10);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(6.5); doc.setTextColor(150, 150, 150);
+    chk(8);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(6); doc.setTextColor(160, 160, 160);
     const uaLines = doc.splitTextToSize(`Campaigner UA: ${ua}`, CW);
     doc.text(uaLines.slice(0, 2), M, y);
-    y += Math.min(uaLines.length, 2) * 3.5 + 2;
+    y += Math.min(uaLines.length, 2) * 3.3 + 2;
+    div();
+  }
+
+  // Admin User Agent (if available)
+  const adminUA = opts.adminDeviceInfo?.userAgent;
+  if (adminUA && opts.generatedByAdmin) {
+    chk(8);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(6); doc.setTextColor(160, 160, 160);
+    const auaLines = doc.splitTextToSize(`Campaign Manager UA: ${adminUA}`, CW);
+    doc.text(auaLines.slice(0, 2), M, y);
+    y += Math.min(auaLines.length, 2) * 3.3 + 2;
     div();
   }
 
   // Footer
+  chk(10);
   doc.setFont("helvetica", "italic"); doc.setFontSize(6.5); doc.setTextColor(140, 140, 140);
-  const ft = "This document is electronically executed under the Information Technology Act, 2000 and is legally binding. " +
+  const ft =
+    "This document is electronically executed under the Information Technology Act, 2000 and is legally binding. " +
     "Azmi Foundation | Gomtipur, Ahmedabad 380021 | +91 78610 10850 | support@azmifoundation.com";
   const ftL = doc.splitTextToSize(ft, CW);
-  chk(ftL.length * 3.5 + 2);
   doc.text(ftL, M, y);
 
   doc.save(`CAF_${opts.cafId}_${opts.campaignerName.replace(/\s+/g, "_")}.pdf`);
