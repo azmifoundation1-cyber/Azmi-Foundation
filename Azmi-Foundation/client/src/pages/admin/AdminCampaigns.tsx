@@ -493,8 +493,23 @@ export default function AdminCampaigns() {
                     <Textarea rows={2} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Brief description..." />
                   </div>
                   <div>
-                    <Label>Full Story <span className="text-xs text-gray-400">(use blank lines to separate paragraphs)</span></Label>
-                    <Textarea rows={10} value={form.story} onChange={e => setForm(f => ({ ...f, story: e.target.value }))} placeholder="Write the full campaign story here. Leave a blank line between paragraphs..." className="font-mono text-sm" />
+                    <div className="flex items-center justify-between mb-1.5">
+                      <Label>Full Story</Label>
+                      <span className="text-[10px] text-gray-400 font-medium">
+                        {form.story.trim().split(/\s+/).filter(Boolean).length} words · {form.story.length} chars
+                      </span>
+                    </div>
+                    <Textarea
+                      rows={18}
+                      value={form.story}
+                      onChange={e => setForm(f => ({ ...f, story: e.target.value }))}
+                      placeholder={"Paste or write the full story here.\n\nLeave a blank line between paragraphs.\nSingle line breaks, indentation and spacing are preserved exactly as you type."}
+                      className="font-mono text-sm leading-relaxed"
+                      style={{ whiteSpace: "pre-wrap" }}
+                    />
+                    <p className="text-[10px] text-gray-400 mt-1.5 leading-relaxed">
+                      Blank line = new paragraph section. Single line breaks and spacing are preserved exactly on the public page.
+                    </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <Switch checked={form.featured} onCheckedChange={v => setForm(f => ({ ...f, featured: v }))} id="featured" />

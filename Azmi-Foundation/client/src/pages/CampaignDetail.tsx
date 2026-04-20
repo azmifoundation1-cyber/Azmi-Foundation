@@ -445,7 +445,12 @@ export default function CampaignDetail() {
   const dbLocalVideo: string | undefined = (campaign as any).localVideoUrl || undefined;
   const story = hardcodedStory || {
     story: campaign.story
-      ? campaign.story.split(/\n\n+/).map(s => s.trim()).filter(Boolean)
+      ? campaign.story
+          .replace(/\r\n/g, "\n")
+          .replace(/\r/g, "\n")
+          .split(/\n\n+/)
+          .map(s => s.replace(/^\n+|\n+$/g, ""))
+          .filter(Boolean)
       : [campaign.description || ""],
     images: [campaign.imageUrl || "", ...dbGallery].filter(Boolean),
     localVideo: dbLocalVideo,
@@ -1100,7 +1105,7 @@ export default function CampaignDetail() {
                   <div className="space-y-8">
                     {story.story.map((para, i) => (
                       <div key={i} className="space-y-6">
-                        <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{para}</p>
+                        <p className="text-gray-600 leading-relaxed text-sm sm:text-base" style={{ whiteSpace: "pre-wrap" }}>{para}</p>
 
                         {/* Video moved to top hero for campaign 3 — not shown here */}
                         {i === 0 && story.localVideo && id !== 3 && (
