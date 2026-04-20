@@ -434,7 +434,13 @@ export default function CampaignDetail() {
   }
 
   const percent = Math.min(100, Math.round((Number(campaign.currentAmount) / Number(campaign.targetAmount)) * 100));
-  const story = CAMPAIGN_STORIES[id] || CAMPAIGN_STORIES[1];
+  const hardcodedStory = CAMPAIGN_STORIES[id];
+  const story = hardcodedStory || {
+    story: campaign.story
+      ? campaign.story.split(/\n\n+/).map(s => s.trim()).filter(Boolean)
+      : [campaign.description || ""],
+    images: campaign.imageUrl ? [campaign.imageUrl, campaign.imageUrl] : [],
+  };
   const relatedCampaigns = allCampaigns.filter(c => c.id !== campaign.id && c.category === campaign.category).slice(0, 3);
 
   const daysLeft = campaign.endDate
