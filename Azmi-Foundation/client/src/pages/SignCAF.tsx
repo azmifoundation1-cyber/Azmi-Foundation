@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation } from "wouter";
 import SignaturePad from "signature_pad";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -7,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { generateCAFPdf } from "@/lib/generate-caf-pdf";
 import {
-  CheckCircle, FileText, Pen, Phone, RefreshCw,
-  Loader2, Shield, ChevronRight, RotateCcw, Trash2, AlertCircle,
+  CheckCircle, FileText, Pen, Loader2, Shield,
+  ChevronRight, RotateCcw, Trash2, AlertCircle,
 } from "lucide-react";
 
 const CAF_TEXT = `CONSENT AGREEMENT FOR FUNDRAISING (CAF)
@@ -42,7 +41,7 @@ ANNEXURE A - EXPENSE BREAK-UP
 • Marketing Charges (if applicable): As agreed
 • GST & Taxes: 18% on applicable charges`;
 
-type Step = "details" | "otp" | "sign" | "done";
+type Step = "details" | "sign" | "done";
 
 function collectDeviceInfo() {
   return {
@@ -65,17 +64,11 @@ function nowIST(): string {
 
 export default function SignCAF() {
   const { toast } = useToast();
-  const [location] = useLocation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const padRef = useRef<SignaturePad | null>(null);
 
   const [step, setStep] = useState<Step>("details");
-  const [sending, setSending] = useState(false);
-  const [verifying, setVerifying] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpInput, setOtpInput] = useState("");
-  const [devOtp, setDevOtp] = useState("");
   const [cafId, setCafId] = useState("");
   const [signedTimestamp, setSignedTimestamp] = useState("");
   const [consent, setConsent] = useState(false);
@@ -95,7 +88,6 @@ export default function SignCAF() {
     campaignTitle: "",
   });
 
-  // Load token data if present
   useEffect(() => {
     if (!urlToken) return;
     setTokenLoading(true);
@@ -121,11 +113,9 @@ export default function SignCAF() {
       .finally(() => setTokenLoading(false));
   }, [urlToken]);
 
-  // Init signature pad
   useEffect(() => {
     if (step !== "sign") return;
     let cancelled = false;
-
     function initPad() {
       const canvas = canvasRef.current;
       if (!canvas || cancelled) return;
@@ -144,53 +134,9 @@ export default function SignCAF() {
       });
       padRef.current.clear();
     }
-
     requestAnimationFrame(() => requestAnimationFrame(initPad));
     return () => { cancelled = true; };
   }, [step]);
-
-  async function sendOTP() {
-    if (!form.campaignerPhone || form.campaignerPhone.length < 10) {
-      toast({ title: "Enter a valid 10-digit phone number", variant: "destructive" });
-      return;
-    }
-    setSending(true);
-    try {
-      const res = await fetch("/api/caf/send-otp", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: form.campaignerPhone }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      setOtpSent(true);
-      if (data.devOtp) setDevOtp(data.devOtp);
-      toast({ title: "OTP sent!", description: "Check your phone for the 6-digit code." });
-    } catch (err: any) {
-      toast({ title: "Failed to send OTP", description: err.message, variant: "destructive" });
-    }
-    setSending(false);
-  }
-
-  async function verifyOTP() {
-    if (otpInput.length !== 6) {
-      toast({ title: "Enter the 6-digit OTP", variant: "destructive" });
-      return;
-    }
-    setVerifying(true);
-    try {
-      const res = await fetch("/api/caf/verify-otp", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: form.campaignerPhone, otp: otpInput }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.message || "Invalid OTP");
-      toast({ title: "OTP Verified!", description: "Please draw your signature to complete." });
-      setStep("sign");
-    } catch (err: any) {
-      toast({ title: "Verification failed", description: err.message, variant: "destructive" });
-    }
-    setVerifying(false);
-  }
 
   async function handleSign() {
     if (!padRef.current || padRef.current.isEmpty()) {
@@ -244,13 +190,11 @@ export default function SignCAF() {
 
   const stepList = [
     { id: "details" as Step, label: "Campaign Details" },
-    { id: "otp" as Step, label: "OTP Verification" },
     { id: "sign" as Step, label: "Digital Signature" },
     { id: "done" as Step, label: "Complete" },
   ];
   const stepIdx = stepList.findIndex(s => s.id === step);
 
-  // Token loading / error states
   if (urlToken && tokenLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -315,7 +259,7 @@ export default function SignCAF() {
           ))}
         </div>
 
-        {/* ── STEP 1 ── */}
+        {/* ── STEP 1: Details ── */}
         {step === "details" && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
             <div>
@@ -368,61 +312,14 @@ export default function SignCAF() {
             <Button
               className="w-full bg-[#0a2463] hover:bg-blue-900 text-white gap-2"
               disabled={!consent || !form.campaignerName.trim() || form.campaignerPhone.length < 10}
-              onClick={() => setStep("otp")}
+              onClick={() => setStep("sign")}
             >
-              Proceed to OTP Verification <ChevronRight className="w-4 h-4" />
+              Proceed to Signature <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         )}
 
-        {/* ── STEP 2 ── */}
-        {step === "otp" && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
-            <div>
-              <h2 className="text-xl font-black text-[#0a2463] flex items-center gap-2">
-                <Phone className="w-5 h-5" /> OTP Verification
-              </h2>
-              <p className="text-gray-500 text-sm mt-1">
-                We'll send a 6-digit OTP to <strong>{form.campaignerPhone}</strong> to verify your identity.
-              </p>
-            </div>
-            {!otpSent ? (
-              <Button className="w-full bg-[#0a2463] hover:bg-blue-900 text-white gap-2" onClick={sendOTP} disabled={sending}>
-                {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Phone className="w-4 h-4" />}
-                {sending ? "Sending OTP…" : `Send OTP to ${form.campaignerPhone}`}
-              </Button>
-            ) : (
-              <div className="space-y-4">
-                <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-700 font-medium">
-                  ✓ OTP sent to {form.campaignerPhone}
-                  {devOtp && (
-                    <span className="block mt-1 text-amber-700 font-bold text-xs">
-                      [Dev Mode] OTP: <span className="font-mono text-base">{devOtp}</span>
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <Label>Enter 6-Digit OTP</Label>
-                  <Input type="text" maxLength={6} value={otpInput}
-                    onChange={e => setOtpInput(e.target.value.replace(/\D/g, ""))}
-                    placeholder="e.g. 123456" className="text-2xl tracking-widest font-mono text-center" />
-                </div>
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white gap-2"
-                  onClick={verifyOTP} disabled={verifying || otpInput.length < 6}>
-                  {verifying ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
-                  {verifying ? "Verifying…" : "Verify & Proceed"}
-                </Button>
-                <button onClick={() => { setOtpSent(false); setOtpInput(""); setDevOtp(""); }}
-                  className="w-full text-sm text-gray-500 hover:text-gray-700 flex items-center justify-center gap-1">
-                  <RefreshCw className="w-3 h-3" /> Resend OTP
-                </button>
-              </div>
-            )}
-            <button onClick={() => setStep("details")} className="text-sm text-gray-400 hover:text-gray-600">← Back to Details</button>
-          </div>
-        )}
-
-        {/* ── STEP 3 ── */}
+        {/* ── STEP 2: Sign ── */}
         {step === "sign" && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
             <div>
@@ -455,13 +352,14 @@ export default function SignCAF() {
                 {saving ? "Generating PDF…" : "Sign & Download PDF"}
               </Button>
             </div>
+            <button onClick={() => setStep("details")} className="text-sm text-gray-400 hover:text-gray-600">← Back to Details</button>
             <p className="text-[10px] text-gray-400 text-center leading-relaxed">
               By clicking "Sign & Download PDF", you confirm this is your electronic signature under the Information Technology Act, 2000. Your device information and exact timestamp will be recorded.
             </p>
           </div>
         )}
 
-        {/* ── STEP 4 ── */}
+        {/* ── STEP 3: Done ── */}
         {step === "done" && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center space-y-5">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
@@ -483,10 +381,6 @@ export default function SignCAF() {
               <div className="flex justify-between">
                 <span className="text-gray-500">Phone</span>
                 <span className="font-semibold">{form.campaignerPhone}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">OTP Verified</span>
-                <span className="text-green-600 font-bold">✓ Yes</span>
               </div>
               <div className="flex justify-between flex-wrap gap-1">
                 <span className="text-gray-500">Signed At</span>
