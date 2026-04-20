@@ -163,6 +163,12 @@ export default function CampaignDetail() {
     queryFn: () => fetch("/api/campaigns").then(r => r.json()),
   });
 
+  const { data: campaignDocs = [] } = useQuery<any[]>({
+    queryKey: ["/api/campaigns", id, "documents"],
+    queryFn: () => fetch(`/api/campaigns/${id}/documents`).then(r => r.json()),
+    enabled: !!id,
+  });
+
   // Live countdown — ticks every second from campaign.endDate
   useEffect(() => {
     const tick = () => {
@@ -435,11 +441,14 @@ export default function CampaignDetail() {
 
   const percent = Math.min(100, Math.round((Number(campaign.currentAmount) / Number(campaign.targetAmount)) * 100));
   const hardcodedStory = CAMPAIGN_STORIES[id];
+  const dbGallery: string[] = (campaign as any).galleryImages || [];
+  const dbLocalVideo: string | undefined = (campaign as any).localVideoUrl || undefined;
   const story = hardcodedStory || {
     story: campaign.story
       ? campaign.story.split(/\n\n+/).map(s => s.trim()).filter(Boolean)
       : [campaign.description || ""],
-    images: campaign.imageUrl ? [campaign.imageUrl, campaign.imageUrl] : [],
+    images: [campaign.imageUrl || "", ...dbGallery].filter(Boolean),
+    localVideo: dbLocalVideo,
   };
   const relatedCampaigns = allCampaigns.filter(c => c.id !== campaign.id && c.category === campaign.category).slice(0, 3);
 
@@ -1218,52 +1227,84 @@ export default function CampaignDetail() {
                   </div>
                 )}
 
-                {/* Documents Tab — campaign 4 only */}
-                {activeTab === "documents" && id === 4 && (
-                  <div className="space-y-8">
-                    <div>
-                      <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/40 mb-1">Verified Medical Document</h3>
-                      <h2 className="text-xl font-black text-primary uppercase tracking-tight">Official Hospital Estimation Letter</h2>
-                      <p className="text-xs text-gray-400 mt-1">Issued by Meera Hospital, Alwar, Rajasthan — 27 November 2025</p>
-                    </div>
-
-                    <div className="border border-gray-100 rounded-none overflow-hidden shadow-sm">
-                      <div className="bg-gray-50 px-4 py-3 flex items-center gap-3 border-b border-gray-100">
-                        <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center shrink-0">
-                          <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                        </div>
+                {/* Documents Tab */}
+                {activeTab === "documents" && (
+                  <div className="space-y-6">
+                    {/* Hardcoded hospital letter for campaign 4 */}
+                    {id === 4 && (
+                      <>
                         <div>
-                          <p className="text-xs font-black text-primary uppercase tracking-wider">Meera Hospital — Estimation Letter</p>
-                          <p className="text-[10px] text-gray-400">Patient: Anwar (49 yrs) · Total Estimate: ₹1,05,80,000</p>
+                          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/40 mb-1">Verified Medical Document</h3>
+                          <h2 className="text-xl font-black text-primary uppercase tracking-tight">Official Hospital Estimation Letter</h2>
+                          <p className="text-xs text-gray-400 mt-1">Issued by Meera Hospital, Alwar, Rajasthan — 27 November 2025</p>
                         </div>
-                      </div>
-                      <a href="/anwar-estimate-letter.jpeg" target="_blank" rel="noopener noreferrer" className="block group">
-                        <img
-                          src="/anwar-estimate-letter.jpeg"
-                          alt="Meera Hospital Official Estimation Letter for Anwar — ₹1.05 Crore medical expenses"
-                          className="w-full object-contain bg-white group-hover:opacity-95 transition-opacity"
-                        />
-                        <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 font-medium">Tap to view full size</span>
-                          <span className="text-[10px] font-black text-accent uppercase tracking-widest">Open Document →</span>
+                        <div className="border border-gray-100 rounded-none overflow-hidden shadow-sm">
+                          <div className="bg-gray-50 px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+                            <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center shrink-0">
+                              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                            </div>
+                            <div>
+                              <p className="text-xs font-black text-primary uppercase tracking-wider">Meera Hospital — Estimation Letter</p>
+                              <p className="text-[10px] text-gray-400">Patient: Anwar (49 yrs) · Total Estimate: ₹1,05,80,000</p>
+                            </div>
+                          </div>
+                          <a href="/anwar-estimate-letter.jpeg" target="_blank" rel="noopener noreferrer" className="block group">
+                            <img src="/anwar-estimate-letter.jpeg" alt="Hospital letter" className="w-full object-contain bg-white group-hover:opacity-95 transition-opacity" />
+                            <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                              <span className="text-[10px] text-gray-500 font-medium">Tap to view full size</span>
+                              <span className="text-[10px] font-black text-accent uppercase tracking-widest">Open Document →</span>
+                            </div>
+                          </a>
                         </div>
-                      </a>
-                    </div>
+                        <div className="bg-amber-50 border border-amber-200 rounded-none p-4 space-y-2">
+                          <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Expense Breakdown</p>
+                          <div className="space-y-2 text-sm text-amber-900">
+                            <div className="flex justify-between"><span>Emergency brain surgery (craniotomy, tracheostomy, ICU)</span><span className="font-black shrink-0 ml-4">₹45,00,000</span></div>
+                            <div className="flex justify-between"><span>Medicines, nursing, physio &amp; rehabilitation (24 months)</span><span className="font-black shrink-0 ml-4">₹40,80,000</span></div>
+                            <div className="flex justify-between"><span>Neuro-ICU stay (15–30 days), ventilator, CT/MRI scans</span><span className="font-black shrink-0 ml-4">₹15–20,00,000</span></div>
+                            <div className="flex justify-between border-t border-amber-300 pt-2 mt-2">
+                              <span className="font-black uppercase tracking-wide">Total Estimated Cost</span>
+                              <span className="font-black text-red-700 shrink-0 ml-4">₹1,05,80,000</span>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
 
-                    <div className="bg-amber-50 border border-amber-200 rounded-none p-4 space-y-2">
-                      <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Expense Breakdown</p>
-                      <div className="space-y-2 text-sm text-amber-900">
-                        <div className="flex justify-between"><span>Emergency brain surgery (craniotomy, tracheostomy, ICU)</span><span className="font-black shrink-0 ml-4">₹45,00,000</span></div>
-                        <div className="flex justify-between"><span>Medicines, nursing, physio &amp; rehabilitation (24 months)</span><span className="font-black shrink-0 ml-4">₹40,80,000</span></div>
-                        <div className="flex justify-between"><span>Neuro-ICU stay (15–30 days), ventilator, CT/MRI scans</span><span className="font-black shrink-0 ml-4">₹15–20,00,000</span></div>
-                        <div className="flex justify-between border-t border-amber-300 pt-2 mt-2">
-                          <span className="font-black uppercase tracking-wide">Total Estimated Cost</span>
-                          <span className="font-black text-red-700 shrink-0 ml-4">₹1,05,80,000</span>
-                        </div>
+                    {/* Dynamic documents uploaded via admin panel */}
+                    {campaignDocs.length > 0 && (
+                      <div className="space-y-3">
+                        {id === 4 && <p className="text-xs font-black uppercase tracking-widest text-primary/40">Additional Documents</p>}
+                        {campaignDocs.map((doc: any) => (
+                          <a key={doc.id} href={doc.fileUrl} target="_blank" rel="noopener noreferrer"
+                            className="flex items-center gap-4 p-4 border border-gray-100 rounded-none hover:bg-gray-50 transition-colors group">
+                            <div className={`w-10 h-10 rounded flex items-center justify-center shrink-0 ${doc.fileType === "image" ? "bg-purple-100 text-purple-600" : doc.fileType === "video" ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"}`}>
+                              {doc.fileType === "image" ? (
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                              ) : doc.fileType === "video" ? (
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                              ) : (
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-black text-primary uppercase tracking-wide line-clamp-1">{doc.name}</p>
+                              <p className="text-[10px] text-gray-400 capitalize mt-0.5">{doc.fileType}</p>
+                            </div>
+                            <span className="text-[10px] font-black text-accent uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity shrink-0">Open →</span>
+                          </a>
+                        ))}
                       </div>
-                    </div>
+                    )}
+
+                    {id !== 4 && campaignDocs.length === 0 && (
+                      <div className="text-center py-12 text-gray-400">
+                        <svg className="w-10 h-10 mx-auto mb-3 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        <p className="text-sm">No documents have been uploaded for this campaign yet.</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

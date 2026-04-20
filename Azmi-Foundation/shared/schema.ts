@@ -18,6 +18,8 @@ export const campaigns = pgTable("campaigns", {
   currentAmount: decimal("current_amount").default("0").notNull(),
   imageUrl: text("image_url"),
   videoUrl: text("video_url"),
+  localVideoUrl: text("local_video_url"),
+  galleryImages: jsonb("gallery_images").$type<string[]>().default([]),
   status: text("status", { enum: ["active", "completed", "paused", "hidden"] }).default("active").notNull(),
   featured: boolean("featured").default(false),
   endDate: timestamp("end_date"),
@@ -32,6 +34,18 @@ export const campaigns = pgTable("campaigns", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+// Campaign Documents Table
+export const campaignDocuments = pgTable("campaign_documents", {
+  id: serial("id").primaryKey(),
+  campaignId: integer("campaign_id").references(() => campaigns.id).notNull(),
+  name: text("name").notNull(),
+  fileUrl: text("file_url").notNull(),
+  fileType: text("file_type").notNull(), // "image" | "document" | "video"
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type CampaignDocument = typeof campaignDocuments.$inferSelect;
 
 // Campaign Updates Table
 export const campaignUpdates = pgTable("campaign_updates", {

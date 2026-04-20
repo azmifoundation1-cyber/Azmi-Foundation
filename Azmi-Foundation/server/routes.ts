@@ -23,10 +23,14 @@ const upload = multer({
       cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`);
     },
   }),
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
   fileFilter: (_req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) cb(null, true);
-    else cb(new Error("Only image files are allowed"));
+    const allowed = [
+      "image/", "video/", "application/pdf",
+      "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+    if (allowed.some(t => file.mimetype.startsWith(t) || file.mimetype === t)) cb(null, true);
+    else cb(new Error("File type not allowed"));
   },
 });
 
@@ -370,11 +374,49 @@ export async function registerRoutes(
     }
   });
 
-  // --- File Upload ---
+  // --- File Upload (images, videos, PDFs, docs) ---
   app.post("/api/upload", upload.single("file"), (req, res) => {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
     const url = `/uploads/${req.file.filename}`;
-    res.json({ url });
+    const mime = req.file.mimetype;
+    const fileType = mime.startsWith("image/") ? "image" : mime.startsWith("video/") ? "video" : "document";
+    res.json({ url, fileType, originalName: req.file.originalname });
+  });
+
+  // --- Campaign Documents (public read) ---
+  app.get("/api/campaigns/:id/documents", async (req, res) => {
+    try {
+      const { campaignDocuments } = await import("@shared/schema");
+      const { eq } = await import("drizzle-orm");
+      const { db } = await import("./db");
+      const docs = await db.select().from(campaignDocuments).where(eq(campaignDocuments.campaignId, Number(req.params.id)));
+      res.json(docs);
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  // --- Admin: Add campaign document ---
+  app.post("/api/admin/campaigns/:id/documents", isAdmin, async (req, res) => {
+    try {
+      const { campaignDocuments } = await import("@shared/schema");
+      const { db } = await import("./db");
+      const { name, fileUrl, fileType } = req.body;
+      if (!name || !fileUrl || !fileType) return res.status(400).json({ message: "name, fileUrl, fileType required" });
+      const [doc] = await db.insert(campaignDocuments).values({
+        campaignId: Number(req.params.id), name, fileUrl, fileType,
+      }).returning();
+      res.json(doc);
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  // --- Admin: Delete campaign document ---
+  app.delete("/api/admin/campaigns/:id/documents/:docId", isAdmin, async (req, res) => {
+    try {
+      const { campaignDocuments } = await import("@shared/schema");
+      const { db } = await import("./db");
+      const { eq } = await import("drizzle-orm");
+      await db.delete(campaignDocuments).where(eq(campaignDocuments.id, Number(req.params.docId)));
+      res.json({ success: true });
+    } catch { res.status(500).json({ message: "Internal server error" }); }
   });
 
   // --- Submit Registration ---
@@ -997,6 +1039,18 @@ export async function registerRoutes(
 }
 
 async function seedDatabase() {
+  // Run safe schema migrations (IF NOT EXISTS — idempotent)
+  try {
+    const { db } = await import("./db");
+    const { sql } = await import("drizzle-orm");
+    await db.execute(sql`CREATE TABLE IF NOT EXISTS campaign_documents (id SERIAL PRIMARY KEY, campaign_id INTEGER REFERENCES campaigns(id), name TEXT NOT NULL, file_url TEXT NOT NULL, file_type TEXT NOT NULL, created_at TIMESTAMP DEFAULT NOW())`);
+    await db.execute(sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS local_video_url TEXT`);
+    await db.execute(sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS gallery_images JSONB DEFAULT '[]'::jsonb`);
+    console.log("[seed] schema migrations applied");
+  } catch (e) {
+    console.error("[seed] schema migration failed:", e);
+  }
+
   // Auto-promote designated main admins to super_admin (runs on every startup — safe & idempotent)
   try {
     const { db } = await import("./db");
