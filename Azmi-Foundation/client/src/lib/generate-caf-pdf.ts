@@ -36,16 +36,6 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   function drawHeader() {
     doc.setFillColor(10, 36, 99);
     doc.rect(0, 0, W, 18, "F");
-    // Trust seal circle on right
-    doc.setFillColor(212, 175, 55);
-    doc.circle(W - margin - 6, 9, 7, "F");
-    doc.setFillColor(10, 36, 99);
-    doc.circle(W - margin - 6, 9, 5.5, "F");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(5);
-    doc.setTextColor(212, 175, 55);
-    doc.text("AZMI", W - margin - 6, 8, { align: "center" });
-    doc.text("TRUST", W - margin - 6, 11.5, { align: "center" });
     // Org name
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
@@ -257,32 +247,9 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   }
   y += 40;
 
-  // ── Official Trust Seal ────────────────────────────────────────────────────
-  checkY(30);
-  const sealX = W - margin - 22;
+  // Authorised signatory block
+  checkY(20);
   const sealY = y - 5;
-  // Outer ring
-  doc.setFillColor(212, 175, 55);
-  doc.circle(sealX, sealY + 12, 16, "F");
-  // Middle ring
-  doc.setFillColor(10, 36, 99);
-  doc.circle(sealX, sealY + 12, 13.5, "F");
-  // Inner circle
-  doc.setFillColor(255, 255, 255);
-  doc.circle(sealX, sealY + 12, 11, "F");
-  // Seal text
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(5);
-  doc.setTextColor(10, 36, 99);
-  doc.text("AZMI", sealX, sealY + 9, { align: "center" });
-  doc.text("FOUNDATION", sealX, sealY + 13, { align: "center" });
-  doc.setFontSize(4.5);
-  doc.text("OFFICIAL SEAL", sealX, sealY + 17, { align: "center" });
-  doc.setFontSize(4);
-  doc.setTextColor(150, 100, 0);
-  doc.text("AHMEDABAD, INDIA", sealX, sealY + 21, { align: "center" });
-
-  // Seal label next to it
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
   doc.setTextColor(100, 100, 100);
@@ -292,7 +259,7 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   doc.setFontSize(7.5);
   doc.setTextColor(10, 36, 99);
   doc.text("AZMI FOUNDATION", margin, sealY + 20);
-  y = sealY + 32;
+  y = sealY + 28;
   divider();
 
   // ── Device & Technical Verification ───────────────────────────────────────
