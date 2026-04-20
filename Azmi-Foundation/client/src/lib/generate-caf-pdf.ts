@@ -39,7 +39,10 @@ async function loadImageAsDataUrl(src: string): Promise<string | null> {
 }
 
 export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
-  const sealDataUrl = await loadImageAsDataUrl("/trust-seal.png");
+  const [sealDataUrl, authSigDataUrl] = await Promise.all([
+    loadImageAsDataUrl("/trust-seal.png"),
+    loadImageAsDataUrl("/azmi-auth-signature.png"),
+  ]);
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const W = 210;
   const margin = 18;
@@ -265,18 +268,13 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   y += 40;
 
   // Authorised signatory block
-  checkY(20);
-  const sealY = y - 5;
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
-  doc.setTextColor(100, 100, 100);
-  doc.text("For AZMI FOUNDATION", margin, sealY + 10);
-  doc.text("Authorised Signatory", margin, sealY + 15);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(7.5);
-  doc.setTextColor(10, 36, 99);
-  doc.text("AZMI FOUNDATION", margin, sealY + 20);
-  y = sealY + 28;
+  checkY(30);
+  if (authSigDataUrl) {
+    try {
+      doc.addImage(authSigDataUrl, "PNG", margin, y, 70, 28);
+    } catch (_) {}
+  }
+  y += 30;
   divider();
 
   // ── Device & Technical Verification ───────────────────────────────────────
