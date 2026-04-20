@@ -611,13 +611,11 @@ export default function CampaignDetail() {
 
             {/* Hero — Local video, YouTube, or hero image */}
             {(() => {
-              const heroYoutubeUrl = id === 4
-                ? "https://www.youtube.com/embed/NfYQeSsNQrg?si=mLgeDG7wNo4rO32p&start=1&autoplay=1&mute=1&playsinline=1&rel=0"
-                : id === 3
-                  ? "https://www.youtube.com/embed/Z_exh7zMqDs?si=EYyv12VkPHBJn9Vm&start=8&autoplay=1&mute=1&playsinline=1&rel=0"
-                  : null;
+              const heroYoutubeUrl = id === 3
+                ? "https://www.youtube.com/embed/Z_exh7zMqDs?si=EYyv12VkPHBJn9Vm&start=8&autoplay=1&mute=1&playsinline=1&rel=0"
+                : null;
               const dbYoutubeId = extractYoutubeId(campaign.videoUrl);
-              const heroLocalVideo = (id === 3 || id === 4) ? null : story.localVideo;
+              const heroLocalVideo = id === 3 ? null : story.localVideo;
               return (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.98 }}
