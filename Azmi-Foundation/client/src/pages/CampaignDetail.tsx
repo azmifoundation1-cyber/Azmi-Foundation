@@ -1076,7 +1076,7 @@ export default function CampaignDetail() {
             <div className="bg-white shadow-sm">
               {/* Tab Nav */}
               <div className="flex border-b border-gray-100">
-                {(["story", "updates", "supporters"] as const).map((tab) => (
+                {(["story", "updates", "supporters", "documents"] as const).map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -1089,20 +1089,9 @@ export default function CampaignDetail() {
                     {tab === "story" && "The Story"}
                     {tab === "updates" && `Updates ${updates.length > 0 ? `(${updates.length})` : ""}`}
                     {tab === "supporters" && `Supporters (${supporters.length})`}
+                    {tab === "documents" && `Documents${(id === 4 || campaignDocs.length > 0) ? ` (${campaignDocs.length + (id === 4 ? 1 : 0)})` : ""}`}
                   </button>
                 ))}
-                {id === 4 && (
-                  <button
-                    onClick={() => setActiveTab("documents")}
-                    className={`flex-1 py-4 text-[10px] font-black uppercase tracking-[0.3em] transition-all border-b-2 ${
-                      activeTab === "documents"
-                        ? "border-primary text-primary"
-                        : "border-transparent text-gray-400 hover:text-gray-600"
-                    }`}
-                  >
-                    Documents
-                  </button>
-                )}
               </div>
 
               <div className="p-6 sm:p-10">
