@@ -60,30 +60,36 @@ export default function AdminCAF() {
 
   // Init signature pad when dialog opens
   useEffect(() => {
-    if (!open || !canvasRef.current) return;
-    const canvas = canvasRef.current;
+    if (!open) return;
+    let cancelled = false;
 
-    function resize() {
+    function initPad() {
+      const canvas = canvasRef.current;
+      if (!canvas || cancelled) return;
+
       const ratio = Math.max(window.devicePixelRatio || 1, 1);
-      canvas.width = canvas.offsetWidth * ratio;
-      canvas.height = canvas.offsetHeight * ratio;
-      canvas.getContext("2d")!.scale(ratio, ratio);
-      padRef.current?.clear();
-    }
+      const w = canvas.offsetWidth || canvas.parentElement?.offsetWidth || 560;
+      const h = 160;
+      canvas.width = w * ratio;
+      canvas.height = h * ratio;
+      const ctx = canvas.getContext("2d")!;
+      ctx.scale(ratio, ratio);
 
-    // slight delay to let dialog fully render
-    const t = setTimeout(() => {
+      if (padRef.current) padRef.current.off();
       padRef.current = new SignaturePad(canvas, {
         backgroundColor: "rgb(255,255,255)",
         penColor: "rgb(10, 36, 99)",
         minWidth: 1.5,
         maxWidth: 4,
       });
-      resize();
-    }, 120);
+      padRef.current.clear();
+    }
 
-    window.addEventListener("resize", resize);
-    return () => { clearTimeout(t); window.removeEventListener("resize", resize); };
+    // Dialog has a CSS transition (~200ms). Wait for it, then double-RAF to
+    // ensure the browser has measured the canvas before we read offsetWidth.
+    const t = setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(initPad)), 220);
+
+    return () => { cancelled = true; clearTimeout(t); };
   }, [open]);
 
   function cafRef(id: number) {

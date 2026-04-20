@@ -85,27 +85,49 @@ export default function SignCAF() {
 
   // Init signature pad when on sign step
   useEffect(() => {
-    if (step !== "sign" || !canvasRef.current) return;
-    const canvas = canvasRef.current;
+    if (step !== "sign") return;
+    let cancelled = false;
 
-    function resize() {
+    function initPad() {
+      const canvas = canvasRef.current;
+      if (!canvas || cancelled) return;
+
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      // Use measured width, fall back to container width if still 0
+      const w = canvas.offsetWidth || canvas.parentElement?.offsetWidth || 600;
+      const h = 220;
+      canvas.width = w * ratio;
+      canvas.height = h * ratio;
+      const ctx = canvas.getContext("2d")!;
+      ctx.scale(ratio, ratio);
+
+      if (padRef.current) padRef.current.off();
+      padRef.current = new SignaturePad(canvas, {
+        backgroundColor: "rgb(255,255,255)",
+        penColor: "rgb(10, 36, 99)",
+        minWidth: 1.5,
+        maxWidth: 4,
+      });
+      padRef.current.clear();
+    }
+
+    function onResize() {
+      const canvas = canvasRef.current;
+      if (!canvas || !padRef.current) return;
+      const data = padRef.current.toData();
       const ratio = Math.max(window.devicePixelRatio || 1, 1);
       canvas.width = canvas.offsetWidth * ratio;
       canvas.height = canvas.offsetHeight * ratio;
       canvas.getContext("2d")!.scale(ratio, ratio);
-      padRef.current?.clear();
+      padRef.current.clear();
+      padRef.current.fromData(data);
     }
 
-    padRef.current = new SignaturePad(canvas, {
-      backgroundColor: "rgb(255,255,255)",
-      penColor: "rgb(10, 36, 99)",
-      minWidth: 1.5,
-      maxWidth: 4,
-    });
+    // Double-RAF ensures browser has completed layout before we measure
+    requestAnimationFrame(() => requestAnimationFrame(initPad));
 
-    resize();
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
+    window.addEventListener("resize", onResize);
+    return () => { cancelled = true; window.removeEventListener("resize", onResize); };
   }, [step]);
 
   async function sendOTP() {
