@@ -27,16 +27,16 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
 
   function drawHeader() {
     doc.setFillColor(10, 36, 99);
-    doc.rect(0, 0, W, 16, "F");
+    doc.rect(0, 0, W, 18, "F");
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("AZMI FOUNDATION", margin, 10);
+    doc.setFontSize(12);
+    doc.text("AZMI FOUNDATION", margin, 8);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.text("Reg. No: E/22280/AHMEDABAD  |  PAN: AAGTA9354B  |  80G & 12A Registered", W / 2, 10, { align: "center" });
+    doc.setFontSize(7.5);
+    doc.text("Reg. No: E/22280/AHMEDABAD  |  PAN: AAGTA9354B  |  80G & 12A Registered", margin, 14);
     doc.setTextColor(0, 0, 0);
-    y = 22;
+    y = 24;
   }
 
   function sectionTitle(title: string) {
@@ -127,7 +127,7 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   infoRow("Campaign Title", opts.campaignTitle || opts.purpose);
   infoRow("Beneficiary Name", opts.beneficiaryName);
   infoRow("Purpose", opts.purpose);
-  infoRow("Target Amount", opts.targetAmount ? `₹ ${Number(opts.targetAmount).toLocaleString("en-IN")}` : "—");
+  infoRow("Target Amount", opts.targetAmount ? `Rs. ${Number(opts.targetAmount).toLocaleString("en-IN")}` : "—");
   infoRow("Hospital / Institution", opts.hospital);
   infoRow("Campaigner Name", opts.campaignerName);
   infoRow("Campaigner Phone", opts.campaignerPhone);

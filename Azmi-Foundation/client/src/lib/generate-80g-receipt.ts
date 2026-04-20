@@ -162,7 +162,7 @@ export async function generate80GReceipt(data: ReceiptData): Promise<void> {
   rect(margin, y, innerW, 18, "#f0f8f0");
   line(margin, y, margin, y + 18, "#2d7a2d", 1.5);
   text("DONATION AMOUNT", margin + 5, y + 6, { size: 7, bold: true, color: "#555555" });
-  text(`₹${data.amount.toLocaleString("en-IN")}`, margin + 5, y + 13, { size: 18, bold: true, color: "#1a7a1a" });
+  text(`Rs. ${data.amount.toLocaleString("en-IN")}`, margin + 5, y + 13, { size: 18, bold: true, color: "#1a7a1a" });
   text(`(${numberToWords(data.amount)})`, W - margin - 4, y + 13, { size: 8, italic: true, color: "#555555", align: "right" });
   text(`Campaign: ${data.campaignTitle}`, margin + 5, y + 17, { size: 6.5, color: "#888888" });
   y += 24;
@@ -266,7 +266,7 @@ export async function generate80GReceipt(data: ReceiptData): Promise<void> {
   doc.rect(margin, y, innerW, 18);
 
   const certText = [
-    `This is to certify that ${data.donorName} has made a donation of ₹${data.amount.toLocaleString("en-IN")}`,
+    `This is to certify that ${data.donorName} has made a donation of Rs. ${data.amount.toLocaleString("en-IN")}`,
     `(${numberToWords(data.amount)}) to AZMI FOUNDATION on ${data.donationDate}.`,
     "This donation is eligible for deduction under Section 80G of the Income Tax Act, 1961.",
     "The deduction is subject to provisions of the Act and rules made thereunder.",
