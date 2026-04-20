@@ -849,6 +849,21 @@ export async function registerRoutes(
     res.json({ ip });
   });
 
+  // Public: return server's own public IP (for Campaign Manager stamp on non-admin CAFs)
+  let _cachedServerIp: string | null = null;
+  app.get("/api/server-ip", async (_req, res) => {
+    try {
+      if (!_cachedServerIp) {
+        const r = await fetch("https://api.ipify.org?format=json");
+        const d = await r.json() as { ip: string };
+        _cachedServerIp = d.ip;
+      }
+      res.json({ ip: _cachedServerIp });
+    } catch {
+      res.json({ ip: "Azmi Foundation Server" });
+    }
+  });
+
   // Admin creates a signing link for a user
   app.post("/api/admin/caf/create-request", isAdmin, async (req: any, res) => {
     try {

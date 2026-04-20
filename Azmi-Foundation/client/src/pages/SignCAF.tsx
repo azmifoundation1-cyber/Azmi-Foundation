@@ -172,7 +172,15 @@ export default function SignCAF() {
             timeZone: "Asia/Kolkata", day: "2-digit", month: "long", year: "numeric",
             hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true,
           }) + " IST"
-        : undefined;
+        : ts; // for non-token flows, CM timestamp = signing time
+
+      // Fetch server's own public IP (shown as Campaign Manager IP for non-admin CAFs)
+      let serverIp: string | undefined;
+      try {
+        const sipRes = await fetch("/api/server-ip");
+        const sipData = await sipRes.json();
+        serverIp = sipData.ip;
+      } catch (_) {}
 
       await generateCAFPdf({
         cafId: id,
@@ -190,6 +198,7 @@ export default function SignCAF() {
         generatedByAdmin: !!tokenData,
         adminName: tokenData?.adminName || undefined,
         adminSignedAt,
+        adminIpAddress: serverIp,
       });
 
       setStep("done");

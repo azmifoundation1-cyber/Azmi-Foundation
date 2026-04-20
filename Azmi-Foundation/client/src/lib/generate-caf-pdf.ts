@@ -162,17 +162,13 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   y += 2;
   div();
 
-  // ── CAMPAIGN DETAILS — with seal in the right column content area ──────────
+  // ── CAMPAIGN DETAILS ────────────────────────────────────────────────────────
   sec("CAMPAIGN DETAILS");
-  // Record Y right after the section header (first content row)
-  const detContentY = y;
+  // Record Y right after the section header (first content row — seal appears on page 2)
 
-  // Left col = M to M+CW/2-4; Right col = M+CW/2+2 to M+CW-1
-  // We reserve a 27mm wide zone in the top-right for the seal
-  const sealW = 27;
-  const sealH = 27;
-  const sealX = W - M - sealW;          // 169mm from left
-  const sealY = detContentY - 1;        // flush with first content row
+  // Seal dimensions (used later on page 2 in the Campaigner Details block)
+  const sealW = 26;
+  const sealH = 26;
 
   // 2-column campaign detail grid
   const col1X = M;
@@ -204,11 +200,6 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
     doc.text(l1Lines, col1X, y);
     doc.text(l2Lines, col2X, y);
     y += Math.max(l1Lines.length, l2Lines.length) * 4.5 + 4;
-  }
-
-  // Stamp seal — placed in the content area top-right of Campaign Details
-  if (sealUrl) {
-    try { doc.addImage(sealUrl, "PNG", sealX, sealY, sealW, sealH); } catch (_) {}
   }
 
   y += 1;
@@ -299,6 +290,13 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   // Campaigner details — right column
   const detX = M + sigBoxW + 6;   // 94mm
   const detW = CW - sigBoxW - 6;  // 102mm
+
+  // Seal overlapping the top-right corner of the CAMPAIGNER DETAILS area
+  if (sealUrl) {
+    try {
+      doc.addImage(sealUrl, "PNG", W - M - sealW, sigBlockY - 2, sealW, sealH);
+    } catch (_) {}
+  }
 
   doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(10, 36, 99);
   doc.text("CAMPAIGNER DETAILS", detX, sigBlockY + 5);
