@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import {
   FileText, CheckCircle, XCircle, Phone, Calendar, Search,
   Download, Plus, Pen, RotateCcw, Trash2, Loader2, Link2,
-  Clock, Copy, ExternalLink, Shield, User,
+  Clock, Copy, ExternalLink, Shield, User, Star, AlertTriangle,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -78,7 +78,7 @@ function collectDeviceInfo() {
 export default function AdminCAF() {
   const { toast } = useToast();
   const { user } = useAuth();
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   const adminDisplayName = (user as any)?.firstName
     ? `${(user as any).firstName} ${(user as any).lastName || ""}`.trim()
     : (user as any)?.email || "Admin";
@@ -97,8 +97,16 @@ export default function AdminCAF() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const padRef = useRef<SignaturePad | null>(null);
 
+  const { data: meInfo } = useQuery<{ role: string }>({
+    queryKey: ["/api/admin/me"],
+    queryFn: () => fetch("/api/admin/me").then(r => r.json()),
+  });
+  const isSuperAdmin = meInfo?.role === "super_admin";
+
   const { data: records = [], isLoading: loadingRecords } = useQuery<CAFRecord[]>({ queryKey: ["/api/admin/caf"] });
   const { data: requests = [], isLoading: loadingRequests } = useQuery<CAFRequest[]>({ queryKey: ["/api/admin/caf/requests"] });
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
   // Init signature pad for PDF generate dialog
   useEffect(() => {
@@ -191,7 +199,7 @@ export default function AdminCAF() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       setGeneratedLink(data.link);
-      qc.invalidateQueries({ queryKey: ["/api/admin/caf/requests"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/caf/requests"] });
       toast({ title: "Signing link created!", description: "Share the link with the campaigner." });
     } catch (err: any) {
       toast({ title: "Failed to create link", description: err.message, variant: "destructive" });
@@ -230,6 +238,20 @@ export default function AdminCAF() {
     setRedownloading(null);
   }
 
+  async function handleDeleteCAF(id: number) {
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/admin/caf/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/caf"] });
+      toast({ title: "CAF deleted permanently", description: `CAF-${String(id).padStart(6, "0")} removed` });
+    } catch {
+      toast({ title: "Delete failed", variant: "destructive" });
+    }
+    setDeletingId(null);
+    setConfirmDeleteId(null);
+  }
+
   function copyLink(link: string) {
     navigator.clipboard.writeText(link);
     toast({ title: "Link copied to clipboard!" });
@@ -243,8 +265,13 @@ export default function AdminCAF() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-black text-gray-900">CAF Management</h1>
-          <p className="text-gray-500 text-sm mt-0.5 flex items-center gap-1.5">
+          <p className="text-gray-500 text-sm mt-0.5 flex items-center gap-1.5 flex-wrap">
             <User className="w-3.5 h-3.5" /> Logged in as <strong>{adminDisplayName}</strong>
+            {isSuperAdmin && (
+              <span className="inline-flex items-center gap-1 text-xs bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-semibold">
+                <Star className="w-3 h-3 fill-amber-500 text-amber-500" /> Super Admin
+              </span>
+            )}
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -329,6 +356,26 @@ export default function AdminCAF() {
                       {redownloading === r.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
                       Download PDF
                     </Button>
+                    {/* Delete — Super Admins only */}
+                    {isSuperAdmin && (
+                      confirmDeleteId === r.id ? (
+                        <div className="flex items-center gap-1.5 bg-red-50 border border-red-200 rounded-lg px-2 py-1">
+                          <AlertTriangle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
+                          <span className="text-xs text-red-700 font-medium">Delete forever?</span>
+                          <Button size="sm" variant="destructive" className="h-6 px-2 text-xs"
+                            disabled={deletingId === r.id} onClick={() => handleDeleteCAF(r.id)}>
+                            {deletingId === r.id ? <Loader2 className="w-3 h-3 animate-spin" /> : "Yes"}
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-6 px-2 text-xs"
+                            onClick={() => setConfirmDeleteId(null)}>No</Button>
+                        </div>
+                      ) : (
+                        <Button size="sm" variant="ghost" className="gap-1 text-red-500 hover:text-red-700 hover:bg-red-50 h-7"
+                          onClick={() => setConfirmDeleteId(r.id)}>
+                          <Trash2 className="w-3.5 h-3.5" /> Delete
+                        </Button>
+                      )
+                    )}
                   </div>
                 </div>
                 <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2 text-sm">

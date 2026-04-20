@@ -45,8 +45,21 @@ async function isAdmin(req: Request, res: Response, next: NextFunction) {
   }
   const user = req.user as any;
   const dbUser = await storage.getUser(user.claims?.sub || user.id);
-  if (!dbUser || dbUser.role !== "admin") {
+  if (!dbUser || (dbUser.role !== "admin" && dbUser.role !== "super_admin")) {
     return res.status(403).json({ message: "Forbidden: Admin access required" });
+  }
+  next();
+}
+
+// Super admin middleware
+async function isSuperAdmin(req: Request, res: Response, next: NextFunction) {
+  if (!req.isAuthenticated || !req.isAuthenticated()) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const user = req.user as any;
+  const dbUser = await storage.getUser(user.claims?.sub || user.id);
+  if (!dbUser || dbUser.role !== "super_admin") {
+    return res.status(403).json({ message: "Forbidden: Super Admin access required" });
   }
   next();
 }
@@ -496,9 +509,17 @@ export async function registerRoutes(
     res.json(usersList);
   });
 
-  app.patch("/api/admin/users/:id/role", isAdmin, async (req, res) => {
+  app.patch("/api/admin/users/:id/role", isAdmin, async (req: any, res) => {
     try {
-      const { role } = z.object({ role: z.enum(["user", "admin"]) }).parse(req.body);
+      const { role } = z.object({ role: z.enum(["user", "admin", "super_admin"]) }).parse(req.body);
+      // Only super_admins can grant or revoke super_admin role
+      if (role === "super_admin") {
+        const actor = req.user as any;
+        const actorDb = await storage.getUser(actor.claims?.sub || actor.id);
+        if (!actorDb || actorDb.role !== "super_admin") {
+          return res.status(403).json({ message: "Only Super Admins can grant Super Admin role" });
+        }
+      }
       const user = await storage.updateUserRole(req.params.id, role);
       res.json(user);
     } catch (err) {
@@ -934,7 +955,7 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/admin/caf", isAdmin, async (_req, res) => {
+  app.get("/api/admin/caf", isAdmin, async (req: any, res) => {
     try {
       const { cafSignatures: cafTable } = await import("@shared/schema");
       const { db } = await import("./db");
@@ -944,6 +965,29 @@ export async function registerRoutes(
     } catch (err) {
       res.status(500).json({ message: "Failed to fetch CAFs" });
     }
+  });
+
+  // Super Admin: delete a CAF record permanently
+  app.delete("/api/admin/caf/:id", isSuperAdmin, async (req, res) => {
+    try {
+      const { cafSignatures: cafTable } = await import("@shared/schema");
+      const { db } = await import("./db");
+      const { eq } = await import("drizzle-orm");
+      const id = parseInt(req.params.id, 10);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid CAF ID" });
+      await db.delete(cafTable).where(eq(cafTable.id, id));
+      res.json({ ok: true });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to delete CAF" });
+    }
+  });
+
+  // Return current admin's role info (used by frontend to gate super-admin UI)
+  app.get("/api/admin/me", isAdmin, async (req: any, res) => {
+    const actor = req.user as any;
+    const dbUser = await storage.getUser(actor.claims?.sub || actor.id);
+    if (!dbUser) return res.status(404).json({ message: "Not found" });
+    res.json({ id: dbUser.id, email: dbUser.email, role: dbUser.role, firstName: dbUser.firstName, lastName: dbUser.lastName });
   });
 
   // Seed Data
