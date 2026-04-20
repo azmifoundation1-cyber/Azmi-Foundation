@@ -836,11 +836,17 @@ export async function registerRoutes(
           .set({ status: "signed", signedAt: now })
           .where(eq(reqTable.token, body.requestToken));
       }
-      res.json({ success: true, cafId: `CAF-${String(saved.id).padStart(6, "0")}`, id: saved.id });
+      res.json({ success: true, cafId: `CAF-${String(saved.id).padStart(6, "0")}`, id: saved.id, ipAddress: ip });
     } catch (err) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
       res.status(500).json({ message: "Failed to save CAF" });
     }
+  });
+
+  // Admin: return current request IP (for PDF stamping)
+  app.get("/api/admin/my-ip", isAdmin, (req, res) => {
+    const ip = (req.headers["x-forwarded-for"] as string || req.ip || "unknown").split(",")[0].trim();
+    res.json({ ip });
   });
 
   // Admin creates a signing link for a user

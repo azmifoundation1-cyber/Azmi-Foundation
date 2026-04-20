@@ -134,6 +134,12 @@ export default function AdminCAF() {
         ? padRef.current.toDataURL("image/png") : "";
       const ts = nowIST();
       const cafId = `CAF-ADM-${Date.now().toString().slice(-6)}`;
+      let adminIp: string | undefined;
+      try {
+        const ipRes = await fetch("/api/admin/my-ip");
+        const ipData = await ipRes.json();
+        adminIp = ipData.ip;
+      } catch (_) {}
       await generateCAFPdf({
         cafId,
         campaignerName: form.campaignerName,
@@ -147,6 +153,7 @@ export default function AdminCAF() {
         signedAt: ts,
         generatedByAdmin: true,
         adminName: adminDisplayName,
+        ipAddress: adminIp,
       });
       toast({ title: "PDF generated!", description: `${cafId} downloaded` });
       setPdfOpen(false);

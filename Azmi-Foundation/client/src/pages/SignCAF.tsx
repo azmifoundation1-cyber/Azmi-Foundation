@@ -163,6 +163,7 @@ export default function SignCAF() {
       const saved = await saveRes.json();
       if (!saveRes.ok) throw new Error(saved.message);
       const id = saved.cafId;
+      const returnedIp: string | undefined = saved.ipAddress;
       setCafId(id);
 
       await generateCAFPdf({
@@ -176,7 +177,9 @@ export default function SignCAF() {
         campaignTitle: form.campaignTitle || form.purpose,
         signatureDataUrl,
         signedAt: ts,
-        generatedByAdmin: false,
+        generatedByAdmin: !!tokenData,
+        adminName: tokenData?.adminName || undefined,
+        ipAddress: returnedIp,
         deviceInfo,
       });
 

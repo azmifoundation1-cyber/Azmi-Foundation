@@ -128,11 +128,12 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   doc.setFontSize(8);
   doc.setTextColor(100, 100, 100);
   doc.text(`CAF ID: ${opts.cafId}  |  Date: ${opts.signedAt}`, margin, y);
-  if (opts.adminName) {
+  if (opts.generatedByAdmin) {
+    const cmName = opts.adminName || "Azmi Foundation Admin";
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8);
     doc.setTextColor(10, 36, 99);
-    doc.text(`Campaign Manager: ${opts.adminName}`, W - margin, y, { align: "right" });
+    doc.text(`Campaign Manager: ${cmName}`, W - margin, y, { align: "right" });
     y += 4.5;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
@@ -142,8 +143,9 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
       y += 4;
       doc.text(`IP: ${opts.ipAddress}`, W - margin, y, { align: "right" });
     }
+    y += 4;
   }
-  y += 8;
+  y += 4;
   divider();
 
   // Parties
