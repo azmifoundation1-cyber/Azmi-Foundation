@@ -31,12 +31,16 @@ function extractYoutubeId(url?: string | null): string | null {
 const PRESET_AMOUNTS_MAP: Record<number, number[]> = {
   3: [680, 1360, 3400, 6800],
   4: [500, 3500, 5000, 10000],
+  5: [500, 1000, 2500, 5000],
 };
 
 const PRESET_LABELS_MAP: Record<number, string[]> = {
   3: ["1 family's groceries", "2 families' groceries", "5 families' groceries", "10 families' groceries"],
   4: ["1 physio session", "Week of medicines", "Home nurse visit", "1 month physio"],
+  5: ["1 day's medicines", "Week of stoma bags", "Month of medicines", "Reversal surgery fund"],
 };
+
+const DEFAULT_PRESET_LABELS = ["Small help", "Medium support", "Big impact", "Life changer"];
 
 const PAYMENT_ICONS = [
   { name: "GPay", color: "#4285F4", label: "G" },
@@ -119,7 +123,7 @@ export default function CampaignDetail() {
   const [, params] = useRoute("/campaigns/:id");
   const id = Number(params?.id);
   const PRESET_AMOUNTS = PRESET_AMOUNTS_MAP[id] || [500, 1000, 2500, 5000];
-  const PRESET_LABELS = PRESET_LABELS_MAP[id] || PRESET_LABELS_MAP[3];
+  const PRESET_LABELS = PRESET_LABELS_MAP[id] || DEFAULT_PRESET_LABELS;
   const [amount, setAmount] = useState(() => String(PRESET_AMOUNTS_MAP[id]?.[1] ?? 1000));
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
