@@ -1,13 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { FileText, CheckCircle, XCircle, Phone, Calendar, Search, Download } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import SignaturePad from "signature_pad";
+import { generateCAFPdf } from "@/lib/generate-caf-pdf";
+import {
+  FileText, CheckCircle, XCircle, Phone, Calendar,
+  Search, Download, Plus, Pen, RotateCcw, Trash2, Loader2,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface CAFRecord {
   id: number;
-  cafId?: string;
   campaignerName: string;
   campaignerPhone: string;
   beneficiaryName?: string;
@@ -15,13 +22,32 @@ interface CAFRecord {
   targetAmount?: string;
   hospital?: string;
   campaignTitle?: string;
+  signatureDataUrl?: string;
   otpVerified: boolean;
   ipAddress?: string;
   createdAt: string;
 }
 
+const EMPTY_FORM = {
+  campaignerName: "",
+  campaignerPhone: "",
+  beneficiaryName: "",
+  purpose: "",
+  targetAmount: "",
+  hospital: "",
+  campaignTitle: "",
+};
+
 export default function AdminCAF() {
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [redownloading, setRedownloading] = useState<number | null>(null);
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const padRef = useRef<SignaturePad | null>(null);
 
   const { data: records = [], isLoading } = useQuery<CAFRecord[]>({
     queryKey: ["/api/admin/caf"],
@@ -32,20 +58,124 @@ export default function AdminCAF() {
       .join(" ").toLowerCase().includes(search.toLowerCase())
   );
 
-  function cafRef(r: CAFRecord) {
-    return `CAF-${String(r.id).padStart(6, "0")}`;
+  // Init signature pad when dialog opens
+  useEffect(() => {
+    if (!open || !canvasRef.current) return;
+    const canvas = canvasRef.current;
+
+    function resize() {
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d")!.scale(ratio, ratio);
+      padRef.current?.clear();
+    }
+
+    // slight delay to let dialog fully render
+    const t = setTimeout(() => {
+      padRef.current = new SignaturePad(canvas, {
+        backgroundColor: "rgb(255,255,255)",
+        penColor: "rgb(10, 36, 99)",
+        minWidth: 1.5,
+        maxWidth: 4,
+      });
+      resize();
+    }, 120);
+
+    window.addEventListener("resize", resize);
+    return () => { clearTimeout(t); window.removeEventListener("resize", resize); };
+  }, [open]);
+
+  function cafRef(id: number) {
+    return `CAF-${String(id).padStart(6, "0")}`;
+  }
+
+  async function handleGenerate() {
+    if (!form.campaignerName.trim() || !form.campaignerPhone.trim()) {
+      toast({ title: "Campaigner name and phone are required", variant: "destructive" });
+      return;
+    }
+    setGenerating(true);
+    try {
+      const signatureDataUrl = padRef.current && !padRef.current.isEmpty()
+        ? padRef.current.toDataURL("image/png")
+        : "";
+
+      const id = Date.now(); // local-only ref for admin PDFs
+      const cafId = `CAF-ADM-${String(id).slice(-6)}`;
+      const now = new Date().toLocaleString("en-IN", {
+        day: "2-digit", month: "long", year: "numeric",
+        hour: "2-digit", minute: "2-digit",
+      });
+
+      await generateCAFPdf({
+        cafId,
+        campaignerName: form.campaignerName,
+        campaignerPhone: form.campaignerPhone,
+        beneficiaryName: form.beneficiaryName,
+        purpose: form.purpose,
+        targetAmount: form.targetAmount,
+        hospital: form.hospital,
+        campaignTitle: form.campaignTitle,
+        signatureDataUrl,
+        signedAt: now,
+        generatedByAdmin: true,
+      });
+
+      toast({ title: "PDF generated!", description: `${cafId} downloaded` });
+      setOpen(false);
+      setForm(EMPTY_FORM);
+    } catch (err: any) {
+      toast({ title: "PDF generation failed", description: err.message, variant: "destructive" });
+    }
+    setGenerating(false);
+  }
+
+  async function redownloadPdf(r: CAFRecord) {
+    setRedownloading(r.id);
+    try {
+      await generateCAFPdf({
+        cafId: cafRef(r.id),
+        campaignerName: r.campaignerName,
+        campaignerPhone: r.campaignerPhone,
+        beneficiaryName: r.beneficiaryName || "",
+        purpose: r.purpose || "",
+        targetAmount: r.targetAmount || "",
+        hospital: r.hospital || "",
+        campaignTitle: r.campaignTitle || "",
+        signatureDataUrl: r.signatureDataUrl || "",
+        signedAt: new Date(r.createdAt).toLocaleString("en-IN", {
+          day: "2-digit", month: "long", year: "numeric",
+          hour: "2-digit", minute: "2-digit",
+        }),
+        generatedByAdmin: false,
+      });
+      toast({ title: "PDF downloaded", description: cafRef(r.id) });
+    } catch {
+      toast({ title: "Download failed", variant: "destructive" });
+    }
+    setRedownloading(null);
   }
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-black text-gray-900">Signed CAFs</h1>
-          <p className="text-gray-500 text-sm mt-0.5">Consent Agreements for Fundraising with OTP-verified signatures</p>
+          <p className="text-gray-500 text-sm mt-0.5">Consent Agreements for Fundraising</p>
         </div>
-        <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-sm px-3 py-1">
-          {records.length} Total
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-sm px-3 py-1">
+            {records.length} Total
+          </Badge>
+          <Button
+            className="bg-[#0a2463] hover:bg-blue-900 text-white gap-2"
+            onClick={() => setOpen(true)}
+          >
+            <Plus className="w-4 h-4" /> Generate CAF PDF
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
@@ -59,13 +189,14 @@ export default function AdminCAF() {
         />
       </div>
 
+      {/* Records list */}
       {isLoading ? (
         <div className="text-center py-16 text-gray-400">Loading…</div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           <FileText className="w-10 h-10 mx-auto mb-3 opacity-30" />
           <p className="font-semibold">No signed CAFs yet</p>
-          <p className="text-sm mt-1">CAFs signed via /sign-caf will appear here</p>
+          <p className="text-sm mt-1">CAFs signed via /sign-caf will appear here, or generate one above.</p>
         </div>
       ) : (
         <div className="grid gap-3">
@@ -73,9 +204,9 @@ export default function AdminCAF() {
             <div key={r.id} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
               <div className="flex items-start justify-between flex-wrap gap-3">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className="font-mono text-xs text-[#0a2463] font-bold bg-blue-50 px-2 py-0.5 rounded">
-                      {cafRef(r)}
+                      {cafRef(r.id)}
                     </span>
                     {r.otpVerified ? (
                       <Badge className="bg-green-100 text-green-700 border-green-200 text-xs gap-1">
@@ -92,12 +223,26 @@ export default function AdminCAF() {
                     <Phone className="w-3 h-3" /> {r.campaignerPhone}
                   </div>
                 </div>
-                <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
-                  <Calendar className="w-3 h-3" />
-                  {new Date(r.createdAt).toLocaleString("en-IN", {
-                    day: "2-digit", month: "short", year: "numeric",
-                    hour: "2-digit", minute: "2-digit",
-                  })}
+                <div className="flex flex-col items-end gap-2">
+                  <div className="flex items-center gap-1 text-xs text-gray-400">
+                    <Calendar className="w-3 h-3" />
+                    {new Date(r.createdAt).toLocaleString("en-IN", {
+                      day: "2-digit", month: "short", year: "numeric",
+                      hour: "2-digit", minute: "2-digit",
+                    })}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5 text-[#0a2463] border-blue-200 hover:bg-blue-50"
+                    disabled={redownloading === r.id}
+                    onClick={() => redownloadPdf(r)}
+                  >
+                    {redownloading === r.id
+                      ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      : <Download className="w-3.5 h-3.5" />}
+                    Download PDF
+                  </Button>
                 </div>
               </div>
 
@@ -117,7 +262,9 @@ export default function AdminCAF() {
                 {r.targetAmount && (
                   <div>
                     <span className="text-gray-400 text-xs uppercase tracking-wide block">Target Amount</span>
-                    <span className="font-bold text-[#0a2463]">₹{Number(r.targetAmount).toLocaleString("en-IN")}</span>
+                    <span className="font-bold text-[#0a2463]">
+                      ₹{Number(r.targetAmount).toLocaleString("en-IN")}
+                    </span>
                   </div>
                 )}
                 {r.purpose && (
@@ -143,6 +290,141 @@ export default function AdminCAF() {
           ))}
         </div>
       )}
+
+      {/* ── Generate CAF PDF Dialog ── */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-[#0a2463] font-black text-xl flex items-center gap-2">
+              <FileText className="w-5 h-5" /> Generate CAF PDF
+            </DialogTitle>
+            <p className="text-gray-500 text-sm">
+              Fill in the campaigner details and optionally add an admin signature. The PDF will be stamped as "Generated by Azmi Foundation Admin".
+            </p>
+          </DialogHeader>
+
+          <div className="space-y-5 pt-2">
+            {/* Form fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label>Campaigner Full Name *</Label>
+                <Input
+                  value={form.campaignerName}
+                  onChange={e => setForm(f => ({ ...f, campaignerName: e.target.value }))}
+                  placeholder="e.g. Mohammed Raza"
+                />
+              </div>
+              <div>
+                <Label>Mobile Number *</Label>
+                <Input
+                  type="tel"
+                  maxLength={10}
+                  value={form.campaignerPhone}
+                  onChange={e => setForm(f => ({ ...f, campaignerPhone: e.target.value.replace(/\D/g, "") }))}
+                  placeholder="10-digit mobile"
+                />
+              </div>
+              <div>
+                <Label>Beneficiary Name</Label>
+                <Input
+                  value={form.beneficiaryName}
+                  onChange={e => setForm(f => ({ ...f, beneficiaryName: e.target.value }))}
+                  placeholder="Patient / Beneficiary name"
+                />
+              </div>
+              <div>
+                <Label>Target Amount (₹)</Label>
+                <Input
+                  type="number"
+                  value={form.targetAmount}
+                  onChange={e => setForm(f => ({ ...f, targetAmount: e.target.value }))}
+                  placeholder="e.g. 500000"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <Label>Campaign Title</Label>
+                <Input
+                  value={form.campaignTitle}
+                  onChange={e => setForm(f => ({ ...f, campaignTitle: e.target.value }))}
+                  placeholder="e.g. Help Raza fight cancer"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <Label>Purpose of Fundraising</Label>
+                <Input
+                  value={form.purpose}
+                  onChange={e => setForm(f => ({ ...f, purpose: e.target.value }))}
+                  placeholder="e.g. Medical treatment for liver disease"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <Label>Hospital / Institution (if applicable)</Label>
+                <Input
+                  value={form.hospital}
+                  onChange={e => setForm(f => ({ ...f, hospital: e.target.value }))}
+                  placeholder="e.g. Apollo Hospital, Ahmedabad"
+                />
+              </div>
+            </div>
+
+            {/* Signature pad */}
+            <div>
+              <Label className="mb-2 block flex items-center gap-2">
+                <Pen className="w-3.5 h-3.5" /> Admin Signature <span className="text-gray-400 font-normal">(optional)</span>
+              </Label>
+              <div className="border-2 border-[#0a2463] rounded-xl overflow-hidden bg-white">
+                <div className="bg-gray-50 px-3 py-1.5 text-xs text-gray-400 border-b border-gray-100 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5"><Pen className="w-3 h-3" /> Draw signature here</span>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => padRef.current?.undo()}
+                      className="text-gray-500 hover:text-gray-800 flex items-center gap-1 text-xs"
+                    >
+                      <RotateCcw className="w-3 h-3" /> Undo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => padRef.current?.clear()}
+                      className="text-red-400 hover:text-red-600 flex items-center gap-1 text-xs"
+                    >
+                      <Trash2 className="w-3 h-3" /> Clear
+                    </button>
+                  </div>
+                </div>
+                <canvas
+                  ref={canvasRef}
+                  className="block w-full touch-none cursor-crosshair"
+                  style={{ height: 160 }}
+                />
+              </div>
+              <p className="text-xs text-gray-400 mt-1">
+                Leave blank to generate without a signature. The PDF will be stamped "Generated By: Azmi Foundation Admin".
+              </p>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-3 pt-1">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => { setOpen(false); setForm(EMPTY_FORM); }}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1 bg-[#0a2463] hover:bg-blue-900 text-white gap-2"
+                disabled={generating || !form.campaignerName.trim() || !form.campaignerPhone.trim()}
+                onClick={handleGenerate}
+              >
+                {generating
+                  ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating…</>
+                  : <><Download className="w-4 h-4" /> Generate & Download PDF</>}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
