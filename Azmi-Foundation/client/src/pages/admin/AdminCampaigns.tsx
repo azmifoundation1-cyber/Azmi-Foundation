@@ -13,7 +13,7 @@ import {
   Plus, Pencil, Trash2, Star, Loader2, RefreshCw, AlertCircle, CheckCircle,
   Upload, Link as LinkIcon, Play, Pause, EyeOff, Eye, CheckSquare, Copy,
   Users, IndianRupee, ExternalLink, FileText, X, ImagePlus, Video, File,
-  CalendarIcon,
+  CalendarIcon, AlertTriangle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Campaign, CampaignDocument } from "@shared/schema";
@@ -24,6 +24,7 @@ const emptyForm = {
   galleryImages: [] as string[],
   status: "active" as const, featured: false, endDate: "",
   upiId: "", upiName: "", bankAccountName: "", bankAccountNumber: "", bankIfsc: "", bankName: "",
+  urgencyLabel: "",
 };
 
 type Tab = "basic" | "media" | "payments" | "documents";
@@ -237,6 +238,7 @@ export default function AdminCampaigns() {
       upiId: (c as any).upiId || "", upiName: (c as any).upiName || "",
       bankAccountName: (c as any).bankAccountName || "", bankAccountNumber: (c as any).bankAccountNumber || "",
       bankIfsc: (c as any).bankIfsc || "", bankName: (c as any).bankName || "",
+      urgencyLabel: (c as any).urgencyLabel || "",
     });
     setUseUrlInput(!!c.imageUrl && !c.imageUrl.startsWith("/uploads/"));
     setActiveTab("basic"); setDialogOpen(true);
@@ -510,6 +512,26 @@ export default function AdminCampaigns() {
                     <p className="text-[10px] text-gray-400 mt-1.5 leading-relaxed">
                       Blank line = new paragraph section. Single line breaks and spacing are preserved exactly on the public page.
                     </p>
+                  </div>
+                  <div>
+                    <Label className="flex items-center gap-1.5 mb-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                      Urgency Banner Label
+                      <span className="text-xs text-gray-400 font-normal">(optional — shown in the dark banner above the campaign)</span>
+                    </Label>
+                    <Input
+                      value={form.urgencyLabel}
+                      onChange={e => setForm(f => ({ ...f, urgencyLabel: e.target.value }))}
+                      placeholder="e.g. 846 Families Need Your Help"
+                      maxLength={80}
+                    />
+                    {form.urgencyLabel && (
+                      <div className="mt-2 flex items-center gap-1.5 px-3 py-1.5 rounded text-[11px] font-black uppercase tracking-wide bg-gray-900 text-amber-400 w-fit">
+                        <AlertTriangle className="w-3 h-3" />
+                        {form.urgencyLabel}
+                      </div>
+                    )}
+                    <p className="text-[10px] text-gray-400 mt-1">Leave blank to hide the urgency banner for this campaign.</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <Switch checked={form.featured} onCheckedChange={v => setForm(f => ({ ...f, featured: v }))} id="featured" />

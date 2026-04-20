@@ -1046,6 +1046,7 @@ async function seedDatabase() {
     await db.execute(sql`CREATE TABLE IF NOT EXISTS campaign_documents (id SERIAL PRIMARY KEY, campaign_id INTEGER REFERENCES campaigns(id), name TEXT NOT NULL, file_url TEXT NOT NULL, file_type TEXT NOT NULL, created_at TIMESTAMP DEFAULT NOW())`);
     await db.execute(sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS local_video_url TEXT`);
     await db.execute(sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS gallery_images JSONB DEFAULT '[]'::jsonb`);
+    await db.execute(sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS urgency_label TEXT`);
     console.log("[seed] schema migrations applied");
   } catch (e) {
     console.error("[seed] schema migration failed:", e);

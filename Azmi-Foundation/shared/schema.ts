@@ -20,6 +20,7 @@ export const campaigns = pgTable("campaigns", {
   videoUrl: text("video_url"),
   localVideoUrl: text("local_video_url"),
   galleryImages: jsonb("gallery_images").$type<string[]>().default([]),
+  urgencyLabel: text("urgency_label"),
   status: text("status", { enum: ["active", "completed", "paused", "hidden"] }).default("active").notNull(),
   featured: boolean("featured").default(false),
   endDate: timestamp("end_date"),

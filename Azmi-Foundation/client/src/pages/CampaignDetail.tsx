@@ -476,8 +476,8 @@ export default function CampaignDetail() {
         </div>
       </div>
 
-      {/* URGENT BANNER — campaign 3 and 4 */}
-      {(id === 3 || id === 4) && (
+      {/* URGENT BANNER — campaigns with urgencyLabel or hardcoded 3/4 */}
+      {(id === 3 || id === 4 || !!(campaign as any).urgencyLabel) && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -511,7 +511,7 @@ export default function CampaignDetail() {
                     letterSpacing: "0.1em",
                   }}
                 >
-                  {id === 4 ? "Help Anwar Recover — Father Needs Daily Care" : "846 Families Need Your Help"}
+                  {(campaign as any).urgencyLabel || (id === 4 ? "Help Anwar Recover — Father Needs Daily Care" : "846 Families Need Your Help")}
                 </span>
               </span>
               <a
