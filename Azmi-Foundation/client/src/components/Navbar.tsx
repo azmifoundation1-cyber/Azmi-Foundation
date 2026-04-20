@@ -65,7 +65,7 @@ export function Navbar() {
                    <Link href="/dashboard">
                      <DropdownMenuItem className="cursor-pointer font-bold uppercase tracking-wider">My Dashboard</DropdownMenuItem>
                    </Link>
-                   {(user as any)?.role === "admin" && (
+                   {((user as any)?.role === "admin" || (user as any)?.role === "super_admin") && (
                      <Link href="/admin">
                        <DropdownMenuItem className="cursor-pointer font-bold uppercase tracking-wider text-purple-600 flex items-center gap-2">
                          <Shield className="w-3.5 h-3.5" /> Admin Panel

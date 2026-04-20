@@ -31,7 +31,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return null;
   }
 
-  if ((user as any).role !== "admin") {
+  if ((user as any).role !== "admin" && (user as any).role !== "super_admin") {
     return (
       <div className="h-screen flex flex-col items-center justify-center gap-4 bg-gray-50">
         <Shield className="w-16 h-16 text-red-400" />

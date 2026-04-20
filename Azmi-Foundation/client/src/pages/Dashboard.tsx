@@ -68,7 +68,7 @@ export default function Dashboard() {
     return null;
   }
 
-  const isAdmin = (user as any).role === "admin";
+  const isAdmin = (user as any).role === "admin" || (user as any).role === "super_admin";
   const campaignMap = Object.fromEntries((campaigns || []).map((c: any) => [c.id, c]));
   const totalDonated = (myDonations || []).filter((d: any) => d.status === "completed").reduce((s: number, d: any) => s + Number(d.amount), 0);
 
