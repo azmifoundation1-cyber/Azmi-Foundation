@@ -1,6 +1,6 @@
 import { jsPDF } from "jspdf";
 
-interface CafPdfOptions {
+export interface CafPdfOptions {
   cafId: string;
   campaignerName: string;
   campaignerPhone: string;
@@ -12,6 +12,15 @@ interface CafPdfOptions {
   signatureDataUrl: string;
   signedAt: string;
   generatedByAdmin?: boolean;
+  adminName?: string;
+  deviceInfo?: {
+    userAgent?: string;
+    platform?: string;
+    screenSize?: string;
+    language?: string;
+    timezone?: string;
+  };
+  ipAddress?: string;
 }
 
 export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
@@ -21,13 +30,23 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   const contentW = W - margin * 2;
   let y = 18;
 
-  // ─── Helpers ──────────────────────────────────────────────────────────────
-  const addPage = () => { doc.addPage(); y = 18; };
+  const addPage = () => { doc.addPage(); y = 18; drawHeader(); };
   const checkY = (need: number = 10) => { if (y + need > 272) addPage(); };
 
   function drawHeader() {
     doc.setFillColor(10, 36, 99);
     doc.rect(0, 0, W, 18, "F");
+    // Trust seal circle on right
+    doc.setFillColor(212, 175, 55);
+    doc.circle(W - margin - 6, 9, 7, "F");
+    doc.setFillColor(10, 36, 99);
+    doc.circle(W - margin - 6, 9, 5.5, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(5);
+    doc.setTextColor(212, 175, 55);
+    doc.text("AZMI", W - margin - 6, 8, { align: "center" });
+    doc.text("TRUST", W - margin - 6, 11.5, { align: "center" });
+    // Org name
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
@@ -51,25 +70,25 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
     y += 6;
   }
 
-  function bodyText(text: string, indent = 0) {
+  function bodyText(t: string, indent = 0) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
     doc.setTextColor(40, 40, 40);
-    const lines = doc.splitTextToSize(text, contentW - indent);
+    const lines = doc.splitTextToSize(t, contentW - indent);
     checkY(lines.length * 5);
     doc.text(lines, margin + indent, y);
     y += lines.length * 5 + 1;
   }
 
-  function boldText(text: string) {
+  function boldText(t: string) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
     doc.setTextColor(20, 20, 20);
-    doc.text(text, margin, y);
+    doc.text(t, margin, y);
     y += 5;
   }
 
-  function infoRow(label: string, value: string) {
+  function infoRow(label: string, value?: string) {
     checkY(6);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8);
@@ -77,7 +96,7 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
     doc.text(label + ":", margin, y);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(20, 20, 20);
-    doc.text(value || "—", margin + 52, y);
+    doc.text(value || "\u2014", margin + 52, y);
     y += 5.5;
   }
 
@@ -88,10 +107,9 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
     y += 4;
   }
 
-  // ─── Page 1 ───────────────────────────────────────────────────────────────
+  // ── Page 1 ────────────────────────────────────────────────────────────────
   drawHeader();
 
-  // Title
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.setTextColor(10, 36, 99);
@@ -106,9 +124,7 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
 
   // Parties
   sectionTitle("PARTIES TO THIS AGREEMENT");
-  bodyText(
-    'This Consent Agreement for Fundraising ("CAF") is signed and executed in Ahmedabad, Gujarat, India.'
-  );
+  bodyText('This Consent Agreement for Fundraising ("CAF") is signed and executed in Ahmedabad, Gujarat, India.');
   y += 2;
   boldText("AZMI FOUNDATION (Platform)");
   bodyText(
@@ -127,7 +143,7 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   infoRow("Campaign Title", opts.campaignTitle || opts.purpose);
   infoRow("Beneficiary Name", opts.beneficiaryName);
   infoRow("Purpose", opts.purpose);
-  infoRow("Target Amount", opts.targetAmount ? `Rs. ${Number(opts.targetAmount).toLocaleString("en-IN")}` : "—");
+  infoRow("Target Amount", opts.targetAmount ? `Rs. ${Number(opts.targetAmount).toLocaleString("en-IN")}` : undefined);
   infoRow("Hospital / Institution", opts.hospital);
   infoRow("Campaigner Name", opts.campaignerName);
   infoRow("Campaigner Phone", opts.campaignerPhone);
@@ -136,12 +152,8 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
 
   // Agreement clauses
   sectionTitle("WHEREAS & AGREEMENT CLAUSES");
-  bodyText(
-    "WHEREAS AZMI is a crowdfunding platform providing services for raising funds for Medical, Educational, Hunger Relief, Disaster Relief and other Social Causes."
-  );
-  bodyText(
-    "WHEREAS the Campaigner has approached AZMI to start a fundraising campaign for the purpose stated above."
-  );
+  bodyText("WHEREAS AZMI is a crowdfunding platform providing services for raising funds for Medical, Educational, Hunger Relief, Disaster Relief and other Social Causes.");
+  bodyText("WHEREAS the Campaigner has approached AZMI to start a fundraising campaign for the purpose stated above.");
   y += 2;
   boldText("NOW THIS AGREEMENT WITNESSETH AS FOLLOWS:");
   y += 1;
@@ -162,19 +174,17 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
     "13. The Campaigner has read, understood and voluntarily agreed to all terms of this agreement.",
     "14. This agreement is governed by the laws of India. Any dispute shall be subject to the exclusive jurisdiction of courts at Ahmedabad, Gujarat.",
   ];
-
   for (const clause of clauses) {
     checkY(8);
     bodyText(clause, 0);
     y += 1;
   }
-
   y += 3;
   divider();
 
   // Annexure A
   checkY(40);
-  sectionTitle("Annexure – A : Indicative Expense Break-up");
+  sectionTitle("Annexure \u2013 A : Indicative Expense Break-up");
   const tData = [
     ["Description", "Rate"],
     ["Platform Fee by AZMI", "0% (Zero)"],
@@ -183,31 +193,28 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
     ["GST & Taxes", "18% on applicable charges"],
   ];
   const colW = [130, 44];
-  const startX = margin;
   let tY = y;
   tData.forEach((row, ri) => {
     checkY(8);
     const isHead = ri === 0;
     if (isHead) { doc.setFillColor(10, 36, 99); doc.setTextColor(255, 255, 255); }
     else { doc.setFillColor(ri % 2 === 0 ? 245 : 255, ri % 2 === 0 ? 248 : 255, ri % 2 === 0 ? 255 : 255); doc.setTextColor(30, 30, 30); }
-    doc.rect(startX, tY - 4.5, colW[0], 7, "F");
-    doc.rect(startX + colW[0], tY - 4.5, colW[1], 7, "F");
+    doc.rect(margin, tY - 4.5, colW[0], 7, "F");
+    doc.rect(margin + colW[0], tY - 4.5, colW[1], 7, "F");
     doc.setFont("helvetica", isHead ? "bold" : "normal");
     doc.setFontSize(8);
-    doc.text(row[0], startX + 2, tY);
-    doc.text(row[1], startX + colW[0] + 2, tY);
+    doc.text(row[0], margin + 2, tY);
+    doc.text(row[1], margin + colW[0] + 2, tY);
     tY += 7;
   });
   y = tY + 4;
   doc.setTextColor(0, 0, 0);
 
-  // Signature section
-  checkY(60);
+  // ── Signature & Verification Section ──────────────────────────────────────
+  checkY(80);
   divider();
-  sectionTitle("DIGITAL SIGNATURE & OTP VERIFICATION");
-  bodyText(
-    "I have read and understood all the terms above. I voluntarily give my consent and electronically sign this document after successful OTP verification under the Information Technology Act, 2000."
-  );
+  sectionTitle("DIGITAL SIGNATURE & VERIFICATION");
+  bodyText("I have read and understood all the terms above. I voluntarily give my consent and electronically sign this document under the Information Technology Act, 2000.");
   y += 4;
 
   // Signature box
@@ -218,33 +225,103 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   doc.setFontSize(7.5);
   doc.setTextColor(100, 100, 100);
   doc.text("Signature of Campaigner", margin + 2, y + 5);
-
-  // Draw signature image
   try {
-    doc.addImage(opts.signatureDataUrl, "PNG", margin + 2, y + 7, 76, 22);
+    if (opts.signatureDataUrl && opts.signatureDataUrl.length > 50) {
+      doc.addImage(opts.signatureDataUrl, "PNG", margin + 2, y + 7, 76, 22);
+    }
   } catch (_) {}
 
-  // Signer details on right
+  // Signer meta
   const rx = margin + 90;
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(40, 40, 40);
-  doc.text(`Name: ${opts.campaignerName}`, rx, y + 8);
-  doc.text(`Phone: ${opts.campaignerPhone}`, rx, y + 14);
-  doc.text(`CAF ID: ${opts.cafId}`, rx, y + 20);
-  doc.text(`Date & Time: ${opts.signedAt}`, rx, y + 26);
+  doc.text(`Name: ${opts.campaignerName}`, rx, y + 6);
+  doc.text(`Phone: ${opts.campaignerPhone}`, rx, y + 11);
+  doc.text(`CAF ID: ${opts.cafId}`, rx, y + 16);
+  doc.text(`Signed At: ${opts.signedAt}`, rx, y + 21);
+  if (opts.ipAddress) doc.text(`IP Address: ${opts.ipAddress}`, rx, y + 26);
+
   if (opts.generatedByAdmin) {
     doc.setTextColor(180, 80, 0);
     doc.setFont("helvetica", "bold");
-    doc.text("Generated By: Azmi Foundation Admin", rx, y + 32);
+    doc.text(`Generated By: ${opts.adminName || "Azmi Foundation Admin"}`, rx, y + 31);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(40, 40, 40);
   } else {
-    doc.text("OTP Verified: \u2713 YES", rx, y + 32);
+    doc.setTextColor(0, 130, 0);
+    doc.setFont("helvetica", "bold");
+    doc.text("OTP Verified: \u2713 YES", rx, y + 31);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(40, 40, 40);
   }
   y += 40;
 
+  // ── Official Trust Seal ────────────────────────────────────────────────────
+  checkY(30);
+  const sealX = W - margin - 22;
+  const sealY = y - 5;
+  // Outer ring
+  doc.setFillColor(212, 175, 55);
+  doc.circle(sealX, sealY + 12, 16, "F");
+  // Middle ring
+  doc.setFillColor(10, 36, 99);
+  doc.circle(sealX, sealY + 12, 13.5, "F");
+  // Inner circle
+  doc.setFillColor(255, 255, 255);
+  doc.circle(sealX, sealY + 12, 11, "F");
+  // Seal text
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(5);
+  doc.setTextColor(10, 36, 99);
+  doc.text("AZMI", sealX, sealY + 9, { align: "center" });
+  doc.text("FOUNDATION", sealX, sealY + 13, { align: "center" });
+  doc.setFontSize(4.5);
+  doc.text("OFFICIAL SEAL", sealX, sealY + 17, { align: "center" });
+  doc.setFontSize(4);
+  doc.setTextColor(150, 100, 0);
+  doc.text("AHMEDABAD, INDIA", sealX, sealY + 21, { align: "center" });
+
+  // Seal label next to it
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(100, 100, 100);
+  doc.text("For AZMI FOUNDATION", margin, sealY + 10);
+  doc.text("Authorised Signatory", margin, sealY + 15);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.5);
+  doc.setTextColor(10, 36, 99);
+  doc.text("AZMI FOUNDATION", margin, sealY + 20);
+  y = sealY + 32;
   divider();
+
+  // ── Device & Technical Verification ───────────────────────────────────────
+  if (opts.deviceInfo && Object.keys(opts.deviceInfo).length > 0) {
+    checkY(30);
+    sectionTitle("TECHNICAL VERIFICATION RECORD");
+    const di = opts.deviceInfo;
+    if (di.platform) infoRow("Device Platform", di.platform);
+    if (di.screenSize) infoRow("Screen Resolution", di.screenSize);
+    if (di.language) infoRow("Browser Language", di.language);
+    if (di.timezone) infoRow("Timezone", di.timezone);
+    if (di.userAgent) {
+      checkY(10);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(80, 80, 80);
+      doc.text("User Agent:", margin, y);
+      y += 4;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(6.5);
+      doc.setTextColor(80, 80, 80);
+      const uaLines = doc.splitTextToSize(di.userAgent, contentW);
+      doc.text(uaLines.slice(0, 3), margin, y);
+      y += (Math.min(uaLines.length, 3) * 4) + 2;
+    }
+    if (opts.ipAddress) infoRow("IP Address", opts.ipAddress);
+    y += 2;
+    divider();
+  }
 
   // Footer
   doc.setFont("helvetica", "italic");
@@ -254,6 +331,7 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
     "This document is an electronically executed agreement under the Information Technology Act, 2000 and is legally binding. " +
     "Azmi Foundation | Gomtipur, Ahmedabad 380021 | +91 78610 10850 | support@azmifoundation.com";
   const footerLines = doc.splitTextToSize(footerText, contentW);
+  checkY(footerLines.length * 4 + 4);
   doc.text(footerLines, margin, y);
 
   doc.save(`CAF_${opts.cafId}_${opts.campaignerName.replace(/\s+/g, "_")}.pdf`);

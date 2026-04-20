@@ -161,10 +161,35 @@ export const cafSignatures = pgTable("caf_signatures", {
   signatureDataUrl: text("signature_data_url").notNull(),
   ipAddress: text("ip_address"),
   otpVerified: boolean("otp_verified").default(true),
+  signedAt: timestamp("signed_at"),
+  deviceInfo: jsonb("device_info"),
+  adminGeneratedBy: text("admin_generated_by"),
+  requestToken: text("request_token"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 export type CafSignature = typeof cafSignatures.$inferSelect;
+
+// CAF Signing Requests (admin-generated links)
+export const cafRequests = pgTable("caf_requests", {
+  id: serial("id").primaryKey(),
+  token: text("token").notNull().unique(),
+  adminId: text("admin_id").notNull(),
+  adminName: text("admin_name").notNull(),
+  campaignerName: text("campaigner_name").notNull(),
+  campaignerPhone: text("campaigner_phone").notNull(),
+  beneficiaryName: text("beneficiary_name"),
+  purpose: text("purpose"),
+  targetAmount: text("target_amount"),
+  hospital: text("hospital"),
+  campaignTitle: text("campaign_title"),
+  status: text("status", { enum: ["pending", "signed"] }).default("pending").notNull(),
+  signedAt: timestamp("signed_at"),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type CafRequest = typeof cafRequests.$inferSelect;
 
 // Schemas
 export const insertCampaignSchema = createInsertSchema(campaigns).omit({ id: true, createdAt: true, updatedAt: true, currentAmount: true });

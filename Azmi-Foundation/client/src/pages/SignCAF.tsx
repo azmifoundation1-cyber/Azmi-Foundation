@@ -1,56 +1,42 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "wouter";
 import SignaturePad from "signature_pad";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { generateCAFPdf } from "@/lib/generate-caf-pdf";
-import { CheckCircle, FileText, Pen, Phone, RefreshCw, Loader2, Shield, ChevronRight, RotateCcw, Trash2 } from "lucide-react";
+import {
+  CheckCircle, FileText, Pen, Phone, RefreshCw,
+  Loader2, Shield, ChevronRight, RotateCcw, Trash2, AlertCircle,
+} from "lucide-react";
 
 const CAF_TEXT = `CONSENT AGREEMENT FOR FUNDRAISING (CAF)
 
 This Consent Agreement for Fundraising ("CAF") is signed and executed in Ahmedabad, Gujarat, India.
 
 BETWEEN
-AZMI FOUNDATION, a Public Charitable Trust registered under the Bombay Public Trusts Act, 1950, having Registration No. E/22280/AHMEDABAD dated 23-07-2018, PAN AAGTA9354B, 80G and 12A registered, with its registered office at Gomtipur Bridge East-End, Opp. Kamdar Maidan, Gomtipur, Ahmedabad – 380021, Gujarat (hereinafter referred to as "AZMI" or "the Platform")
+AZMI FOUNDATION, a Public Charitable Trust registered under the Bombay Public Trusts Act, 1950, Registration No. E/22280/AHMEDABAD dated 23-07-2018, PAN AAGTA9354B, 80G and 12A registered, Registered Office: Gomtipur Bridge East-End, Opp. Kamdar Maidan, Gomtipur, Ahmedabad - 380021, Gujarat (the "Platform")
 
 AND
-The Campaigner, acting as the Beneficiary / Patient or Legal Guardian or authorised Family Member / Representative (hereinafter referred to as the "CAMPAIGNER").
+The Campaigner acting as Beneficiary / Patient or Legal Guardian / authorised Representative (the "CAMPAIGNER").
 
-WHEREAS AZMI is a crowdfunding platform providing services for raising funds for Medical, Educational, Hunger Relief, Disaster Relief and other Social Causes.
+1. Campaign commences on signing. AZMI does not guarantee target achievement.
+2. Funds raised used only for stated purpose.
+3. AZMI has exclusive rights to personal information, photos, videos, medical records, KYC documents.
+4. Campaigner grants AZMI perpetual rights for platform, social media & promotional use.
+5. AZMI charges zero platform fee. Only actual third-party charges (gateway, marketing, GST) deducted.
+6. AZMI may contact Campaigner via email, SMS, WhatsApp or calls.
+7. AZMI provides periodic updates on funds raised.
+8. Disputes resolved via AZMI's two-tier escalation matrix.
+9. Funds released only after verification of invoices and documents.
+10. Excess or terminated campaign funds refunded to donors or used for similar causes transparently.
+11. Misrepresentation leads to immediate termination and possible legal action.
+12. Campaigner indemnifies AZMI against claims from incorrect information.
+13. Campaigner has read and voluntarily agreed to all terms.
+14. Governed by laws of India. Exclusive jurisdiction: Ahmedabad, Gujarat.
 
-NOW THIS AGREEMENT WITNESSETH AS FOLLOWS:
-
-1. The campaign shall commence on or after the date of signing with the stated target amount. AZMI does not guarantee achievement of the target.
-
-2. The funds raised shall be used only for the purpose mentioned above.
-
-3. AZMI shall have exclusive rights to all personal information, photographs, videos, medical records, and KYC documents provided by the Campaigner.
-
-4. The Campaigner grants AZMI perpetual rights to use the above information on the platform, social media, and promotional materials for fundraising purposes.
-
-5. AZMI charges zero platform fee. Only actual third-party charges (payment gateway, marketing, GST) shall be deducted as per Annexure A.
-
-6. AZMI may communicate with the Campaigner via email, SMS, WhatsApp or calls for campaign updates.
-
-7. AZMI shall provide periodic updates on funds raised and balance available.
-
-8. Any dispute shall first be resolved through AZMI's two-tier escalation matrix.
-
-9. AZMI shall release funds only after verification of proper invoices and documents.
-
-10. In case of excess funds or campaign termination, AZMI may refund to donors or use for similar charitable causes with transparency.
-
-11. Any misrepresentation or fraud by the Campaigner shall lead to immediate termination of the campaign and possible legal action.
-
-12. The Campaigner agrees to indemnify AZMI against any claims arising due to incorrect information provided.
-
-13. The Campaigner has read, understood and voluntarily agreed to all terms of this agreement.
-
-14. This agreement is governed by the laws of India. Any dispute shall be subject to the exclusive jurisdiction of courts at Ahmedabad, Gujarat.
-
-ANNEXURE – A: INDICATIVE EXPENSE BREAK-UP
+ANNEXURE A - EXPENSE BREAK-UP
 • Platform Fee by AZMI: 0% (Zero)
 • Payment Gateway Charges: Approx 2%
 • Marketing Charges (if applicable): As agreed
@@ -58,8 +44,28 @@ ANNEXURE – A: INDICATIVE EXPENSE BREAK-UP
 
 type Step = "details" | "otp" | "sign" | "done";
 
+function collectDeviceInfo() {
+  return {
+    userAgent: navigator.userAgent,
+    platform: navigator.platform || (navigator as any).userAgentData?.platform || "Unknown",
+    screenSize: `${screen.width}x${screen.height} (DPR: ${window.devicePixelRatio})`,
+    language: navigator.language,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  };
+}
+
+function nowIST(): string {
+  return new Date().toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit", month: "long", year: "numeric",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hour12: true,
+  }) + " IST";
+}
+
 export default function SignCAF() {
   const { toast } = useToast();
+  const [location] = useLocation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const padRef = useRef<SignaturePad | null>(null);
 
@@ -71,7 +77,13 @@ export default function SignCAF() {
   const [otpInput, setOtpInput] = useState("");
   const [devOtp, setDevOtp] = useState("");
   const [cafId, setCafId] = useState("");
+  const [signedTimestamp, setSignedTimestamp] = useState("");
   const [consent, setConsent] = useState(false);
+  const [tokenData, setTokenData] = useState<any>(null);
+  const [tokenError, setTokenError] = useState("");
+  const [tokenLoading, setTokenLoading] = useState(false);
+
+  const urlToken = new URLSearchParams(window.location.search).get("token") || "";
 
   const [form, setForm] = useState({
     campaignerName: "",
@@ -83,7 +95,33 @@ export default function SignCAF() {
     campaignTitle: "",
   });
 
-  // Init signature pad when on sign step
+  // Load token data if present
+  useEffect(() => {
+    if (!urlToken) return;
+    setTokenLoading(true);
+    fetch(`/api/caf/request/${urlToken}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.message) {
+          setTokenError(data.message);
+        } else {
+          setTokenData(data);
+          setForm({
+            campaignerName: data.campaignerName || "",
+            campaignerPhone: data.campaignerPhone || "",
+            beneficiaryName: data.beneficiaryName || "",
+            purpose: data.purpose || "",
+            targetAmount: data.targetAmount || "",
+            hospital: data.hospital || "",
+            campaignTitle: data.campaignTitle || "",
+          });
+        }
+      })
+      .catch(() => setTokenError("Failed to load signing request"))
+      .finally(() => setTokenLoading(false));
+  }, [urlToken]);
+
+  // Init signature pad
   useEffect(() => {
     if (step !== "sign") return;
     let cancelled = false;
@@ -91,16 +129,12 @@ export default function SignCAF() {
     function initPad() {
       const canvas = canvasRef.current;
       if (!canvas || cancelled) return;
-
       const ratio = Math.max(window.devicePixelRatio || 1, 1);
-      // Use measured width, fall back to container width if still 0
       const w = canvas.offsetWidth || canvas.parentElement?.offsetWidth || 600;
-      const h = 220;
       canvas.width = w * ratio;
-      canvas.height = h * ratio;
+      canvas.height = 220 * ratio;
       const ctx = canvas.getContext("2d")!;
       ctx.scale(ratio, ratio);
-
       if (padRef.current) padRef.current.off();
       padRef.current = new SignaturePad(canvas, {
         backgroundColor: "rgb(255,255,255)",
@@ -111,23 +145,8 @@ export default function SignCAF() {
       padRef.current.clear();
     }
 
-    function onResize() {
-      const canvas = canvasRef.current;
-      if (!canvas || !padRef.current) return;
-      const data = padRef.current.toData();
-      const ratio = Math.max(window.devicePixelRatio || 1, 1);
-      canvas.width = canvas.offsetWidth * ratio;
-      canvas.height = canvas.offsetHeight * ratio;
-      canvas.getContext("2d")!.scale(ratio, ratio);
-      padRef.current.clear();
-      padRef.current.fromData(data);
-    }
-
-    // Double-RAF ensures browser has completed layout before we measure
     requestAnimationFrame(() => requestAnimationFrame(initPad));
-
-    window.addEventListener("resize", onResize);
-    return () => { cancelled = true; window.removeEventListener("resize", onResize); };
+    return () => { cancelled = true; };
   }, [step]);
 
   async function sendOTP() {
@@ -138,8 +157,7 @@ export default function SignCAF() {
     setSending(true);
     try {
       const res = await fetch("/api/caf/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: form.campaignerPhone }),
       });
       const data = await res.json();
@@ -161,8 +179,7 @@ export default function SignCAF() {
     setVerifying(true);
     try {
       const res = await fetch("/api/caf/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: form.campaignerPhone, otp: otpInput }),
       });
       const data = await res.json();
@@ -183,19 +200,25 @@ export default function SignCAF() {
     setSaving(true);
     try {
       const signatureDataUrl = padRef.current.toDataURL("image/png");
+      const deviceInfo = collectDeviceInfo();
+      const ts = nowIST();
+      setSignedTimestamp(ts);
 
-      // 1. Save to DB
       const saveRes = await fetch("/api/caf/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, signatureDataUrl }),
+        body: JSON.stringify({
+          ...form,
+          signatureDataUrl,
+          deviceInfo,
+          requestToken: urlToken || undefined,
+        }),
       });
       const saved = await saveRes.json();
       if (!saveRes.ok) throw new Error(saved.message);
       const id = saved.cafId;
       setCafId(id);
 
-      // 2. Generate PDF client-side
       await generateCAFPdf({
         cafId: id,
         campaignerName: form.campaignerName,
@@ -206,7 +229,9 @@ export default function SignCAF() {
         hospital: form.hospital,
         campaignTitle: form.campaignTitle || form.purpose,
         signatureDataUrl,
-        signedAt: new Date().toLocaleString("en-IN", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }),
+        signedAt: ts,
+        generatedByAdmin: false,
+        deviceInfo,
       });
 
       setStep("done");
@@ -217,17 +242,40 @@ export default function SignCAF() {
     setSaving(false);
   }
 
-  const stepList: { id: Step; label: string }[] = [
-    { id: "details", label: "Campaign Details" },
-    { id: "otp", label: "OTP Verification" },
-    { id: "sign", label: "Digital Signature" },
-    { id: "done", label: "Complete" },
+  const stepList = [
+    { id: "details" as Step, label: "Campaign Details" },
+    { id: "otp" as Step, label: "OTP Verification" },
+    { id: "sign" as Step, label: "Digital Signature" },
+    { id: "done" as Step, label: "Complete" },
   ];
   const stepIdx = stepList.findIndex(s => s.id === step);
 
+  // Token loading / error states
+  if (urlToken && tokenLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center space-y-3">
+          <Loader2 className="w-10 h-10 animate-spin text-[#0a2463] mx-auto" />
+          <p className="text-gray-600 font-medium">Loading your signing request…</p>
+        </div>
+      </div>
+    );
+  }
+  if (urlToken && tokenError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-red-100 p-8 max-w-md text-center space-y-4">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
+          <h2 className="text-xl font-black text-gray-900">Link Not Available</h2>
+          <p className="text-gray-500 text-sm">{tokenError}</p>
+          <a href="/"><Button variant="outline">Go to Home</Button></a>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-[#0a2463] text-white py-4 px-6">
         <div className="max-w-2xl mx-auto flex items-center gap-3">
           <Shield className="w-6 h-6 text-amber-400 flex-shrink-0" />
@@ -238,16 +286,27 @@ export default function SignCAF() {
         </div>
       </div>
 
+      {urlToken && tokenData && (
+        <div className="max-w-2xl mx-auto px-4 pt-4">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800 flex items-start gap-2">
+            <Shield className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <span>This signing request was prepared by <strong>Azmi Foundation Admin</strong>. Your details are pre-filled. Please review and proceed.</span>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-2xl mx-auto px-4 py-6">
-        {/* Progress Steps */}
+        {/* Progress */}
         <div className="flex items-center gap-1 mb-8">
           {stepList.map((s, i) => (
             <div key={s.id} className="flex items-center flex-1">
-              <div className={`flex-1 flex flex-col items-center gap-1`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${i < stepIdx ? "bg-green-500 text-white" : i === stepIdx ? "bg-[#0a2463] text-white" : "bg-gray-200 text-gray-400"}`}>
+              <div className="flex-1 flex flex-col items-center gap-1">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors
+                  ${i < stepIdx ? "bg-green-500 text-white" : i === stepIdx ? "bg-[#0a2463] text-white" : "bg-gray-200 text-gray-400"}`}>
                   {i < stepIdx ? <CheckCircle className="w-4 h-4" /> : i + 1}
                 </div>
-                <span className={`text-[10px] font-semibold text-center leading-tight ${i === stepIdx ? "text-[#0a2463]" : "text-gray-400"}`}>{s.label}</span>
+                <span className={`text-[10px] font-semibold text-center leading-tight
+                  ${i === stepIdx ? "text-[#0a2463]" : "text-gray-400"}`}>{s.label}</span>
               </div>
               {i < stepList.length - 1 && (
                 <div className={`h-0.5 flex-1 mb-4 ${i < stepIdx ? "bg-green-500" : "bg-gray-200"}`} />
@@ -256,14 +315,13 @@ export default function SignCAF() {
           ))}
         </div>
 
-        {/* ── STEP 1: Campaign Details ── */}
+        {/* ── STEP 1 ── */}
         {step === "details" && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
             <div>
               <h2 className="text-xl font-black text-[#0a2463]">Campaign Details</h2>
-              <p className="text-gray-500 text-sm mt-1">Fill in the campaign information before reading and signing the agreement.</p>
+              <p className="text-gray-500 text-sm mt-1">Fill in or review the campaign information before signing.</p>
             </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Campaigner Full Name *</Label>
@@ -271,14 +329,15 @@ export default function SignCAF() {
               </div>
               <div>
                 <Label>Mobile Number *</Label>
-                <Input type="tel" maxLength={10} value={form.campaignerPhone} onChange={e => setForm(f => ({ ...f, campaignerPhone: e.target.value.replace(/\D/g, "") }))} placeholder="10-digit mobile" />
+                <Input type="tel" maxLength={10} value={form.campaignerPhone}
+                  onChange={e => setForm(f => ({ ...f, campaignerPhone: e.target.value.replace(/\D/g, "") }))} placeholder="10-digit mobile" />
               </div>
               <div>
                 <Label>Beneficiary Name</Label>
-                <Input value={form.beneficiaryName} onChange={e => setForm(f => ({ ...f, beneficiaryName: e.target.value }))} placeholder="Patient/Beneficiary name" />
+                <Input value={form.beneficiaryName} onChange={e => setForm(f => ({ ...f, beneficiaryName: e.target.value }))} placeholder="Patient / Beneficiary name" />
               </div>
               <div>
-                <Label>Target Amount (₹)</Label>
+                <Label>Target Amount (Rs.)</Label>
                 <Input type="number" value={form.targetAmount} onChange={e => setForm(f => ({ ...f, targetAmount: e.target.value }))} placeholder="e.g. 500000" />
               </div>
               <div className="sm:col-span-2">
@@ -290,26 +349,22 @@ export default function SignCAF() {
                 <Input value={form.purpose} onChange={e => setForm(f => ({ ...f, purpose: e.target.value }))} placeholder="e.g. Medical treatment for liver disease" />
               </div>
               <div className="sm:col-span-2">
-                <Label>Hospital / Institution (if applicable)</Label>
+                <Label>Hospital / Institution</Label>
                 <Input value={form.hospital} onChange={e => setForm(f => ({ ...f, hospital: e.target.value }))} placeholder="e.g. Apollo Hospital, Ahmedabad" />
               </div>
             </div>
-
-            {/* CAF Text */}
             <div>
-              <Label className="mb-2 block">Consent Agreement for Fundraising (CAF)</Label>
+              <Label className="mb-2 block">Consent Agreement for Fundraising (CAF) — Please read fully</Label>
               <div className="border border-gray-200 rounded-xl bg-gray-50 p-4 h-64 overflow-y-auto text-xs text-gray-700 font-mono leading-relaxed whitespace-pre-wrap">
                 {CAF_TEXT}
               </div>
             </div>
-
             <label className="flex items-start gap-3 cursor-pointer">
               <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} className="mt-0.5 w-4 h-4 rounded" />
               <span className="text-sm text-gray-700">
-                I have read the entire Consent Agreement for Fundraising (CAF). I voluntarily consent to electronically sign this document under the Information Technology Act, 2000.
+                I have read the entire Consent Agreement for Fundraising (CAF) and voluntarily consent to electronically sign this document under the Information Technology Act, 2000.
               </span>
             </label>
-
             <Button
               className="w-full bg-[#0a2463] hover:bg-blue-900 text-white gap-2"
               disabled={!consent || !form.campaignerName.trim() || form.campaignerPhone.length < 10}
@@ -320,7 +375,7 @@ export default function SignCAF() {
           </div>
         )}
 
-        {/* ── STEP 2: OTP ── */}
+        {/* ── STEP 2 ── */}
         {step === "otp" && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
             <div>
@@ -331,7 +386,6 @@ export default function SignCAF() {
                 We'll send a 6-digit OTP to <strong>{form.campaignerPhone}</strong> to verify your identity.
               </p>
             </div>
-
             {!otpSent ? (
               <Button className="w-full bg-[#0a2463] hover:bg-blue-900 text-white gap-2" onClick={sendOTP} disabled={sending}>
                 {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Phone className="w-4 h-4" />}
@@ -343,46 +397,40 @@ export default function SignCAF() {
                   ✓ OTP sent to {form.campaignerPhone}
                   {devOtp && (
                     <span className="block mt-1 text-amber-700 font-bold text-xs">
-                      [Dev Mode] Your OTP: <span className="font-mono text-base">{devOtp}</span>
+                      [Dev Mode] OTP: <span className="font-mono text-base">{devOtp}</span>
                     </span>
                   )}
                 </div>
                 <div>
                   <Label>Enter 6-Digit OTP</Label>
-                  <Input
-                    type="text"
-                    maxLength={6}
-                    value={otpInput}
+                  <Input type="text" maxLength={6} value={otpInput}
                     onChange={e => setOtpInput(e.target.value.replace(/\D/g, ""))}
-                    placeholder="e.g. 123456"
-                    className="text-2xl tracking-widest font-mono text-center"
-                  />
+                    placeholder="e.g. 123456" className="text-2xl tracking-widest font-mono text-center" />
                 </div>
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white gap-2" onClick={verifyOTP} disabled={verifying || otpInput.length < 6}>
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white gap-2"
+                  onClick={verifyOTP} disabled={verifying || otpInput.length < 6}>
                   {verifying ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                   {verifying ? "Verifying…" : "Verify & Proceed"}
                 </Button>
-                <button onClick={() => { setOtpSent(false); setOtpInput(""); setDevOtp(""); }} className="w-full text-sm text-gray-500 hover:text-gray-700 flex items-center justify-center gap-1">
+                <button onClick={() => { setOtpSent(false); setOtpInput(""); setDevOtp(""); }}
+                  className="w-full text-sm text-gray-500 hover:text-gray-700 flex items-center justify-center gap-1">
                   <RefreshCw className="w-3 h-3" /> Resend OTP
                 </button>
               </div>
             )}
-
             <button onClick={() => setStep("details")} className="text-sm text-gray-400 hover:text-gray-600">← Back to Details</button>
           </div>
         )}
 
-        {/* ── STEP 3: Signature ── */}
+        {/* ── STEP 3 ── */}
         {step === "sign" && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
             <div>
               <h2 className="text-xl font-black text-[#0a2463] flex items-center gap-2">
                 <Pen className="w-5 h-5" /> Draw Your Signature
               </h2>
-              <p className="text-gray-500 text-sm mt-1">Use your finger or stylus to sign in the box below. This will be embedded in the signed CAF PDF.</p>
+              <p className="text-gray-500 text-sm mt-1">Use your finger or stylus to sign in the box below.</p>
             </div>
-
-            {/* Signature Canvas */}
             <div className="border-2 border-[#0a2463] rounded-xl overflow-hidden bg-white">
               <div className="bg-gray-50 px-3 py-1.5 text-xs text-gray-400 border-b border-gray-100 flex items-center gap-2">
                 <Pen className="w-3 h-3" /> Sign here — draw your full signature
@@ -393,32 +441,27 @@ export default function SignCAF() {
                 style={{ height: 220 }}
               />
             </div>
-
             <div className="flex gap-2">
               <Button variant="outline" className="gap-2" onClick={() => padRef.current?.undo()}>
                 <RotateCcw className="w-4 h-4" /> Undo
               </Button>
-              <Button variant="outline" className="gap-2 text-red-600 border-red-200 hover:bg-red-50" onClick={() => padRef.current?.clear()}>
+              <Button variant="outline" className="gap-2 text-red-600 border-red-200 hover:bg-red-50"
+                onClick={() => padRef.current?.clear()}>
                 <Trash2 className="w-4 h-4" /> Clear
               </Button>
-              <Button
-                className="flex-1 bg-[#0a2463] hover:bg-blue-900 text-white gap-2"
-                onClick={handleSign}
-                disabled={saving}
-              >
+              <Button className="flex-1 bg-[#0a2463] hover:bg-blue-900 text-white gap-2"
+                onClick={handleSign} disabled={saving}>
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
                 {saving ? "Generating PDF…" : "Sign & Download PDF"}
               </Button>
             </div>
-
-            {/* Legal note */}
             <p className="text-[10px] text-gray-400 text-center leading-relaxed">
-              By clicking "Sign & Download PDF", you confirm this is your electronic signature. This document is legally binding under the Information Technology Act, 2000 and is equivalent to a physical signature.
+              By clicking "Sign & Download PDF", you confirm this is your electronic signature under the Information Technology Act, 2000. Your device information and exact timestamp will be recorded.
             </p>
           </div>
         )}
 
-        {/* ── STEP 4: Done ── */}
+        {/* ── STEP 4 ── */}
         {step === "done" && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center space-y-5">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
@@ -426,7 +469,7 @@ export default function SignCAF() {
             </div>
             <div>
               <h2 className="text-2xl font-black text-gray-900">CAF Signed Successfully!</h2>
-              <p className="text-gray-500 text-sm mt-2">Your Consent Agreement has been digitally signed and the PDF has been downloaded to your device.</p>
+              <p className="text-gray-500 text-sm mt-2">Your Consent Agreement has been digitally signed and the PDF has been downloaded.</p>
             </div>
             <div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm text-left">
               <div className="flex justify-between">
@@ -445,22 +488,20 @@ export default function SignCAF() {
                 <span className="text-gray-500">OTP Verified</span>
                 <span className="text-green-600 font-bold">✓ Yes</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between flex-wrap gap-1">
                 <span className="text-gray-500">Signed At</span>
-                <span className="font-semibold">{new Date().toLocaleString("en-IN")}</span>
+                <span className="font-semibold text-xs">{signedTimestamp}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Device</span>
+                <span className="text-xs text-gray-600 truncate max-w-[160px]">{collectDeviceInfo().platform}</span>
               </div>
             </div>
             <div className="flex gap-3 justify-center">
-              <a href="/">
-                <Button variant="outline">Go to Home</Button>
-              </a>
-              <a href="/campaigns">
-                <Button className="bg-[#0a2463] hover:bg-blue-900 text-white">Browse Campaigns</Button>
-              </a>
+              <a href="/"><Button variant="outline">Go to Home</Button></a>
+              <a href="/campaigns"><Button className="bg-[#0a2463] hover:bg-blue-900 text-white">Browse Campaigns</Button></a>
             </div>
-            <p className="text-xs text-gray-400">
-              Keep your Reference ID safe. Contact us at support@azmifoundation.com for any queries.
-            </p>
+            <p className="text-xs text-gray-400">Keep your Reference ID safe. Contact us at support@azmifoundation.com for any queries.</p>
           </div>
         )}
       </div>

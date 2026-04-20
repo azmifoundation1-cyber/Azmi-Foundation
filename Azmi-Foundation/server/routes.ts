@@ -799,8 +799,9 @@ export async function registerRoutes(
 
   app.post("/api/caf/save", async (req, res) => {
     try {
-      const { cafSignatures: cafTable } = await import("@shared/schema");
+      const { cafSignatures: cafTable, cafRequests: reqTable } = await import("@shared/schema");
       const { db } = await import("./db");
+      const { eq } = await import("drizzle-orm");
       const body = z.object({
         campaignId: z.number().optional(),
         campaignTitle: z.string().optional(),
@@ -811,13 +812,104 @@ export async function registerRoutes(
         targetAmount: z.string().optional(),
         hospital: z.string().optional(),
         signatureDataUrl: z.string().min(10),
+        requestToken: z.string().optional(),
+        deviceInfo: z.object({
+          userAgent: z.string().optional(),
+          platform: z.string().optional(),
+          screenSize: z.string().optional(),
+          language: z.string().optional(),
+          timezone: z.string().optional(),
+        }).optional(),
       }).parse(req.body);
-      const ip = req.ip || req.headers["x-forwarded-for"] as string || "unknown";
-      const [saved] = await db.insert(cafTable).values({ ...body, ipAddress: ip, otpVerified: true }).returning();
+      const ip = (req.headers["x-forwarded-for"] as string || req.ip || "unknown").split(",")[0].trim();
+      const now = new Date();
+      const [saved] = await db.insert(cafTable).values({
+        ...body,
+        ipAddress: ip,
+        otpVerified: true,
+        signedAt: now,
+        deviceInfo: body.deviceInfo || null,
+      }).returning();
+      // Mark linked request as signed
+      if (body.requestToken) {
+        await db.update(reqTable)
+          .set({ status: "signed", signedAt: now })
+          .where(eq(reqTable.token, body.requestToken));
+      }
       res.json({ success: true, cafId: `CAF-${String(saved.id).padStart(6, "0")}`, id: saved.id });
     } catch (err) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
       res.status(500).json({ message: "Failed to save CAF" });
+    }
+  });
+
+  // Admin creates a signing link for a user
+  app.post("/api/admin/caf/create-request", isAdmin, async (req: any, res) => {
+    try {
+      const { cafRequests: reqTable } = await import("@shared/schema");
+      const { db } = await import("./db");
+      const body = z.object({
+        campaignerName: z.string().min(1),
+        campaignerPhone: z.string().min(10),
+        beneficiaryName: z.string().optional(),
+        purpose: z.string().optional(),
+        targetAmount: z.string().optional(),
+        hospital: z.string().optional(),
+        campaignTitle: z.string().optional(),
+        expiryHours: z.number().min(1).max(168).default(72),
+      }).parse(req.body);
+      const user = req.user as any;
+      const dbUser = await storage.getUser(user.claims?.sub || user.id);
+      const adminName = dbUser ? `${dbUser.firstName || ""} ${dbUser.lastName || ""}`.trim() || dbUser.email || "Admin" : "Admin";
+      const adminId = dbUser?.id || "unknown";
+      const token = crypto.randomBytes(20).toString("hex");
+      const expiresAt = new Date(Date.now() + body.expiryHours * 60 * 60 * 1000);
+      const [saved] = await db.insert(reqTable).values({
+        token, adminId, adminName,
+        campaignerName: body.campaignerName,
+        campaignerPhone: body.campaignerPhone,
+        beneficiaryName: body.beneficiaryName,
+        purpose: body.purpose,
+        targetAmount: body.targetAmount,
+        hospital: body.hospital,
+        campaignTitle: body.campaignTitle,
+        expiresAt,
+      }).returning();
+      const link = `${req.protocol}://${req.get("host")}/sign-caf?token=${token}`;
+      res.json({ success: true, token, link, id: saved.id, expiresAt });
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Failed to create signing request" });
+    }
+  });
+
+  // Public: get pre-filled data from token
+  app.get("/api/caf/request/:token", async (req, res) => {
+    try {
+      const { cafRequests: reqTable } = await import("@shared/schema");
+      const { db } = await import("./db");
+      const { eq } = await import("drizzle-orm");
+      const [row] = await db.select().from(reqTable).where(eq(reqTable.token, req.params.token));
+      if (!row) return res.status(404).json({ message: "Signing link not found or expired" });
+      if (row.status === "signed") return res.status(410).json({ message: "This CAF has already been signed" });
+      if (row.expiresAt && row.expiresAt < new Date()) return res.status(410).json({ message: "This signing link has expired" });
+      const { token: _t, adminId: _a, ...safe } = row as any;
+      res.json(safe);
+    } catch {
+      res.status(500).json({ message: "Failed to fetch signing request" });
+    }
+  });
+
+  // Admin: get all signing requests
+  app.get("/api/admin/caf/requests", isAdmin, async (_req, res) => {
+    try {
+      const { cafRequests: reqTable } = await import("@shared/schema");
+      const { db } = await import("./db");
+      const { desc } = await import("drizzle-orm");
+      const rows = await db.select().from(reqTable).orderBy(desc(reqTable.createdAt));
+      res.json(rows);
+    } catch {
+      res.status(500).json({ message: "Failed to fetch requests" });
     }
   });
 
