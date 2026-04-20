@@ -119,10 +119,15 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   // ── Page 1 ────────────────────────────────────────────────────────────────
   drawHeader();
 
+  // Trust seal — top-right of title block
+  if (sealDataUrl) {
+    try { doc.addImage(sealDataUrl, "PNG", W - margin - 32, 18, 30, 30); } catch (_) {}
+  }
+
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.setTextColor(10, 36, 99);
-  doc.text("CONSENT AGREEMENT FOR FUNDRAISING (CAF)", W / 2, y, { align: "center" });
+  doc.text("CONSENT AGREEMENT FOR FUNDRAISING (CAF)", margin, y);
   y += 7;
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
@@ -256,13 +261,6 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
       doc.addImage(opts.signatureDataUrl, "PNG", margin + 2, y + 7, 76, 22);
     }
   } catch (_) {}
-
-  // Overlay trust seal on signature box (bottom-right overlap)
-  if (sealDataUrl) {
-    try {
-      doc.addImage(sealDataUrl, "PNG", margin + 44, y + 8, 34, 34);
-    } catch (_) {}
-  }
 
   // Signer meta
   const rx = margin + 90;
