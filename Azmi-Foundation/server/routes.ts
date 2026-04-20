@@ -997,6 +997,17 @@ export async function registerRoutes(
 }
 
 async function seedDatabase() {
+  // Auto-promote designated main admins to super_admin (runs on every startup — safe & idempotent)
+  try {
+    const { db } = await import("./db");
+    const { users } = await import("@shared/models/auth");
+    const { inArray } = await import("drizzle-orm");
+    const SUPER_ADMIN_EMAILS = ["support@azmifoundation.com", "azmifoundation1@gmail.com"];
+    await db.update(users).set({ role: "super_admin" as any }).where(inArray(users.email, SUPER_ADMIN_EMAILS));
+  } catch (e) {
+    console.error("[seed] super_admin promotion failed:", e);
+  }
+
   const campaigns = await storage.getCampaigns();
   
   // Fix existing campaigns that were seeded without category/featured
