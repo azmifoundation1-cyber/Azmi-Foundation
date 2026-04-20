@@ -127,7 +127,22 @@ export async function generateCAFPdf(opts: CafPdfOptions): Promise<void> {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(100, 100, 100);
-  doc.text(`CAF ID: ${opts.cafId}  |  Date: ${opts.signedAt}`, W / 2, y, { align: "center" });
+  doc.text(`CAF ID: ${opts.cafId}  |  Date: ${opts.signedAt}`, margin, y);
+  if (opts.adminName) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(10, 36, 99);
+    doc.text(`Campaign Manager: ${opts.adminName}`, W - margin, y, { align: "right" });
+    y += 4.5;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.setTextColor(100, 100, 100);
+    doc.text(opts.signedAt, W - margin, y, { align: "right" });
+    if (opts.ipAddress) {
+      y += 4;
+      doc.text(`IP: ${opts.ipAddress}`, W - margin, y, { align: "right" });
+    }
+  }
   y += 8;
   divider();
 
