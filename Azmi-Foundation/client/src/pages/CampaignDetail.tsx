@@ -22,6 +22,12 @@ declare global {
   }
 }
 
+function extractYoutubeId(url?: string | null): string | null {
+  if (!url) return null;
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
 const PRESET_AMOUNTS_MAP: Record<number, number[]> = {
   3: [680, 1360, 3400, 6800],
   4: [500, 3500, 5000, 10000],
@@ -591,83 +597,109 @@ export default function CampaignDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-12 items-start">
 
           {/* ── LEFT COLUMN ── */}
-          <div className={`${(id === 3 || id === 4) ? "lg:col-span-3" : "lg:col-span-2"} space-y-4 lg:space-y-8`}>
+          <div className="lg:col-span-3 space-y-4 lg:space-y-8">
 
             {/* Campaign Title */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Link href="/campaigns" className="inline-flex items-center gap-2 text-xs text-gray-400 font-bold uppercase tracking-widest mb-2 hover:text-primary transition-colors">
                 <ArrowLeft className="w-3 h-3" /> All Campaigns
               </Link>
-              <h1 className={`text-lg sm:text-3xl font-black leading-tight tracking-tight ${id === 4 ? "text-red-700" : "text-primary"}`}>
+              <h1 className="text-lg sm:text-3xl font-black leading-tight tracking-tight text-primary">
                 {campaign.title}
               </h1>
             </motion.div>
 
-            {/* Hero — Video (campaign 3) or Image (others) */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="relative rounded-none overflow-hidden aspect-video bg-gray-900"
+            {/* Hero — Local video, YouTube, or hero image */}
+            {(() => {
+              const heroYoutubeUrl = id === 4
+                ? "https://www.youtube.com/embed/NfYQeSsNQrg?si=mLgeDG7wNo4rO32p&start=1&autoplay=1&mute=1&playsinline=1&rel=0"
+                : id === 3
+                  ? "https://www.youtube.com/embed/Z_exh7zMqDs?si=EYyv12VkPHBJn9Vm&start=8&autoplay=1&mute=1&playsinline=1&rel=0"
+                  : null;
+              const dbYoutubeId = extractYoutubeId(campaign.videoUrl);
+              const heroLocalVideo = (id === 3 || id === 4) ? null : story.localVideo;
+              return (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="relative rounded-none overflow-hidden aspect-video bg-gray-900"
+                >
+                  {heroYoutubeUrl ? (
+                    <iframe
+                      src={heroYoutubeUrl}
+                      title={campaign.title}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
+                  ) : dbYoutubeId ? (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${dbYoutubeId}?autoplay=1&mute=1&playsinline=1&rel=0`}
+                      title={campaign.title}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
+                  ) : heroLocalVideo ? (
+                    <video
+                      src={heroLocalVideo}
+                      autoPlay muted playsInline controls
+                      preload="metadata"
+                      className="w-full h-full object-contain"
+                    >
+                      <source src={heroLocalVideo} type="video/mp4" />
+                    </video>
+                  ) : (
+                    <>
+                      <img
+                        src={campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"}
+                        alt={campaign.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"; }}
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/80 to-transparent p-6">
+                        <div className="flex items-center gap-2">
+                          <span className="bg-accent text-white text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1">
+                            Active Campaign
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </motion.div>
+              );
+            })()}
+
+            {/* Urgency text — shown for all campaigns */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-xs sm:text-sm text-gray-700 leading-relaxed border-l-4 border-red-500 pl-3 bg-red-50 py-2 pr-3"
             >
-              {(id === 3 || id === 4) ? (
-                <iframe
-                  src={
-                    id === 4
-                      ? "https://www.youtube.com/embed/NfYQeSsNQrg?si=mLgeDG7wNo4rO32p&start=1&autoplay=1&mute=1&playsinline=1&rel=0"
-                      : "https://www.youtube.com/embed/Z_exh7zMqDs?si=EYyv12VkPHBJn9Vm&start=8&autoplay=1&mute=1&playsinline=1&rel=0"
-                  }
-                  title={id === 4 ? "Save Anwar — Father Fighting to Survive After Traumatic Brain Injury" : "Help Dr. Shahbaaz Feed Needy People Everyday For Free"}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
+              {id === 4 ? (
+                <>
+                  Anwar needs <strong>Rs. 50,000–2 lakh every month</strong> for physiotherapy, medicines and home nursing. Family savings exhausted after <strong>Rs. 1.05 crore</strong> hospital bill. His daughter Alqama is begging for one more chance.{" "}
+                  <span className="text-red-600 font-bold">Time is running out.</span>
+                </>
+              ) : id === 3 ? (
+                <>
+                  We need <strong>₹5,75,280</strong> to provide groceries to <strong>846 poor families</strong> in Ahmedabad. Dr. Shahbaaz is fighting serious illness but still feeding 2000+ people daily. His father's 18-year legacy is at risk.{" "}
+                  <span className="text-red-600 font-bold">Time is running out.</span>
+                </>
               ) : (
                 <>
-                  <img
-                    src={campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"}
-                    alt={campaign.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"; }}
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/80 to-transparent p-6">
-                    <div className="flex items-center gap-2">
-                      <span className="bg-accent text-white text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1">
-                        Active Campaign
-                      </span>
-                      <span className="bg-white/20 text-white text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1 backdrop-blur-sm">
-                        Ahmedabad, Gujarat
-                      </span>
-                    </div>
-                  </div>
+                  {campaign.description}{" "}
+                  {campaign.endDate && <span className="text-red-600 font-bold">Time is running out.</span>}
                 </>
               )}
-            </motion.div>
-
-            {/* Urgency text — campaigns 3 & 4, shown BELOW the video/image */}
-            {(id === 3 || id === 4) && (
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-xs sm:text-sm text-gray-700 leading-relaxed border-l-4 border-red-500 pl-3 bg-red-50 py-2 pr-3"
-              >
-                {id === 4 ? (
-                  <>
-                    Anwar needs <strong>Rs. 50,000–2 lakh every month</strong> for physiotherapy, medicines and home nursing. Family savings exhausted after <strong>Rs. 1.05 crore</strong> hospital bill. His daughter Alqama is begging for one more chance.{" "}
-                    <span className="text-red-600 font-bold">Time is running out.</span>
-                  </>
-                ) : (
-                  <>
-                    We need <strong>₹5,75,280</strong> to provide groceries to <strong>846 poor families</strong> in Ahmedabad. Dr. Shahbaaz is fighting serious illness but still feeding 2000+ people daily. His father's 18-year legacy is at risk.{" "}
-                    <span className="text-red-600 font-bold">Time is running out.</span>
-                  </>
-                )}
-              </motion.p>
-            )}
+            </motion.p>
 
             {/* ── INLINE DONATION PANEL (all devices) ── */}
-            {(id === 3 || id === 4) && (
+            {(true) && (
               <motion.div
                 id="mobile-donate"
                 initial={{ opacity: 0, y: 16 }}
@@ -721,7 +753,9 @@ export default function CampaignDetail() {
                 <p className="text-[11px] font-semibold leading-snug" style={{ color: "#b91c1c", textShadow: "0 0 8px rgba(185,28,28,0.5)" }}>
                   {id === 4
                     ? "Anwar needs daily physio, medicines & nursing. Without your help, his recovery may never happen."
-                    : "Sirf 7 din bache hain… 846 families ko groceries chahiye. Aapki madad se possible hai."
+                    : id === 3
+                      ? "Sirf 7 din bache hain… 846 families ko groceries chahiye. Aapki madad se possible hai."
+                      : ((campaign as any).urgencyLabel || campaign.description)
                   }
                 </p>
 
@@ -1307,8 +1341,8 @@ export default function CampaignDetail() {
             </div>
           </div>
 
-          {/* ── RIGHT COLUMN (STICKY DONATION WIDGET) — hidden for campaigns 3 & 4 since inline panel handles it ── */}
-          <div className={`lg:col-span-1 ${(id === 3 || id === 4) ? "hidden" : ""}`}>
+          {/* ── RIGHT COLUMN (STICKY DONATION WIDGET) — hidden since inline panel handles all campaigns ── */}
+          <div className="hidden">
             <div className="sticky top-24 space-y-4">
 
               {/* Verified Badge */}
@@ -1580,8 +1614,8 @@ export default function CampaignDetail() {
                     <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Donate Anonymously</span>
                   </label>
 
-                  {/* Urgency countdown near button — campaigns 3 & 4 */}
-                  {(id === 3 || id === 4) && (
+                  {/* Urgency countdown near button — all campaigns with endDate */}
+                  {campaign.endDate && (
                     <p className="text-center text-[10px] font-bold text-red-600 uppercase tracking-widest tabular-nums flex items-center justify-center gap-1">
                       <Clock className="w-3 h-3 shrink-0" />
                       {countdown.expired
@@ -1595,29 +1629,23 @@ export default function CampaignDetail() {
                   <Button
                     onClick={handleDonate}
                     disabled={donating || !amount || Number(amount) < 1}
-                    className={`w-full text-white font-black uppercase tracking-[0.3em] rounded-none transition-all duration-500 relative overflow-hidden group ${
-                      (id === 3 || id === 4)
-                        ? "bg-red-600 hover:bg-red-700 text-white py-7 text-base shadow-lg shadow-red-200"
-                        : "bg-primary hover:bg-black py-6 text-sm gold-edge"
-                    }`}
+                    className="w-full text-white font-black uppercase tracking-[0.3em] rounded-none transition-all duration-500 relative overflow-hidden group bg-red-600 hover:bg-red-700 py-7 text-base shadow-lg shadow-red-200"
                   >
                     {donating ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                       <span className="flex items-center justify-center gap-2">
-                        <Heart className={`${(id === 3 || id === 4) ? "w-5 h-5" : "w-4 h-4"}`} />
+                        <Heart className="w-5 h-5" />
                         {want80G && !isAnon ? "Donate & Get 80G Receipt" : "Donate Now"}
                       </span>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                   </Button>
 
-                  {/* Trust text — campaigns 3 & 4 */}
-                  {(id === 3 || id === 4) && (
-                    <p className="text-center text-[10px] text-gray-500 font-medium">
-                      Every rupee helps. &nbsp;80G tax receipt available. &nbsp;Fully transparent.
-                    </p>
-                  )}
+                  {/* Trust text */}
+                  <p className="text-center text-[10px] text-gray-500 font-medium">
+                    Every rupee helps. &nbsp;80G tax receipt available. &nbsp;Fully transparent.
+                  </p>
 
                   {/* Re-download Receipt button */}
                   <AnimatePresence>
