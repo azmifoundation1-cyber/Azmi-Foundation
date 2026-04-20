@@ -65,6 +65,16 @@ function nowIST() {
   }) + " IST";
 }
 
+function collectDeviceInfo() {
+  return {
+    userAgent: navigator.userAgent,
+    platform: navigator.platform || (navigator as any).userAgentData?.platform || "Unknown",
+    screenSize: `${screen.width}x${screen.height} (DPR: ${window.devicePixelRatio})`,
+    language: navigator.language,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  };
+}
+
 export default function AdminCAF() {
   const { toast } = useToast();
   const { user } = useAuth();
@@ -134,6 +144,7 @@ export default function AdminCAF() {
         ? padRef.current.toDataURL("image/png") : "";
       const ts = nowIST();
       const cafId = `CAF-ADM-${Date.now().toString().slice(-6)}`;
+      const adminDevice = collectDeviceInfo();
       let adminIp: string | undefined;
       try {
         const ipRes = await fetch("/api/admin/my-ip");
@@ -153,7 +164,9 @@ export default function AdminCAF() {
         signedAt: ts,
         generatedByAdmin: true,
         adminName: adminDisplayName,
-        ipAddress: adminIp,
+        adminSignedAt: ts,
+        adminIpAddress: adminIp,
+        adminDeviceInfo: adminDevice,
       });
       toast({ title: "PDF generated!", description: `${cafId} downloaded` });
       setPdfOpen(false);

@@ -166,6 +166,14 @@ export default function SignCAF() {
       const returnedIp: string | undefined = saved.ipAddress;
       setCafId(id);
 
+      // Format admin timestamp from token creation date (IST)
+      const adminSignedAt = tokenData?.createdAt
+        ? new Date(tokenData.createdAt).toLocaleString("en-IN", {
+            timeZone: "Asia/Kolkata", day: "2-digit", month: "long", year: "numeric",
+            hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true,
+          }) + " IST"
+        : undefined;
+
       await generateCAFPdf({
         cafId: id,
         campaignerName: form.campaignerName,
@@ -177,10 +185,11 @@ export default function SignCAF() {
         campaignTitle: form.campaignTitle || form.purpose,
         signatureDataUrl,
         signedAt: ts,
-        generatedByAdmin: !!tokenData,
-        adminName: tokenData?.adminName || undefined,
         ipAddress: returnedIp,
         deviceInfo,
+        generatedByAdmin: !!tokenData,
+        adminName: tokenData?.adminName || undefined,
+        adminSignedAt,
       });
 
       setStep("done");
