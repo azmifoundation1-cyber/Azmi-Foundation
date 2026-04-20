@@ -512,8 +512,11 @@ export default function AdminCampaigns() {
                       <Label className="flex items-center gap-1.5"><ImagePlus className="w-4 h-4 text-blue-500" /> Hero Image</Label>
                       <button type="button" onClick={() => setUseUrlInput(!useUrlInput)}
                         className="text-xs text-blue-600 hover:underline flex items-center gap-1">
-                        {useUrlInput ? <><Upload className="w-3 h-3" /> Upload file</> : <><LinkIcon className="w-3 h-3" /> Use URL</>}
+                        {useUrlInput ? <><Upload className="w-3 h-3" /> Upload file</> : <><LinkIcon className="w-3 h-3" /> Use URL instead</>}
                       </button>
+                    </div>
+                    <div className="mb-2 p-2.5 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800 leading-relaxed">
+                      <strong>Tip:</strong> For images that must always be visible, paste an external URL (e.g. from Google Photos, ImgBB, or Unsplash). Uploaded files may disappear when the app is redeployed.
                     </div>
                     {useUrlInput ? (
                       <Input value={form.imageUrl} onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))} placeholder="https://..." />
@@ -526,7 +529,7 @@ export default function AdminCampaigns() {
                         </Button>
                         {form.imageUrl && (
                           <div className="flex items-center gap-2">
-                            <img src={form.imageUrl} alt="Hero" className="w-14 h-14 object-cover rounded border" />
+                            <img src={form.imageUrl} alt="Hero" className="w-14 h-14 object-cover rounded border" onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0.3"; }} />
                             <button type="button" onClick={() => setForm(f => ({ ...f, imageUrl: "" }))} className="text-red-500 hover:text-red-700"><X className="w-4 h-4" /></button>
                           </div>
                         )}

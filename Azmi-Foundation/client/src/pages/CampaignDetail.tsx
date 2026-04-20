@@ -624,6 +624,7 @@ export default function CampaignDetail() {
                     src={campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"}
                     alt={campaign.title}
                     className="w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"; }}
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/80 to-transparent p-6">
                     <div className="flex items-center gap-2">
@@ -1146,6 +1147,7 @@ export default function CampaignDetail() {
                             <img
                               src={story.images[i + 1]}
                               alt={`Campaign image ${i + 2}`}
+                              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                               className="w-full h-full object-cover"
                               loading="lazy"
                               decoding="async"
