@@ -395,7 +395,7 @@ export default function CampaignDetail() {
   const handleWhatsAppDonate = () => {
     const amt = Number(amount) || PRESET_AMOUNTS[1];
     const msg = `🙏 Main "${campaign?.title}" campaign mein ₹${amt.toLocaleString("en-IN")} donate karna chahta/chahti hoon. Kripya confirm karein:\n${shareUrl}`;
-    window.open(`https://wa.me/918320218861?text=${encodeURIComponent(msg)}`, "_blank");
+    window.open(`https://wa.me/917861010850?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
   const handleWhatsAppShare = () => {
