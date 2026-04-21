@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 // Register local passport strategy for email/password auth
 export function setupLocalAuth() {
@@ -34,6 +35,49 @@ export function setupLocalAuth() {
       }
     })
   );
+
+  // Register Google OAuth strategy only if credentials are configured
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    passport.use(
+      "google",
+      new GoogleStrategy(
+        {
+          clientID: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          callbackURL: "/api/auth/google/callback",
+          passReqToCallback: true,
+        },
+        async (req: any, _accessToken, _refreshToken, profile, done) => {
+          try {
+            const email = profile.emails?.[0]?.value?.toLowerCase();
+            if (!email) return done(new Error("No email from Google"));
+
+            let [user] = await db.select().from(users).where(eq(users.email, email));
+
+            if (!user) {
+              const [created] = await db
+                .insert(users)
+                .values({
+                  email,
+                  firstName: profile.name?.givenName || profile.displayName.split(" ")[0] || "User",
+                  lastName: profile.name?.familyName || null,
+                  profileImageUrl: profile.photos?.[0]?.value || null,
+                  role: "user",
+                })
+                .returning();
+              user = created;
+            } else if (!user.profileImageUrl && profile.photos?.[0]?.value) {
+              await db.update(users).set({ profileImageUrl: profile.photos[0].value }).where(eq(users.id, user.id));
+            }
+
+            return done(null, { localUser: true, id: user.id });
+          } catch (err) {
+            return done(err as Error);
+          }
+        }
+      )
+    );
+  }
 }
 
 // Register auth-specific routes
@@ -133,5 +177,31 @@ export function registerAuthRoutes(app: Express): void {
     req.logout(() => {
       res.json({ message: "Logged out" });
     });
+  });
+
+  // Tells the frontend whether Google OAuth is configured
+  app.get("/api/auth/google/available", (_req, res) => {
+    res.json({ available: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) });
+  });
+
+  // Google OAuth — initiate
+  app.get("/api/auth/google", (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+      return res.status(503).json({ message: "Google login is not configured" });
+    }
+    passport.authenticate("google", {
+      scope: ["profile", "email"],
+      prompt: "select_account",
+    })(req, res, next);
+  });
+
+  // Google OAuth — callback
+  app.get("/api/auth/google/callback", (req, res, next) => {
+    passport.authenticate("google", {
+      failureRedirect: "/login?error=google_failed",
+      session: true,
+    })(req, res, next);
+  }, (req: any, res) => {
+    res.redirect("/");
   });
 }
