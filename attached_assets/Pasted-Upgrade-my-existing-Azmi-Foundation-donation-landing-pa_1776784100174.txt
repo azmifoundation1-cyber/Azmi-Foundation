@@ -1,0 +1,114 @@
+Upgrade my existing Azmi Foundation donation landing page to be ultra-fast, smooth, and fully compatible across all devices and in-app browsers (Instagram, Facebook), WITHOUT changing any content (text, images, videos).
+
+CRITICAL RULES:
+- Do NOT modify, delete, or rewrite any content
+- Only optimize performance, structure, rendering, and compatibility
+
+GOALS:
+- Load under 2 seconds on slow 4G
+- Smooth on low-end Android devices
+- Works inside Instagram/Facebook browsers
+- Donation button visible instantly
+- Payment never fails (fallback available)
+
+STACK:
+React + Tailwind CSS
+
+---------------------------------------
+CORE IMPLEMENTATION
+---------------------------------------
+
+1. ABOVE-THE-FOLD PRIORITY
+- Render hero section instantly
+- Inline critical CSS
+- Defer non-critical scripts
+- Show skeleton loaders for remaining sections
+
+2. IMAGE OPTIMIZATION
+- Use <picture> with WebP fallback
+- Add width/height attributes
+- Lazy load non-critical images
+- Preload hero image
+
+3. VIDEO HANDLING
+- Disable autoplay
+- Click-to-play only
+- Lazy load iframe/video
+
+4. SCRIPT OPTIMIZATION
+- Use React.lazy + Suspense
+- Minify JS/CSS
+- Remove blocking scripts
+- Defer analytics
+
+5. FONT OPTIMIZATION
+- Use system fonts or 1 font only
+- font-display: swap
+
+6. PAYMENT OPTIMIZATION
+- Preload Razorpay script
+- Instant checkout open
+- Add loading indicator
+- Max 2-step flow
+
+7. SERVICE WORKER
+- Cache static assets
+- Enable offline fallback UI
+
+8. MOBILE OPTIMIZATION
+- Large buttons (min 44px)
+- Remove heavy animations
+- Use GPU-friendly CSS
+
+9. CROSS-BROWSER SUPPORT
+- Add polyfills (fetch, Promise, IntersectionObserver)
+- Use Babel transpilation
+- Add CSS autoprefixer
+
+10. CLS FIX
+- Reserve space for images/videos
+- Prevent layout shift
+
+---------------------------------------
+INSTAGRAM / FACEBOOK FIX
+---------------------------------------
+
+11. DETECT IN-APP BROWSER
+- Detect Instagram/Facebook user-agent
+
+12. SHOW WARNING BANNER
+- "For better experience, open in Chrome/Safari"
+
+13. OPEN IN BROWSER BUTTON
+- Deep link:
+  googlechrome:// + fallback to https
+
+14. PAYMENT FALLBACK
+If Razorpay fails:
+- Show:
+  - UPI ID with copy button
+  - WhatsApp donation button
+
+15. WHATSAPP CTA
+- Floating button:
+  "Donate via WhatsApp"
+- Pre-filled message
+
+16. LIGHTWEIGHT MODE
+- Disable heavy scripts in in-app browser
+- Load only essential components
+
+17. ERROR HANDLING
+- If payment fails:
+  Show fallback message + options
+
+18. STICKY CTA
+- Fixed bottom "Donate Now" button always visible
+
+---------------------------------------
+OUTPUT:
+- Optimized React code
+- In-app browser detection system
+- Payment fallback UI
+- Service worker setup
+- Fully responsive and fast
