@@ -392,6 +392,12 @@ export default function CampaignDetail() {
   const shareTitle = campaign?.title ?? "Azmi Foundation Campaign";
   const shareText = `🙏 Help us support: "${shareTitle}". Every rupee counts — donate now and change lives!`;
 
+  const handleWhatsAppDonate = () => {
+    const amt = Number(amount) || PRESET_AMOUNTS[1];
+    const msg = `🙏 Main "${campaign?.title}" campaign mein ₹${amt.toLocaleString("en-IN")} donate karna chahta/chahti hoon. Kripya confirm karein:\n${shareUrl}`;
+    window.open(`https://wa.me/918320218861?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+
   const handleWhatsAppShare = () => {
     const text = encodeURIComponent(`${shareText}\n${shareUrl}`);
     window.open(`https://wa.me/?text=${text}`, "_blank");
@@ -837,6 +843,54 @@ export default function CampaignDetail() {
                       backdropFilter: "blur(8px)",
                     }}
                   />
+                </div>
+
+                {/* ── QUICK DONATE — visible immediately, no friction ── */}
+                <div className="space-y-2">
+                  <button
+                    onClick={handleDonate}
+                    disabled={donating || !amount || Number(amount) < 1}
+                    className="w-full font-black uppercase tracking-[0.15em] text-base transition-all duration-200 disabled:opacity-50 active:scale-95"
+                    style={{
+                      padding: "16px 0",
+                      borderRadius: "10px",
+                      border: "1px solid rgba(220,220,235,0.5)",
+                      background: "linear-gradient(135deg, #dc2626, #991b1b)",
+                      color: "#fff",
+                      boxShadow: "0 0 24px rgba(220,38,38,0.5), 0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2)",
+                    }}
+                  >
+                    {donating ? (
+                      <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                    ) : (
+                      <span className="flex items-center justify-center gap-2">
+                        <Heart className="w-5 h-5" />
+                        Donate ₹{Number(amount || 0).toLocaleString("en-IN")} Now
+                      </span>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={handleWhatsAppDonate}
+                    className="w-full font-black uppercase tracking-[0.1em] text-sm transition-all duration-200 active:scale-95 flex items-center justify-center gap-2.5"
+                    style={{
+                      padding: "12px 0",
+                      borderRadius: "10px",
+                      background: "linear-gradient(135deg, #16a34a, #15803d)",
+                      color: "#fff",
+                      boxShadow: "0 0 16px rgba(22,163,74,0.4), inset 0 1px 0 rgba(255,255,255,0.15)",
+                    }}
+                  >
+                    <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    Donate via WhatsApp
+                  </button>
+                </div>
+
+                {/* Optional details divider */}
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.1)" }} />
+                  <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)" }}>Optional details</span>
+                  <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.1)" }} />
                 </div>
 
                 {/* Name */}
@@ -1657,6 +1711,16 @@ export default function CampaignDetail() {
                     <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                   </Button>
 
+                  {/* WhatsApp Donate button — sidebar */}
+                  <button
+                    onClick={handleWhatsAppDonate}
+                    className="w-full font-black uppercase tracking-wider text-sm rounded-none flex items-center justify-center gap-2.5 py-4 transition-all duration-200 hover:opacity-90 active:scale-95"
+                    style={{ background: "#25D366", color: "#fff", boxShadow: "0 4px 14px rgba(37,211,102,0.3)" }}
+                  >
+                    <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    Donate via WhatsApp
+                  </button>
+
                   {/* Trust text */}
                   <p className="text-center text-[10px] text-gray-500 font-medium">
                     Every rupee helps. &nbsp;80G tax receipt available. &nbsp;Fully transparent.
@@ -1834,6 +1898,36 @@ export default function CampaignDetail() {
           </div>
         </section>
       )}
+
+      {/* ── STICKY MOBILE BOTTOM DONATE BAR ── */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden" style={{ background: "rgba(4,0,15,0.97)", backdropFilter: "blur(16px)", borderTop: "1px solid rgba(200,200,220,0.25)", boxShadow: "0 -4px 24px rgba(0,0,0,0.5)" }}>
+        {/* Mini progress strip */}
+        <div className="h-1 w-full" style={{ background: "rgba(255,255,255,0.05)" }}>
+          <div className="h-full transition-all duration-700" style={{ width: `${percent}%`, background: "linear-gradient(90deg, #888899, #c0c0d0)" }} />
+        </div>
+        <div className="flex items-center gap-2 px-3 pt-2 pb-1">
+          <span className="text-[10px] font-black text-white/60 uppercase tracking-widest tabular-nums">₹{Number(campaign?.currentAmount ?? 0).toLocaleString("en-IN")} raised · {percent}%</span>
+          <span className="ml-auto text-[10px] font-black text-red-400 tabular-nums">{!countdown.expired && `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h left`}</span>
+        </div>
+        <div className="flex gap-2 px-3 pb-3">
+          <button
+            onClick={() => { document.getElementById("mobile-donate")?.scrollIntoView({ behavior: "smooth", block: "center" }); }}
+            className="flex-1 font-black uppercase tracking-widest text-sm py-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
+            style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)", color: "#fff", boxShadow: "0 0 20px rgba(220,38,38,0.5), inset 0 1px 0 rgba(255,255,255,0.15)" }}
+          >
+            <Heart className="w-4 h-4" />
+            Donate ₹{Number(amount || PRESET_AMOUNTS[1]).toLocaleString("en-IN")} Now
+          </button>
+          <button
+            onClick={handleWhatsAppDonate}
+            className="px-4 py-4 rounded-xl flex flex-col items-center justify-center gap-0.5 font-black text-[9px] uppercase tracking-wider transition-all active:scale-95"
+            style={{ background: "#25D366", color: "#fff", boxShadow: "0 0 12px rgba(37,211,102,0.4)" }}
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            <span>WA</span>
+          </button>
+        </div>
+      </div>
 
       <Footer />
     </div>

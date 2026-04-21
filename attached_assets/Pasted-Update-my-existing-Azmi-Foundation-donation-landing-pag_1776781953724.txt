@@ -1,0 +1,134 @@
+Update my existing Azmi Foundation donation landing page UI/UX to match high-converting crowdfunding platforms like Milaap, ImpactGuru, and Charitism.
+
+CRITICAL RULE:
+- DO NOT change ANY content
+- Do NOT edit text, images, videos, or wording
+- Only improve STRUCTURE, DESIGN, FLOW, and CONVERSION UX
+
+GOAL:
+Increase donation conversion rate from cold traffic without modifying original content.
+
+---
+
+CORE IMPROVEMENTS:
+
+1. ABOVE-THE-FOLD OPTIMIZATION (MOST IMPORTANT)
+- Reorganize existing content so that:
+  - Main image appears first
+  - Headline appears immediately
+  - Donation CTA is visible WITHOUT SCROLL
+- Add donation buttons using EXISTING content context:
+  ₹10 | ₹50 | ₹100 | ₹500 | Custom input
+- Add primary CTA button:
+  "Donate Now" (use existing wording only)
+
+---
+
+2. STICKY DONATE BUTTON
+- Add fixed bottom button (mobile):
+  "Donate Now"
+- Always visible while scrolling
+
+---
+
+3. PROGRESS VISIBILITY
+- Move existing:
+  - Amount raised
+  - Goal
+  - Donor count
+- Place it directly below headline
+- Add visual progress bar (do not change numbers)
+
+---
+
+4. TRUST LAYER (NO CONTENT CHANGE, ONLY PRESENTATION)
+- Visually highlight existing:
+  - NGO info
+  - Any verification details
+- Add UI badges (design only):
+  - "Secure Payment"
+  - "Trusted Campaign"
+  (Do NOT fabricate data, only visual emphasis)
+
+---
+
+5. SOCIAL PROOF UI (WITHOUT CHANGING DATA)
+- If donor count exists:
+  Display as:
+  "123 people have already donated"
+- Add animated ticker UI (optional placeholder if no real-time data)
+
+---
+
+6. STORY REFORMAT
+- Break existing story text into:
+  - Short paragraphs
+  - Highlight key emotional lines in bold
+- Add spacing for readability
+- Do NOT rewrite text
+
+---
+
+7. URGENCY POSITIONING
+- Take existing urgency elements (countdown/text)
+- Move them:
+  ABOVE donation button
+- Make visually strong (red/yellow highlight)
+
+---
+
+8. PAYMENT UX IMPROVEMENT
+- Reduce steps to minimum
+- Keep Razorpay / UPI integration
+- Ensure fast checkout (1–2 steps max)
+
+---
+
+9. WHATSAPP CTA (ADD ONLY BUTTON)
+- Add button:
+  "Donate via WhatsApp"
+- Pre-filled message:
+  "Hi, I want to support this campaign"
+
+---
+
+10. MOBILE-FIRST OPTIMIZATION
+- Large buttons
+- Thumb-friendly spacing
+- Fast load
+- No clutter
+
+---
+
+11. VISUAL HIERARCHY
+- Use:
+  - Bold headings
+  - Clean spacing
+  - Card sections
+- Highlight CTA with contrasting color
+
+---
+
+12. PERFORMANCE
+- Lazy load images
+- Compress assets
+- Optimize speed
+
+---
+
+OUTPUT:
+- Updated React + Tailwind code
+- Reusable layout for all campaigns
+- Component-based structure:
+  - Hero
+  - Progress
+  - Story
+  - CTA
+  - Footer
+
+---
+
+SUCCESS METRIC:
+- User should be able to donate within 10–20 seconds of landing
+- CTA always visible
+- Trust visible instantly
