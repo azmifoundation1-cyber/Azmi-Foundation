@@ -886,6 +886,26 @@ export default function CampaignDetail() {
                   </button>
                 </div>
 
+                {/* Razorpay trust badge — dark panel */}
+                <div
+                  className="flex items-center justify-center gap-2 py-2 px-3"
+                  style={{
+                    borderRadius: "8px",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                  }}
+                >
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z" fill="#2563eb" opacity="0.85"/>
+                    <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span className="text-[10px] font-bold" style={{ color: "rgba(255,255,255,0.55)" }}>
+                    100% Secure · Powered by{" "}
+                    <span style={{ color: "#5b8dee", fontWeight: 900 }}>Razorpay</span>
+                    {" "}· SSL Encrypted
+                  </span>
+                </div>
+
                 {/* Optional details divider */}
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.1)" }} />
@@ -1721,10 +1741,16 @@ export default function CampaignDetail() {
                     Donate via WhatsApp
                   </button>
 
-                  {/* Trust text */}
-                  <p className="text-center text-[10px] text-gray-500 font-medium">
-                    Every rupee helps. &nbsp;80G tax receipt available. &nbsp;Fully transparent.
-                  </p>
+                  {/* Razorpay trust badge — sidebar */}
+                  <div className="flex items-center justify-center gap-2 py-2.5 px-3 border border-blue-100 bg-blue-50/60">
+                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z" fill="#2563eb" opacity="0.9"/>
+                      <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span className="text-[10px] font-bold text-gray-600">
+                      100% Secure · Powered by <span className="text-blue-600 font-black">Razorpay</span> · SSL Encrypted
+                    </span>
+                  </div>
 
                   {/* Re-download Receipt button */}
                   <AnimatePresence>
