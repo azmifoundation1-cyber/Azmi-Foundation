@@ -184,6 +184,38 @@ export async function registerRoutes(
     }
   });
 
+  // Public status check by phone number
+  app.get("/api/apply/status", async (req, res) => {
+    try {
+      const { fundraisingApplications } = await import("@shared/schema");
+      const { db: dbInst } = await import("./db");
+      const { eq: eqFn, desc: descFn } = await import("drizzle-orm");
+      const phone = (req.query.phone as string || "").replace(/\D/g, "").slice(-10);
+      if (!phone || phone.length !== 10) {
+        return res.status(400).json({ message: "Please enter a valid 10-digit phone number." });
+      }
+      const rows = await dbInst.select({
+        id: fundraisingApplications.id,
+        patientName: fundraisingApplications.patientName,
+        campaignerName: fundraisingApplications.campaignerName,
+        status: fundraisingApplications.status,
+        userMessage: fundraisingApplications.userMessage,
+        createdAt: fundraisingApplications.createdAt,
+        updatedAt: fundraisingApplications.updatedAt,
+        city: fundraisingApplications.city,
+        amountNeeded: fundraisingApplications.amountNeeded,
+      })
+        .from(fundraisingApplications)
+        .where(eqFn(fundraisingApplications.contactNumber, phone))
+        .orderBy(descFn(fundraisingApplications.createdAt));
+      if (!rows.length) return res.status(404).json({ message: "No application found for this phone number." });
+      res.json(rows);
+    } catch (err) {
+      console.error("Status check error:", err);
+      res.status(500).json({ message: "Failed to check status." });
+    }
+  });
+
   // ==============================
   // AUTHENTICATED USER ROUTES
   // ==============================
@@ -523,13 +555,14 @@ export async function registerRoutes(
       const { db: dbInst } = await import("./db");
       const { eq: eqFn } = await import("drizzle-orm");
       const id = parseInt(req.params.id, 10);
-      const { status, adminNote } = req.body;
+      const { status, adminNote, userMessage } = req.body;
       const actor = req.user as any;
       const dbUser = await storage.getUser(actor.claims?.sub || actor.id);
       const [updated] = await dbInst.update(fundraisingApplications)
         .set({
           status,
-          adminNote: adminNote || null,
+          adminNote: adminNote ?? null,
+          userMessage: userMessage ?? null,
           reviewedBy: dbUser?.email || null,
           reviewedAt: new Date(),
           updatedAt: new Date(),
@@ -1165,11 +1198,13 @@ async function seedDatabase() {
       id_proof_url TEXT,
       status TEXT DEFAULT 'new' NOT NULL,
       admin_note TEXT,
+      user_message TEXT,
       reviewed_by TEXT,
       reviewed_at TIMESTAMP,
       created_at TIMESTAMP DEFAULT NOW(),
       updated_at TIMESTAMP DEFAULT NOW()
     )`);
+    await db.execute(sql`ALTER TABLE fundraising_applications ADD COLUMN IF NOT EXISTS user_message TEXT`);
     // Hardcode campaign 5 (Harsh Shrimali) image and set 25-day timer from campaign creation
     await db.execute(sql`UPDATE campaigns SET image_url = '/harsh-hospital.jpeg' WHERE id = 5 AND (image_url IS NULL OR image_url LIKE '/uploads/%')`);
     await db.execute(sql`UPDATE campaigns SET end_date = '2026-05-15T23:59:59.000Z' WHERE id = 5 AND end_date IS NULL`);

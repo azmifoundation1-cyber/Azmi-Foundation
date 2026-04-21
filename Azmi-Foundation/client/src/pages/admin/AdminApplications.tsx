@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import {
   Loader2, Eye, Phone, Filter, FileText, FileImage,
   Home, Building2, Heart, User, MapPin, Users, Trash2,
-  CheckCircle2, Clock, AlertCircle, XCircle,
+  CheckCircle2, Clock, AlertCircle, XCircle, MessageSquare,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
@@ -51,6 +51,7 @@ export default function AdminApplications() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [viewItem, setViewItem] = useState<FundraisingApplication | null>(null);
   const [adminNote, setAdminNote] = useState("");
+  const [userMessage, setUserMessage] = useState("");
   const [newStatus, setNewStatus] = useState("");
 
   const { data: applications, isLoading } = useQuery<FundraisingApplication[]>({
@@ -59,11 +60,11 @@ export default function AdminApplications() {
   });
 
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status, note }: { id: number; status: string; note?: string }) => {
+    mutationFn: async ({ id, status, note, msg }: { id: number; status: string; note?: string; msg?: string }) => {
       const res = await fetch(`/api/admin/applications/${id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, adminNote: note }),
+        body: JSON.stringify({ status, adminNote: note, userMessage: msg }),
       });
       if (!res.ok) throw new Error("Update failed");
       return res.json();
@@ -90,9 +91,10 @@ export default function AdminApplications() {
   function openItem(item: FundraisingApplication) {
     setViewItem(item);
     setAdminNote(item.adminNote || "");
+    setUserMessage((item as any).userMessage || "");
     setNewStatus(item.status);
     if (item.status === "new") {
-      updateStatus.mutate({ id: item.id, status: "under_review", note: item.adminNote || "" });
+      updateStatus.mutate({ id: item.id, status: "under_review", note: item.adminNote || "", msg: (item as any).userMessage || "" });
     }
   }
 
@@ -323,13 +325,26 @@ export default function AdminApplications() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-sm font-medium">Admin Note (internal)</Label>
+                  <Label className="text-sm font-medium flex items-center gap-1.5">
+                    <MessageSquare className="w-3.5 h-3.5 text-blue-500" />
+                    Message to Applicant <span className="text-xs text-blue-600 font-normal">(visible to applicant when they check status)</span>
+                  </Label>
+                  <Textarea
+                    value={userMessage}
+                    onChange={e => setUserMessage(e.target.value)}
+                    rows={3}
+                    placeholder="e.g. Aapki application review ho rahi hai. 2 din mein call karenge. / Your application is under review..."
+                    className="resize-none border-blue-200 focus:ring-blue-300"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-sm font-medium text-gray-500">Admin Note (internal only)</Label>
                   <Textarea
                     value={adminNote}
                     onChange={e => setAdminNote(e.target.value)}
-                    rows={3}
-                    placeholder="Internal notes about this application..."
-                    className="resize-none"
+                    rows={2}
+                    placeholder="Internal notes not visible to applicant..."
+                    className="resize-none text-xs"
                   />
                 </div>
               </div>
@@ -356,7 +371,7 @@ export default function AdminApplications() {
             <Button variant="outline" onClick={() => setViewItem(null)}>Close</Button>
             <Button
               className="bg-primary hover:bg-primary/90 gap-2"
-              onClick={() => updateStatus.mutate({ id: viewItem!.id, status: newStatus, note: adminNote })}
+              onClick={() => updateStatus.mutate({ id: viewItem!.id, status: newStatus, note: adminNote, msg: userMessage })}
               disabled={updateStatus.isPending}
             >
               {updateStatus.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}

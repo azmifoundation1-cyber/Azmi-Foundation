@@ -5,7 +5,7 @@ import { CampaignCard } from "@/components/CampaignCard";
 import { LegalCredentials } from "@/components/LegalCredentials";
 import { useCampaigns } from "@/hooks/use-campaigns";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Heart, Globe, Users, Award, Shield, Zap, Target, Search, CreditCard, TrendingUp, CheckCircle, Star, Quote } from "lucide-react";
+import { ArrowRight, Heart, Globe, Users, Award, Shield, Zap, Target, Search, CreditCard, TrendingUp, CheckCircle, Star, Quote, HeartHandshake } from "lucide-react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
 
@@ -150,6 +150,14 @@ export default function Home() {
                   Our Legacy
                 </Button>
               </Link>
+              <Link href="/apply" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto group relative bg-accent/90 hover:bg-accent text-primary border-2 border-accent px-8 sm:px-14 py-8 sm:py-12 text-sm sm:text-lg rounded-none transition-all duration-700 uppercase tracking-[0.3em] font-black overflow-hidden transform-gpu hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
+                  <span className="relative z-10 flex items-center justify-center gap-3">
+                    <HeartHandshake className="w-5 h-5 sm:w-6 sm:h-6" />
+                    Apply For Medical Fundraising
+                  </span>
+                </Button>
+              </Link>
             </motion.div>
           </motion.div>
         </div>
@@ -279,6 +287,79 @@ export default function Home() {
                 <p className="text-gray-400 text-xs leading-relaxed">{desc}</p>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── APPLY FOR MEDICAL FUNDRAISING ── */}
+      <section className="py-16 sm:py-24 bg-gradient-to-br from-primary via-primary to-black relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')] opacity-5" />
+        <motion.div
+          animate={{ scale: [1, 1.1, 1], opacity: [0.05, 0.1, 0.05] }}
+          transition={{ duration: 10, repeat: Infinity }}
+          className="absolute -right-32 -top-32 w-96 h-96 bg-accent/30 rounded-full blur-[80px]"
+        />
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+            <div className="flex-1 text-center lg:text-left space-y-5">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-accent/20 border border-accent/30 rounded-none text-accent text-[10px] font-black tracking-[0.5em] uppercase"
+              >
+                <HeartHandshake className="w-3.5 h-3.5" /> Medical Fundraising
+              </motion.div>
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="text-4xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-tight leading-[0.9]"
+              >
+                Need Help For <br /><span className="text-accent">Medical Bills?</span>
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="text-white/60 text-sm sm:text-base leading-relaxed max-w-lg"
+              >
+                Can't afford hospital bills, surgery, or medicine? Apply for a medical fundraising campaign. Our team reviews every application personally and contacts you within 2–3 days.
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+                className="flex flex-wrap gap-4 justify-center lg:justify-start text-xs text-white/50"
+              >
+                {["✓ 100% Free to Apply", "✓ No Middlemen", "✓ Verified by NGO Team", "✓ Response in 2–3 Days"].map(item => (
+                  <span key={item} className="font-semibold">{item}</span>
+                ))}
+              </motion.div>
+            </div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="flex-shrink-0 w-full lg:w-auto"
+            >
+              <Link href="/apply">
+                <Button size="lg" className="group w-full lg:w-auto bg-accent hover:bg-white text-primary px-10 sm:px-16 py-8 sm:py-10 text-base sm:text-xl rounded-none font-black uppercase tracking-[0.3em] transition-all duration-500 hover:scale-105 active:scale-95 shadow-[0_20px_60px_rgba(0,0,0,0.4)] border-0">
+                  <span className="flex items-center gap-3">
+                    <HeartHandshake className="w-6 h-6" />
+                    Apply For Medical<br className="sm:hidden" /> Fundraising Campaign
+                    <motion.div animate={{ x: [0, 8, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                      <ArrowRight className="w-5 h-5" />
+                    </motion.div>
+                  </span>
+                </Button>
+              </Link>
+              <p className="text-center text-white/30 text-xs mt-3">Hinglish · English · हिंदी · ગુજરાતી · اردو</p>
+            </motion.div>
           </div>
         </div>
       </section>

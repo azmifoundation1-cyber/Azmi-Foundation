@@ -224,6 +224,7 @@ export const fundraisingApplications = pgTable("fundraising_applications", {
   idProofUrl: text("id_proof_url"),
   status: text("status", { enum: ["new", "under_review", "approved", "rejected"] }).default("new").notNull(),
   adminNote: text("admin_note"),
+  userMessage: text("user_message"),
   reviewedBy: text("reviewed_by"),
   reviewedAt: timestamp("reviewed_at"),
   createdAt: timestamp("created_at").defaultNow(),
