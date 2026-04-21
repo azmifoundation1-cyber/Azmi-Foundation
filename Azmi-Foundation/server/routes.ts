@@ -1047,6 +1047,9 @@ async function seedDatabase() {
     await db.execute(sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS local_video_url TEXT`);
     await db.execute(sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS gallery_images JSONB DEFAULT '[]'::jsonb`);
     await db.execute(sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS urgency_label TEXT`);
+    // Hardcode campaign 5 (Harsh Shrimali) image and set 25-day timer from campaign creation
+    await db.execute(sql`UPDATE campaigns SET image_url = '/harsh-hospital.jpeg' WHERE id = 5 AND (image_url IS NULL OR image_url LIKE '/uploads/%')`);
+    await db.execute(sql`UPDATE campaigns SET end_date = '2026-05-15T23:59:59.000Z' WHERE id = 5 AND end_date IS NULL`);
     console.log("[seed] schema migrations applied");
   } catch (e) {
     console.error("[seed] schema migration failed:", e);

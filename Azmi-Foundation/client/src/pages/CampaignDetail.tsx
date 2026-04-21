@@ -117,6 +117,19 @@ const CAMPAIGN_STORIES: Record<number, {
     ],
     localVideo: "/anwar-video.mp4",
   },
+  5: {
+    story: [
+      "My name is Harsh Shrimali. For as long as I can remember, the sound of my childhood was the sound of my father, Nanak Shrimali, and my mother, Hansaben, preparing for their shifts. They weren't doctors, engineers, or wealthy businessmen. They were Security Guards.",
+      "It happened without warning. A few weeks ago, my father complained of a sharp, biting pain in his stomach. By midnight, he was screaming in agony. The doctors' words felt like a physical blow: his appendix had burst inside him — Appendicular Lump with Perforation, a life-threatening emergency. He was immediately taken into surgery for an Exploratory Laparotomy.",
+      "To save my father, the surgeons had to perform a Double Barrel Ileostomy — they brought a loop of his small intestine through an opening in his abdomen. My strong, proud father now lives with his intestines outside his body. He cannot walk without help. He cannot even sit up to eat without wincing in pain.",
+      "We are buried under a debt of ₹7,00,000 (7 Lakhs). My father was our primary provider. My mother had to quit her job because my father requires 24-hour nursing care. Overnight, our family's income went from two salaries to zero. I am 18 years old, and I am now the sole earner for a family of six, earning ₹12,000 a month — with ₹9,500 in rent alone.",
+      "My father spent his life protecting people he didn't even know. He stood guard at gates so that others could feel safe. Now, he is the one who is unprotected. Please be the guardian for the man who was a guardian for everyone else. Your donation, no matter how small, is a brick in the wall that protects my family from homelessness.",
+    ],
+    images: [
+      "/harsh-hospital.jpeg",
+      "/harsh-hospital.jpeg",
+    ],
+  },
 };
 
 export default function CampaignDetail() {
@@ -658,10 +671,10 @@ export default function CampaignDetail() {
                   ) : (
                     <>
                       <img
-                        src={campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"}
+                        src={story.images?.[0] || campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"}
                         alt={campaign.title}
                         className="w-full h-full object-cover"
-                        onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"; }}
+                        onError={(e) => { (e.target as HTMLImageElement).src = campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"; }}
                       />
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/80 to-transparent p-6">
                         <div className="flex items-center gap-2">

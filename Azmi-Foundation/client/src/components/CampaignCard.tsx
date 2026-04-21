@@ -10,6 +10,10 @@ const CAMPAIGN_YOUTUBE_IDS: Record<number, string> = {
   4: "NfYQeSsNQrg",
 };
 
+const CAMPAIGN_HARDCODED_IMAGES: Record<number, string> = {
+  5: "/harsh-hospital.jpeg",
+};
+
 const CATEGORY_CONFIG: Record<string, { label: string; Icon: React.ElementType; color: string }> = {
   health:      { label: "Medical Emergency",   Icon: HeartPulse,    color: "bg-red-600" },
   education:   { label: "Education",           Icon: GraduationCap, color: "bg-blue-700" },
@@ -24,6 +28,7 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
   const cat = CATEGORY_CONFIG[campaign.category] ?? CATEGORY_CONFIG.other;
   const { label, Icon, color } = cat;
   const youtubeId = CAMPAIGN_YOUTUBE_IDS[campaign.id];
+  const hardcodedImage = CAMPAIGN_HARDCODED_IMAGES[campaign.id];
 
   return (
     <Link href={`/campaigns/${campaign.id}`} className="block h-full cursor-pointer">
@@ -56,11 +61,12 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
               <motion.img
                 whileHover={{ scale: 1.15 }}
                 transition={{ duration: 1.2 }}
-                src={campaign.imageUrl || `https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80`}
+                src={hardcodedImage || campaign.imageUrl || `https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80`}
                 alt={campaign.title}
                 className="w-full h-full object-cover"
                 loading="lazy"
                 decoding="async"
+                onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"; }}
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/40 to-transparent opacity-90" />
