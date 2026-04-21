@@ -136,6 +136,54 @@ export async function registerRoutes(
     }
   });
 
+  // --- Fundraising Application (public, multipart) ---
+  app.post("/api/apply", upload.fields([
+    { name: "medicalFile", maxCount: 1 },
+    { name: "idProof", maxCount: 1 },
+  ]), async (req: any, res) => {
+    try {
+      const { fundraisingApplications } = await import("@shared/schema");
+      const { db: dbInst } = await import("./db");
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+      const medicalFileUrl = files?.medicalFile?.[0] ? `/uploads/${files.medicalFile[0].filename}` : null;
+      const idProofUrl = files?.idProof?.[0] ? `/uploads/${files.idProof[0].filename}` : null;
+
+      const {
+        campaignerName, campaignerRelation, patientName, city, pincode,
+        contactNumber, problemDescription, amountNeeded, familyMembers,
+        houseType, patientLocation,
+      } = req.body;
+
+      if (!campaignerName || !campaignerRelation || !patientName || !city || !pincode ||
+        !contactNumber || !problemDescription || !amountNeeded || !familyMembers ||
+        !houseType || !patientLocation) {
+        return res.status(400).json({ message: "All required fields must be filled" });
+      }
+
+      const [row] = await dbInst.insert(fundraisingApplications).values({
+        campaignerName: campaignerName.trim(),
+        campaignerRelation: campaignerRelation.trim(),
+        patientName: patientName.trim(),
+        city: city.trim(),
+        pincode: pincode.trim(),
+        contactNumber: contactNumber.trim(),
+        problemDescription: problemDescription.trim(),
+        amountNeeded: String(amountNeeded),
+        familyMembers: parseInt(familyMembers, 10),
+        houseType: houseType as "own" | "rented",
+        patientLocation: patientLocation as "home" | "hospital",
+        medicalFileUrl,
+        idProofUrl,
+        status: "new",
+      }).returning();
+
+      res.status(201).json({ success: true, id: row.id });
+    } catch (err) {
+      console.error("Apply form error:", err);
+      res.status(500).json({ message: "Submission failed. Please try again." });
+    }
+  });
+
   // ==============================
   // AUTHENTICATED USER ROUTES
   // ==============================
@@ -453,6 +501,59 @@ export async function registerRoutes(
   app.get("/api/admin/stats", isAdmin, async (req, res) => {
     const stats = await storage.getAdminStats();
     res.json(stats);
+  });
+
+  // --- Admin: Fundraising Applications ---
+  app.get("/api/admin/applications", isAdmin, async (_req, res) => {
+    try {
+      const { fundraisingApplications } = await import("@shared/schema");
+      const { db: dbInst } = await import("./db");
+      const { desc: descFn } = await import("drizzle-orm");
+      const rows = await dbInst.select().from(fundraisingApplications).orderBy(descFn(fundraisingApplications.createdAt));
+      res.json(rows);
+    } catch (err) {
+      console.error("Fetch applications error:", err);
+      res.status(500).json({ message: "Failed to fetch applications" });
+    }
+  });
+
+  app.patch("/api/admin/applications/:id/status", isAdmin, async (req: any, res) => {
+    try {
+      const { fundraisingApplications } = await import("@shared/schema");
+      const { db: dbInst } = await import("./db");
+      const { eq: eqFn } = await import("drizzle-orm");
+      const id = parseInt(req.params.id, 10);
+      const { status, adminNote } = req.body;
+      const actor = req.user as any;
+      const dbUser = await storage.getUser(actor.claims?.sub || actor.id);
+      const [updated] = await dbInst.update(fundraisingApplications)
+        .set({
+          status,
+          adminNote: adminNote || null,
+          reviewedBy: dbUser?.email || null,
+          reviewedAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eqFn(fundraisingApplications.id, id))
+        .returning();
+      res.json(updated);
+    } catch (err) {
+      console.error("Update application error:", err);
+      res.status(500).json({ message: "Failed to update application" });
+    }
+  });
+
+  app.delete("/api/admin/applications/:id", isSuperAdmin, async (req, res) => {
+    try {
+      const { fundraisingApplications } = await import("@shared/schema");
+      const { db: dbInst } = await import("./db");
+      const { eq: eqFn } = await import("drizzle-orm");
+      const id = parseInt(req.params.id, 10);
+      await dbInst.delete(fundraisingApplications).where(eqFn(fundraisingApplications.id, id));
+      res.json({ ok: true });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to delete application" });
+    }
   });
 
   // --- Admin Analytics: Donation trend (last 30 days) ---
@@ -1047,6 +1148,28 @@ async function seedDatabase() {
     await db.execute(sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS local_video_url TEXT`);
     await db.execute(sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS gallery_images JSONB DEFAULT '[]'::jsonb`);
     await db.execute(sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS urgency_label TEXT`);
+    await db.execute(sql`CREATE TABLE IF NOT EXISTS fundraising_applications (
+      id SERIAL PRIMARY KEY,
+      campaigner_name TEXT NOT NULL,
+      campaigner_relation TEXT NOT NULL,
+      patient_name TEXT NOT NULL,
+      city TEXT NOT NULL,
+      pincode TEXT NOT NULL,
+      contact_number TEXT NOT NULL,
+      problem_description TEXT NOT NULL,
+      amount_needed DECIMAL NOT NULL,
+      family_members INTEGER NOT NULL,
+      house_type TEXT NOT NULL,
+      patient_location TEXT NOT NULL,
+      medical_file_url TEXT,
+      id_proof_url TEXT,
+      status TEXT DEFAULT 'new' NOT NULL,
+      admin_note TEXT,
+      reviewed_by TEXT,
+      reviewed_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )`);
     // Hardcode campaign 5 (Harsh Shrimali) image and set 25-day timer from campaign creation
     await db.execute(sql`UPDATE campaigns SET image_url = '/harsh-hospital.jpeg' WHERE id = 5 AND (image_url IS NULL OR image_url LIKE '/uploads/%')`);
     await db.execute(sql`UPDATE campaigns SET end_date = '2026-05-15T23:59:59.000Z' WHERE id = 5 AND end_date IS NULL`);

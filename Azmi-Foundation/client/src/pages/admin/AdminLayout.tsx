@@ -1,11 +1,12 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, LayoutDashboard, Megaphone, Heart, Users, BookOpen, MessageSquare, ClipboardList, LogOut, ChevronRight, Shield, Settings, FileText } from "lucide-react";
+import { Loader2, LayoutDashboard, Megaphone, Heart, Users, BookOpen, MessageSquare, ClipboardList, LogOut, ChevronRight, Shield, Settings, FileText, HandHeart } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", path: "/admin", icon: LayoutDashboard },
   { label: "Campaigns", path: "/admin/campaigns", icon: Megaphone },
   { label: "Donations", path: "/admin/donations", icon: Heart },
+  { label: "Applications", path: "/admin/applications", icon: HandHeart },
   { label: "Registrations", path: "/admin/registrations", icon: ClipboardList },
   { label: "Programs", path: "/admin/programs", icon: BookOpen },
   { label: "Users", path: "/admin/users", icon: Users },

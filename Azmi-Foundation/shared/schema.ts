@@ -206,6 +206,33 @@ export const cafRequests = pgTable("caf_requests", {
 
 export type CafRequest = typeof cafRequests.$inferSelect;
 
+// Fundraising Applications Table
+export const fundraisingApplications = pgTable("fundraising_applications", {
+  id: serial("id").primaryKey(),
+  campaignerName: text("campaigner_name").notNull(),
+  campaignerRelation: text("campaigner_relation").notNull(),
+  patientName: text("patient_name").notNull(),
+  city: text("city").notNull(),
+  pincode: text("pincode").notNull(),
+  contactNumber: text("contact_number").notNull(),
+  problemDescription: text("problem_description").notNull(),
+  amountNeeded: decimal("amount_needed").notNull(),
+  familyMembers: integer("family_members").notNull(),
+  houseType: text("house_type", { enum: ["own", "rented"] }).notNull(),
+  patientLocation: text("patient_location", { enum: ["home", "hospital"] }).notNull(),
+  medicalFileUrl: text("medical_file_url"),
+  idProofUrl: text("id_proof_url"),
+  status: text("status", { enum: ["new", "under_review", "approved", "rejected"] }).default("new").notNull(),
+  adminNote: text("admin_note"),
+  reviewedBy: text("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type FundraisingApplication = typeof fundraisingApplications.$inferSelect;
+export type InsertFundraisingApplication = typeof fundraisingApplications.$inferInsert;
+
 // Schemas
 export const insertCampaignSchema = createInsertSchema(campaigns).omit({ id: true, createdAt: true, updatedAt: true, currentAmount: true });
 export const insertCampaignUpdateSchema = createInsertSchema(campaignUpdates).omit({ id: true, createdAt: true });

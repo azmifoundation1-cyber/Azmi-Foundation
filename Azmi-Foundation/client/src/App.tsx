@@ -26,8 +26,10 @@ import AdminPrograms from "@/pages/admin/AdminPrograms";
 import AdminUsers from "@/pages/admin/AdminUsers";
 import AdminMessages from "@/pages/admin/AdminMessages";
 import AdminSettings from "@/pages/admin/AdminSettings";
+import Apply from "@/pages/Apply";
 import SignCAF from "@/pages/SignCAF";
 import AdminCAF from "@/pages/admin/AdminCAF";
+import AdminApplications from "@/pages/admin/AdminApplications";
 
 function Router() {
   return (
@@ -44,6 +46,7 @@ function Router() {
       <Route path="/get-involved" component={GetInvolved} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/contact" component={Contact} />
+      <Route path="/apply" component={Apply} />
 
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/campaigns" component={AdminCampaigns} />
@@ -53,6 +56,7 @@ function Router() {
       <Route path="/admin/users" component={AdminUsers} />
       <Route path="/admin/messages" component={AdminMessages} />
       <Route path="/admin/settings" component={AdminSettings} />
+      <Route path="/admin/applications" component={AdminApplications} />
       <Route path="/sign-caf" component={SignCAF} />
       <Route path="/admin/caf" component={AdminCAF} />
 
