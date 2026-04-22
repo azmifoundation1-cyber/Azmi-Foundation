@@ -157,6 +157,7 @@ export default function CampaignDetail() {
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [paymentFailed, setPaymentFailed] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
 
   // Social proof donation ticker
   const FAKE_DONORS = [
@@ -690,46 +691,58 @@ export default function CampaignDetail() {
               return (
                 <div className="relative rounded-none overflow-hidden aspect-video bg-gray-900">
                   {youtubeId ? (
-                    /* Tap-to-open YouTube — works in Instagram WebView & all browsers */
-                    <a
-                      href={youtubeLink!}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block w-full h-full relative group"
-                      aria-label="Watch campaign video on YouTube"
-                    >
-                      <img
-                        src={youtubeThumbnail!}
-                        alt={campaign.title}
-                        className="w-full h-full object-cover"
-                        loading="eager"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
-                        }}
+                    videoPlaying ? (
+                      /* Inline autoplay iframe — shown after tap */
+                      <iframe
+                        src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1${youtubeStartTime ? `&start=${youtubeStartTime}` : ""}`}
+                        title={campaign.title}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        className="w-full h-full"
                       />
-                      {/* Dark overlay */}
-                      <div className="absolute inset-0 bg-black/30 group-active:bg-black/50 transition-colors" />
-                      {/* Play button */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                        <div
-                          className="w-16 h-16 rounded-full flex items-center justify-center transition-transform group-active:scale-95"
-                          style={{ background: "rgba(220,38,38,0.92)", boxShadow: "0 0 0 6px rgba(255,255,255,0.18), 0 4px 24px rgba(0,0,0,0.5)" }}
-                        >
-                          <svg className="w-7 h-7 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z" />
-                          </svg>
+                    ) : (
+                      /* Thumbnail with play button — instant load, tap to play inline */
+                      <button
+                        onClick={() => setVideoPlaying(true)}
+                        className="block w-full h-full relative group"
+                        aria-label="Play campaign video"
+                        style={{ background: "#000", border: "none", padding: 0, cursor: "pointer" }}
+                      >
+                        <img
+                          src={youtubeThumbnail!}
+                          alt={campaign.title}
+                          className="w-full h-full object-cover"
+                          loading="eager"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+                          }}
+                        />
+                        {/* Dark overlay */}
+                        <div className="absolute inset-0 bg-black/25 group-active:bg-black/40 transition-colors" />
+                        {/* Play button */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                          <div
+                            className="w-16 h-16 rounded-full flex items-center justify-center transition-transform group-active:scale-95 group-hover:scale-105"
+                            style={{ background: "rgba(220,38,38,0.95)", boxShadow: "0 0 0 6px rgba(255,255,255,0.2), 0 4px 28px rgba(0,0,0,0.6)" }}
+                          >
+                            <svg className="w-7 h-7 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </div>
+                          <span className="text-white text-xs font-bold tracking-widest uppercase" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}>
+                            ▶ Play Video
+                          </span>
                         </div>
-                        <span className="text-white text-xs font-bold tracking-widest uppercase opacity-90" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
-                          Watch Video
-                        </span>
-                      </div>
-                      {/* YouTube logo badge */}
-                      <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/70 rounded px-2 py-1">
-                        <svg className="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                        <span className="text-white text-[9px] font-bold tracking-wider">YouTube</span>
-                      </div>
-                    </a>
+                        {/* YouTube badge */}
+                        <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/70 rounded px-2 py-1">
+                          <svg className="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                          <span className="text-white text-[9px] font-bold tracking-wider">YouTube</span>
+                        </div>
+                      </button>
+                    )
+                  
                   ) : heroLocalVideo ? (
                     <video
                       src={heroLocalVideo}
