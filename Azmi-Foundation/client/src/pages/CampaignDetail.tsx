@@ -31,13 +31,15 @@ function extractYoutubeId(url?: string | null): string | null {
 const PRESET_AMOUNTS_MAP: Record<number, number[]> = {
   3: [680, 1360, 3400, 6800],
   4: [500, 3500, 5000, 10000],
-  5: [500, 1000, 2500, 5000],
+  5: [100, 300, 1000, 2500],
+  6: [500, 1000, 2500, 5000],
 };
 
 const PRESET_LABELS_MAP: Record<number, string[]> = {
   3: ["1 family's groceries", "2 families' groceries", "5 families' groceries", "10 families' groceries"],
   4: ["1 physio session", "Week of medicines", "Home nurse visit", "1 month physio"],
-  5: ["1 day's medicines", "Week of stoma bags", "Month of medicines", "Reversal surgery fund"],
+  5: ["Basic clothing support", "Child's proper wear", "Family clothes kit", "Support 5 families"],
+  6: ["1 day's medicines", "Week of stoma bags", "Month of medicines", "Reversal surgery fund"],
 };
 
 const DEFAULT_PRESET_LABELS = ["Small help", "Medium support", "Big impact", "Life changer"];
@@ -118,6 +120,20 @@ const CAMPAIGN_STORIES: Record<number, {
     localVideo: "/anwar-video.mp4",
   },
   5: {
+    story: [
+      "Not everyone has the privilege of choosing what to wear. For many families in our city, clothing is not about fashion — it is about survival, dignity, and basic human respect.",
+      "We meet children wearing the same torn clothes every day. We meet mothers who hesitate to step outside because they don't have proper clothes. We meet fathers working in extreme heat, wearing worn-out, damaged garments that barely protect them. This is not just poverty. This is a loss of dignity.",
+      "At Azmi Foundation, we are starting a mission to provide clean, wearable clothes, basic daily outfits, and essential garments for men, women, and children. Because something as simple as a proper set of clothes can restore confidence, allow someone to work with dignity, and help a child go outside without shame.",
+      "Somewhere today, someone is staying inside — not because they want to — but because they have nothing decent to wear. With your support, we can change that. 🙏 Join Azmi Foundation. Let's give not just clothes… but dignity.",
+    ],
+    images: [
+      "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&q=80",
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+      "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=800&q=80",
+      "https://images.unsplash.com/photo-1471286174890-9c112ffca5b4?w=800&q=80",
+    ],
+  },
+  6: {
     story: [
       "My name is Harsh Shrimali. For as long as I can remember, the sound of my childhood was the sound of my father, Nanak Shrimali, and my mother, Hansaben, preparing for their shifts. They weren't doctors, engineers, or wealthy businessmen. They were Security Guards.",
       "It happened without warning. A few weeks ago, my father complained of a sharp, biting pain in his stomach. By midnight, he was screaming in agony. The doctors' words felt like a physical blow: his appendix had burst inside him — Appendicular Lump with Perforation, a life-threatening emergency. He was immediately taken into surgery for an Exploratory Laparotomy.",
