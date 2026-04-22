@@ -676,77 +676,236 @@ export default function CampaignDetail() {
           {/* ── LEFT COLUMN ── */}
           <div className="lg:col-span-3 space-y-4 lg:space-y-8">
 
-            {/* ── HIGH-URGENCY ABOVE-FOLD HERO (campaign 3) ── */}
+            {/* ══════════════════════════════════════════════════
+                HIGH-CONVERSION LANDING LAYOUT — Campaign 3
+            ══════════════════════════════════════════════════ */}
             {id === 3 && (
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25 }}
-                className="rounded-2xl overflow-hidden"
-                style={{ background: "linear-gradient(160deg, #1a0000 0%, #0d0d0d 60%, #1a0a00 100%)", border: "1px solid rgba(220,38,38,0.3)" }}
-              >
-                <div className="px-4 pt-5 pb-4 space-y-3">
-                  {/* Headline */}
-                  <div className="text-center">
-                    <p className="text-[11px] font-black uppercase tracking-[0.25em] mb-1" style={{ color: "#f87171" }}>
-                      🚨 URGENT
-                    </p>
-                    <h2 className="text-xl sm:text-2xl font-black leading-tight text-white">
-                      Only {String(countdown.days).padStart(2,"0")} Days Left to<br />
-                      <span style={{ color: "#fcd34d" }}>Feed 800 Families</span>
-                    </h2>
-                    <p className="text-sm text-white/70 mt-1.5 leading-snug">
+              <div className="space-y-3">
+
+                {/* ── 1. HERO BLOCK ── */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.22 }}
+                  className="relative rounded-2xl overflow-hidden"
+                  style={{ background: "#0d0000", minHeight: 320 }}
+                >
+                  {/* Campaign image — right half, faded into dark */}
+                  <div className="absolute inset-0 right-0 sm:left-[42%]">
+                    <img
+                      src={campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"}
+                      alt=""
+                      className="w-full h-full object-cover object-top"
+                      onError={e => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"; }}
+                    />
+                    {/* gradient mask over image */}
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(to right, #0d0000 0%, rgba(13,0,0,0.85) 35%, rgba(13,0,0,0.3) 100%)" }} />
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #0d0000 0%, transparent 50%)" }} />
+                  </div>
+
+                  {/* Content */}
+                  <div className="relative z-10 px-4 pt-5 pb-5 sm:max-w-[55%] space-y-3">
+                    {/* Urgency badge */}
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest" style={{ background: "#dc2626", color: "#fff" }}>
+                      🔔 Only {countdown.days} Days Left
+                    </span>
+
+                    {/* Headline */}
+                    <div>
+                      <p className="text-[13px] font-black uppercase tracking-widest text-white/60">To Feed</p>
+                      <h2 className="text-3xl sm:text-4xl font-black leading-none text-white">800+</h2>
+                      <h2 className="text-3xl sm:text-4xl font-black leading-none" style={{ color: "#fcd34d" }}>FAMILIES</h2>
+                    </div>
+
+                    <p className="text-sm text-white/75 leading-snug">
                       Tonight, many will sleep hungry without your help.
                     </p>
-                  </div>
 
-                  {/* Micro-impact pill */}
-                  <div className="flex justify-center">
-                    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-black" style={{ background: "rgba(252,211,77,0.12)", border: "1px solid rgba(252,211,77,0.35)", color: "#fcd34d" }}>
-                      ₹30 = 1 Meal 🍛
+                    {/* ₹30 = 1 Meal pill */}
+                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-black" style={{ background: "rgba(252,211,77,0.15)", border: "1px solid rgba(252,211,77,0.4)", color: "#fcd34d" }}>
+                      🍛 ₹30 = 1 MEAL
                     </span>
-                  </div>
 
-                  {/* Primary CTA */}
+                    {/* Primary CTA */}
+                    <button
+                      onClick={() => { setAmount("1360"); setTimeout(() => handleDonate(), 80); }}
+                      disabled={donating}
+                      className="w-full py-3.5 rounded-xl font-black text-sm uppercase tracking-widest text-white transition-all active:scale-95 disabled:opacity-50 flex flex-col items-center justify-center gap-0.5"
+                      style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)", boxShadow: "0 0 24px rgba(220,38,38,0.5)" }}
+                    >
+                      {donating ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                        <>
+                          <span>♡ Donate in 10 Seconds (UPI)</span>
+                          <span className="text-[9px] font-semibold normal-case tracking-wider opacity-80">Help Someone Eat Today</span>
+                        </>
+                      )}
+                    </button>
+
+                    {/* Or divider */}
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.12)" }} />
+                      <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>or choose your impact</span>
+                      <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.12)" }} />
+                    </div>
+
+                    {/* Quick-pick amounts — 4 buttons */}
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {[
+                        { amt: 30,   emoji: "🍽️", label: "Feed\n1 Person" },
+                        { amt: 100,  emoji: "👨‍👩‍👦", label: "Feed\n3 People" },
+                        { amt: 500,  emoji: "🏘️", label: "Feed\n15 People" },
+                        { amt: 1360, emoji: "👪", label: "Feed a\nFamily" },
+                      ].map(({ amt, emoji, label }) => (
+                        <button
+                          key={amt}
+                          onClick={() => { setAmount(String(amt)); setTimeout(() => handleDonate(), 80); }}
+                          disabled={donating}
+                          className="flex flex-col items-center py-2 px-1 rounded-xl transition-all active:scale-95 disabled:opacity-50"
+                          style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.13)" }}
+                        >
+                          <span className="text-base">{emoji}</span>
+                          <span className="text-[11px] font-black text-white mt-0.5">₹{amt}</span>
+                          <span className="text-[8px] font-medium text-center leading-tight whitespace-pre-line" style={{ color: "rgba(255,255,255,0.5)" }}>{label}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Trust line */}
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
+                      {["Verified NGO", "100% Secure Payments", "Real Impact, Real People"].map(t => (
+                        <span key={t} className="text-[9px] font-bold flex items-center gap-1" style={{ color: "rgba(255,255,255,0.45)" }}>
+                          <span style={{ color: "#4ade80" }}>✔</span> {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* ── 2. STATS ROW ── */}
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.22, delay: 0.06 }}
+                  className="rounded-2xl overflow-hidden"
+                  style={{ background: "#fff", border: "1px solid #e5e7eb" }}
+                >
+                  <div className="grid grid-cols-3 divide-x divide-gray-100 px-0">
+                    <div className="flex flex-col items-center py-4 px-2">
+                      <span className="text-2xl font-black" style={{ color: "#dc2626" }}>846</span>
+                      <span className="text-[9px] font-semibold text-gray-500 text-center leading-tight mt-0.5">Families Need Help</span>
+                    </div>
+                    <div className="flex flex-col items-center py-4 px-2">
+                      <span className="text-2xl font-black" style={{ color: "#16a34a" }}>₹{Number(campaign.currentAmount ?? 0).toLocaleString("en-IN")}</span>
+                      <span className="text-[9px] font-semibold text-gray-500 text-center leading-tight mt-0.5">Raised So Far</span>
+                    </div>
+                    <div className="flex flex-col items-center py-4 px-2">
+                      <span className="text-2xl font-black" style={{ color: "#d97706" }}>₹{Number(campaign.targetAmount ?? 2400000).toLocaleString("en-IN")}</span>
+                      <span className="text-[9px] font-semibold text-gray-500 text-center leading-tight mt-0.5">Our Goal</span>
+                    </div>
+                  </div>
+                  {/* Progress bar */}
+                  <div className="px-4 pb-3">
+                    <div className="h-2 rounded-full overflow-hidden" style={{ background: "#f3f4f6" }}>
+                      <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(2, percent)}%`, background: "linear-gradient(90deg, #dc2626, #f97316)" }} />
+                    </div>
+                    <div className="flex justify-between mt-1">
+                      <span className="text-[9px] font-bold text-gray-400">{percent}% Completed</span>
+                      <span className="text-[9px] font-bold text-gray-400">{countdown.days} Days Left</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-2">
+                      <span className="text-base">🔥</span>
+                      <span className="text-[11px] font-black" style={{ color: "#dc2626" }}>27 people</span>
+                      <span className="text-[11px] font-semibold text-gray-500">donated in the last few hours</span>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* ── 3. WHERE YOUR MONEY GOES ── */}
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.22, delay: 0.1 }}
+                  className="rounded-2xl overflow-hidden"
+                  style={{ background: "#fff", border: "1px solid #e5e7eb" }}
+                >
+                  <div className="px-4 pt-4 pb-3">
+                    <p className="text-center text-xs font-black uppercase tracking-[0.2em] text-gray-800 mb-3">Where Your Money Goes</p>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[
+                        { amt: 30,   color: "#16a34a", bg: "#f0fdf4", border: "#bbf7d0", emoji: "🍽️", meals: "1 Meal",    desc: "Feeds one person a healthy meal" },
+                        { amt: 100,  color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe", emoji: "👨‍👩‍👦", meals: "3 Meals",   desc: "Feeds three people in need" },
+                        { amt: 500,  color: "#d97706", bg: "#fffbeb", border: "#fde68a", emoji: "🏘️", meals: "15 Meals",  desc: "Feeds fifteen people and spreads hope" },
+                        { amt: 1360, color: "#7c3aed", bg: "#f5f3ff", border: "#ddd6fe", emoji: "👪", meals: "Family Support", desc: "Provides a full meal for a family" },
+                      ].map(({ amt, color, bg, border, emoji, meals, desc }) => (
+                        <button
+                          key={amt}
+                          onClick={() => { setAmount(String(amt)); setTimeout(() => handleDonate(), 80); }}
+                          disabled={donating}
+                          className="flex flex-col items-center p-2 rounded-xl text-center transition-all active:scale-95 disabled:opacity-50"
+                          style={{ background: bg, border: `1.5px solid ${border}` }}
+                        >
+                          <div className="w-9 h-9 rounded-full flex items-center justify-center text-lg mb-1" style={{ background: color + "20" }}>{emoji}</div>
+                          <span className="text-sm font-black" style={{ color }}>₹{amt}</span>
+                          <span className="text-[9px] font-black text-gray-700 mt-0.5">{meals}</span>
+                          <span className="text-[8px] text-gray-400 leading-tight mt-0.5">{desc}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-center text-[9px] text-gray-400 mt-3 font-medium">Every rupee goes directly to food distribution. No middlemen. No delay.</p>
+                  </div>
+                </motion.div>
+
+                {/* ── 4. REAL IMPACT, REAL PEOPLE — image grid ── */}
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.22, delay: 0.13 }}
+                  className="rounded-2xl overflow-hidden"
+                  style={{ background: "#fff", border: "1px solid #e5e7eb" }}
+                >
+                  <p className="text-center text-xs font-black uppercase tracking-[0.2em] text-gray-800 pt-4 pb-2 px-4">Real Impact, Real People</p>
+                  <div className="grid grid-cols-4 gap-0.5 px-3 pb-3">
+                    {[0.05, 0.2, 0.45, 0.7].map((t, i) => (
+                      <div key={i} className="aspect-square rounded-xl overflow-hidden">
+                        <img
+                          src={`https://img.youtube.com/vi/Z_exh7zMqDs/${i === 0 ? "maxresdefault" : `${i}`}.jpg`}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={e => { (e.target as HTMLImageElement).src = campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&q=80"; }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* ── 5. FINAL DARK CTA ── */}
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.22, delay: 0.16 }}
+                  className="rounded-2xl overflow-hidden px-5 py-6 text-center space-y-3"
+                  style={{ background: "linear-gradient(160deg, #0d0000, #1a0505)" }}
+                >
+                  <div>
+                    <p className="text-lg font-black text-white leading-tight">
+                      ❤️ This is not just a donation.
+                    </p>
+                    <p className="text-lg font-black leading-tight" style={{ color: "#fcd34d" }}>
+                      This is someone's dinner tonight.
+                    </p>
+                    <p className="text-xs text-white/50 mt-1.5">If you skip this... someone sleeps hungry.</p>
+                  </div>
                   <button
-                    onClick={() => { setAmount("500"); setTimeout(() => handleDonate(), 80); }}
+                    onClick={() => { setAmount("1360"); setTimeout(() => handleDonate(), 80); }}
                     disabled={donating}
-                    className="w-full py-4 rounded-xl font-black text-base uppercase tracking-widest text-white transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
-                    style={{ background: "linear-gradient(135deg, #dc2626, #b91c1c)", boxShadow: "0 0 30px rgba(220,38,38,0.5), inset 0 1px 0 rgba(255,255,255,0.15)" }}
+                    className="w-full py-4 rounded-xl font-black text-sm uppercase tracking-widest text-white transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                    style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)", boxShadow: "0 0 24px rgba(220,38,38,0.45)" }}
                   >
-                    {donating ? <Loader2 className="w-5 h-5 animate-spin" /> : <>⚡ Donate in 10 Seconds (UPI)</>}
+                    {donating ? <Loader2 className="w-5 h-5 animate-spin" /> : <>♡ Donate Now – Save a Life</>}
                   </button>
+                </motion.div>
 
-                  {/* Quick-pick amounts */}
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { amt: 30,  label: "Feed 1 Person" },
-                      { amt: 100, label: "Feed 3 People" },
-                      { amt: 500, label: "Feed 15 People" },
-                    ].map(({ amt, label }) => (
-                      <button
-                        key={amt}
-                        onClick={() => { setAmount(String(amt)); setTimeout(() => handleDonate(), 80); }}
-                        disabled={donating}
-                        className="flex flex-col items-center py-2.5 px-1 rounded-xl transition-all active:scale-95 disabled:opacity-50"
-                        style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" }}
-                      >
-                        <span className="text-base font-black text-white">₹{amt}</span>
-                        <span className="text-[9px] font-semibold mt-0.5 text-center leading-tight" style={{ color: "rgba(255,255,255,0.55)" }}>{label}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Trust line */}
-                  <div className="flex items-center justify-center gap-3 pt-1">
-                    {["Verified NGO", "Secure Payments", "Real Impact"].map(t => (
-                      <span key={t} className="text-[9px] font-bold uppercase tracking-wider flex items-center gap-1" style={{ color: "rgba(255,255,255,0.4)" }}>
-                        <span style={{ color: "#4ade80" }}>✔</span> {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
+              </div>
             )}
 
             {/* Campaign Title */}
