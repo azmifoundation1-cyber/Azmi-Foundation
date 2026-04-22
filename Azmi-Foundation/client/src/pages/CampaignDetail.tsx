@@ -2135,6 +2135,29 @@ export default function CampaignDetail() {
 
       {/* ── STICKY MOBILE BOTTOM DONATE BAR ── */}
       <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden" style={{ background: "rgba(4,0,15,0.97)", backdropFilter: "blur(16px)", borderTop: "1px solid rgba(200,200,220,0.25)", boxShadow: "0 -4px 24px rgba(0,0,0,0.5)" }}>
+        {/* Social proof ticker — above donate button */}
+        <AnimatePresence mode="wait">
+          {tickerVisible && (
+            <motion.div
+              key={tickerIdx}
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.35 }}
+              className="flex items-center gap-2 px-4 py-2 mx-3 mt-2 rounded-lg"
+              style={{ background: "rgba(220,38,38,0.12)", border: "1px solid rgba(220,38,38,0.3)" }}
+            >
+              <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+              </svg>
+              <span className="text-xs font-black uppercase tracking-wider" style={{ color: "#fff" }}>
+                <span style={{ color: "#f87171" }}>{FAKE_DONORS[tickerIdx].name}</span>
+                {" "}has donated{" "}
+                <span style={{ color: "#fcd34d" }}>₹{FAKE_DONORS[tickerIdx].amount.toLocaleString("en-IN")}</span>
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
         {/* Mini progress strip */}
         <div className="h-1 w-full" style={{ background: "rgba(255,255,255,0.05)" }}>
           <div className="h-full transition-all duration-700" style={{ width: `${percent}%`, background: "linear-gradient(90deg, #888899, #c0c0d0)" }} />
