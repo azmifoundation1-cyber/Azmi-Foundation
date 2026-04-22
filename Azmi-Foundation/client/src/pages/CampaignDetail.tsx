@@ -845,21 +845,26 @@ export default function CampaignDetail() {
                     />
                   </div>
 
-                  {/* Thumbnail strip — 4 images */}
-                  <div className="grid grid-cols-4 gap-1.5 px-3 pb-4">
-                    {[0, 1, 2, 3].map(i => (
-                      <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-                        <img
-                          src={i === 0 ? `https://img.youtube.com/vi/Z_exh7zMqDs/maxresdefault.jpg` : `https://img.youtube.com/vi/Z_exh7zMqDs/${i}.jpg`}
-                          alt=""
+                  {/* Local impact video strip — 3 tap-to-play videos */}
+                  <div className="grid grid-cols-3 gap-2 px-3 pb-4">
+                    {[
+                      { src: "/videos/impact1.mp4" },
+                      { src: "/videos/impact2.mp4" },
+                      { src: "/videos/impact3.mp4" },
+                    ].map(({ src }, i) => (
+                      <div
+                        key={i}
+                        className="relative rounded-xl overflow-hidden bg-black"
+                        style={{ aspectRatio: "9/16" }}
+                      >
+                        <video
+                          src={src}
+                          preload="metadata"
+                          playsInline
+                          controls
                           className="w-full h-full object-cover"
-                          onError={e => { (e.target as HTMLImageElement).src = campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=400&q=60"; }}
+                          style={{ display: "block" }}
                         />
-                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                          <div className="w-7 h-7 rounded-full bg-white/80 flex items-center justify-center">
-                            <svg className="w-3 h-3 ml-0.5" fill="#dc2626" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                          </div>
-                        </div>
                       </div>
                     ))}
                   </div>
