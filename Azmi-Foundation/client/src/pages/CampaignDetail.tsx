@@ -569,20 +569,6 @@ export default function CampaignDetail() {
                   {(campaign as any).urgencyLabel || (id === 4 ? "Help Anwar Recover — Father Needs Daily Care" : "846 Families Need Your Help")}
                 </span>
               </span>
-              <a
-                href="#mobile-donate"
-                className="shrink-0 font-black text-[10px] uppercase tracking-widest px-3 py-1.5 transition-all duration-200 whitespace-nowrap"
-                style={{
-                  borderRadius: "5px",
-                  border: "1px solid rgba(210,210,225,0.4)",
-                  background: "linear-gradient(135deg, #c01414, #8a0000)",
-                  color: "#fff",
-                  boxShadow: "0 0 14px rgba(200,200,220,0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
-                  textShadow: "0 1px 2px rgba(0,0,0,0.5)",
-                }}
-              >
-                Donate Now →
-              </a>
             </div>
 
             {/* Row 2: "Time Remaining" + countdown */}
