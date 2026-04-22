@@ -530,16 +530,6 @@ export default function CampaignDetail() {
     <div className="min-h-screen flex flex-col bg-gray-50 font-sans pb-20 lg:pb-0">
       <Navbar />
 
-      {/* Breadcrumb */}
-      <div className="bg-white border-b border-gray-100 py-3 px-4">
-        <div className="max-w-7xl mx-auto flex items-center gap-2 text-xs text-gray-400 font-medium">
-          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
-          <ChevronRight className="w-3 h-3" />
-          <Link href="/campaigns" className="hover:text-primary transition-colors">Campaigns</Link>
-          <ChevronRight className="w-3 h-3" />
-          <span className="text-primary font-bold truncate max-w-[200px]">{campaign.title}</span>
-        </div>
-      </div>
 
       {/* URGENT BANNER — campaigns with urgencyLabel or hardcoded 3/4 */}
       {(id === 3 || id === 4 || !!(campaign as any).urgencyLabel) && (
