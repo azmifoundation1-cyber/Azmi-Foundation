@@ -692,7 +692,7 @@ export default function CampaignDetail() {
               const dbYoutubeId = extractYoutubeId(campaign.videoUrl);
               const youtubeId = hardcodedYoutubeId || dbYoutubeId;
               const heroLocalVideo = id === 3 ? null : story.localVideo;
-              const youtubeStartTime = id === 3 ? 8 : 0;
+              const youtubeStartTime = id === 3 ? 17 : 0;
               const youtubeLink = youtubeId
                 ? `https://www.youtube.com/watch?v=${youtubeId}${youtubeStartTime ? `&t=${youtubeStartTime}` : ""}`
                 : null;
