@@ -635,7 +635,7 @@ export default function CampaignDetail() {
           <div className="lg:col-span-3 space-y-4 lg:space-y-8">
 
             {/* Campaign Title */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
               <Link href="/campaigns" className="inline-flex items-center gap-2 text-xs text-gray-400 font-bold uppercase tracking-widest mb-2 hover:text-primary transition-colors">
                 <ArrowLeft className="w-3 h-3" /> All Campaigns
               </Link>
@@ -644,39 +644,62 @@ export default function CampaignDetail() {
               </h1>
             </motion.div>
 
-            {/* Hero — Local video, YouTube, or hero image */}
+            {/* Hero — YouTube thumbnail (tap-to-open) or local video or image */}
             {(() => {
-              const heroYoutubeUrl = id === 3
-                ? "https://www.youtube.com/embed/Z_exh7zMqDs?si=EYyv12VkPHBJn9Vm&start=8&autoplay=1&mute=1&playsinline=1&rel=0"
-                : null;
+              const hardcodedYoutubeId = id === 3 ? "Z_exh7zMqDs" : null;
               const dbYoutubeId = extractYoutubeId(campaign.videoUrl);
+              const youtubeId = hardcodedYoutubeId || dbYoutubeId;
               const heroLocalVideo = id === 3 ? null : story.localVideo;
+              const youtubeStartTime = id === 3 ? 8 : 0;
+              const youtubeLink = youtubeId
+                ? `https://www.youtube.com/watch?v=${youtubeId}${youtubeStartTime ? `&t=${youtubeStartTime}` : ""}`
+                : null;
+              const youtubeThumbnail = youtubeId
+                ? `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`
+                : null;
               return (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="relative rounded-none overflow-hidden aspect-video bg-gray-900"
-                >
-                  {heroYoutubeUrl ? (
-                    <iframe
-                      src={heroYoutubeUrl}
-                      title={campaign.title}
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allowFullScreen
-                      className="w-full h-full"
-                    />
-                  ) : dbYoutubeId ? (
-                    <iframe
-                      src={`https://www.youtube.com/embed/${dbYoutubeId}?autoplay=1&mute=1&playsinline=1&rel=0`}
-                      title={campaign.title}
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allowFullScreen
-                      className="w-full h-full"
-                    />
+                <div className="relative rounded-none overflow-hidden aspect-video bg-gray-900">
+                  {youtubeId ? (
+                    /* Tap-to-open YouTube — works in Instagram WebView & all browsers */
+                    <a
+                      href={youtubeLink!}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full h-full relative group"
+                      aria-label="Watch campaign video on YouTube"
+                    >
+                      <img
+                        src={youtubeThumbnail!}
+                        alt={campaign.title}
+                        className="w-full h-full object-cover"
+                        loading="eager"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+                        }}
+                      />
+                      {/* Dark overlay */}
+                      <div className="absolute inset-0 bg-black/30 group-active:bg-black/50 transition-colors" />
+                      {/* Play button */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                        <div
+                          className="w-16 h-16 rounded-full flex items-center justify-center transition-transform group-active:scale-95"
+                          style={{ background: "rgba(220,38,38,0.92)", boxShadow: "0 0 0 6px rgba(255,255,255,0.18), 0 4px 24px rgba(0,0,0,0.5)" }}
+                        >
+                          <svg className="w-7 h-7 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                        <span className="text-white text-xs font-bold tracking-widest uppercase opacity-90" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
+                          Watch Video
+                        </span>
+                      </div>
+                      {/* YouTube logo badge */}
+                      <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/70 rounded px-2 py-1">
+                        <svg className="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        <span className="text-white text-[9px] font-bold tracking-wider">YouTube</span>
+                      </div>
+                    </a>
                   ) : heroLocalVideo ? (
                     <video
                       src={heroLocalVideo}
@@ -693,6 +716,7 @@ export default function CampaignDetail() {
                         src={story.images?.[0] || campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"}
                         alt={campaign.title}
                         className="w-full h-full object-cover"
+                        loading="eager"
                         onError={(e) => { (e.target as HTMLImageElement).src = campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80"; }}
                       />
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/80 to-transparent p-6">
@@ -704,14 +728,38 @@ export default function CampaignDetail() {
                       </div>
                     </>
                   )}
-                </motion.div>
+                </div>
               );
             })()}
 
+            {/* Trust strip — visible immediately below video, no scroll needed */}
+            <div className="flex items-center justify-center flex-wrap gap-x-3 gap-y-1 py-2 px-3 bg-green-50 border border-green-100 rounded-lg">
+              <span className="flex items-center gap-1 text-[10px] font-bold text-green-700 uppercase tracking-wide">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Registered NGO
+              </span>
+              <span className="text-green-300 text-xs">|</span>
+              <span className="flex items-center gap-1 text-[10px] font-bold text-green-700 uppercase tracking-wide">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                80G Tax Benefit
+              </span>
+              <span className="text-green-300 text-xs">|</span>
+              <span className="flex items-center gap-1 text-[10px] font-bold text-green-700 uppercase tracking-wide">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+                Razorpay Secured
+              </span>
+              <span className="text-green-300 text-xs">|</span>
+              <span className="flex items-center gap-1 text-[10px] font-bold text-green-700 uppercase tracking-wide">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                1000+ Families Helped
+              </span>
+            </div>
+
             {/* Urgency text — shown for all campaigns */}
             <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
               className="text-xs sm:text-sm text-gray-700 leading-relaxed border-l-4 border-red-500 pl-3 bg-red-50 py-2 pr-3"
             >
               {id === 4 ? (
@@ -736,8 +784,9 @@ export default function CampaignDetail() {
             {(true) && (
               <motion.div
                 id="mobile-donate"
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
                 className="relative overflow-hidden glass-panel-neon glass-shimmer lg:max-w-3xl lg:mx-auto"
                 style={{
                   background: "linear-gradient(135deg, rgba(4,0,15,0.97) 0%, rgba(12,0,28,0.96) 40%, rgba(6,0,20,0.97) 100%)",
