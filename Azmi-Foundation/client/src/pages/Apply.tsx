@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -458,6 +458,16 @@ export default function Apply() {
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
+  // ── Meta Pixel ViewContent — fires when Apply page loads ──
+  useEffect(() => {
+    try {
+      (window as any).fbq?.("track", "ViewContent", {
+        content_name: "Apply for Medical Fundraising",
+        content_type: "application_form",
+      });
+    } catch (e) {}
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -476,6 +486,16 @@ export default function Apply() {
       if (!res.ok) throw new Error(data.message || "Failed");
       setAppId(data.id);
       setSubmitted(true);
+
+      // ── Meta Pixel Lead event — fires on successful application ──
+      try {
+        (window as any).fbq?.("track", "Lead", {
+          content_name: "Medical Fundraising Application",
+          content_category: "fundraising_apply",
+          value: Number(form.amountNeeded) || 0,
+          currency: "INR",
+        });
+      } catch (e) {}
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
     } finally {
