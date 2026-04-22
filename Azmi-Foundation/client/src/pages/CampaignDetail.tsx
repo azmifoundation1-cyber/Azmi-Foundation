@@ -767,21 +767,24 @@ export default function CampaignDetail() {
                   {/* Stats card */}
                   <div className="rounded-2xl overflow-hidden" style={{ background: "#fff", border: "1px solid #e5e7eb", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
                     <div className="grid grid-cols-3 divide-x divide-gray-100">
-                      <div className="flex flex-col items-center py-5 px-2">
-                        <span className="text-[11px] mb-1">🍱</span>
-                        <span className="text-2xl font-black leading-none" style={{ color: "#dc2626" }}>846</span>
-                        <span className="text-[9px] font-semibold text-gray-400 text-center mt-1 leading-tight">Families Need Help</span>
-                      </div>
-                      <div className="flex flex-col items-center py-5 px-2">
-                        <span className="text-[11px] mb-1">🤝</span>
-                        <span className="text-2xl font-black leading-none" style={{ color: "#16a34a" }}>₹{Number(campaign.currentAmount ?? 0).toLocaleString("en-IN")}</span>
-                        <span className="text-[9px] font-semibold text-gray-400 text-center mt-1 leading-tight">Raised So Far</span>
-                      </div>
-                      <div className="flex flex-col items-center py-5 px-2">
-                        <span className="text-[11px] mb-1">🎯</span>
-                        <span className="text-2xl font-black leading-none" style={{ color: "#d97706" }}>₹{Number(campaign.targetAmount ?? 2400000).toLocaleString("en-IN")}</span>
-                        <span className="text-[9px] font-semibold text-gray-400 text-center mt-1 leading-tight">Our Goal</span>
-                      </div>
+                      {[
+                        { emoji: "🍱", value: "846",                                                                       label: "Families Need Help", color: "#dc2626" },
+                        { emoji: "🤝", value: `₹${Number(campaign.currentAmount ?? 0).toLocaleString("en-IN")}`,           label: "Raised So Far",       color: "#16a34a" },
+                        { emoji: "🎯", value: `₹${Number(campaign.targetAmount   ?? 2400000).toLocaleString("en-IN")}`,    label: "Our Goal",            color: "#d97706" },
+                      ].map(({ emoji, value, label, color }) => (
+                        <div key={label} className="flex flex-col items-center py-4 px-1 min-w-0">
+                          <span className="text-[11px] mb-1">{emoji}</span>
+                          <span
+                            className="font-black leading-tight text-center w-full px-0.5 break-words"
+                            style={{
+                              color,
+                              fontSize: value.length > 9 ? "11px" : value.length > 6 ? "14px" : "20px",
+                              wordBreak: "break-all",
+                            }}
+                          >{value}</span>
+                          <span className="text-[8px] font-semibold text-gray-400 text-center mt-1 leading-tight">{label}</span>
+                        </div>
+                      ))}
                     </div>
                     <div className="px-4 pb-4">
                       <div className="h-2 rounded-full overflow-hidden" style={{ background: "#f3f4f6" }}>
