@@ -159,6 +159,11 @@ export default function CampaignDetail() {
   const [upiCopied, setUpiCopied] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(false);
 
+  // Donation popup — appears 2s after page open, once per campaign visit
+  const [showDonationPopup, setShowDonationPopup] = useState(false);
+  const [popupAmount, setPopupAmount] = useState("");
+  const [popupCustom, setPopupCustom] = useState(false);
+
   // Social proof donation ticker
   const FAKE_DONORS = [
     { name: "Mohd Arshad", amount: 500 }, { name: "Priya Sharma", amount: 1000 },
@@ -188,6 +193,12 @@ export default function CampaignDetail() {
     }, 3500);
     return () => clearInterval(interval);
   }, []);
+
+  // Show donation popup 2 seconds after page load
+  useEffect(() => {
+    const t = setTimeout(() => setShowDonationPopup(true), 2000);
+    return () => clearTimeout(t);
+  }, [id]);
 
   // Live countdown timer state
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, expired: false });
@@ -2167,6 +2178,152 @@ export default function CampaignDetail() {
           <span className="text-[9px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.45)" }}>256-bit SSL</span>
         </div>
       </div>
+
+      {/* ── Donation Popup — appears 2s after page load ── */}
+      <AnimatePresence>
+        {showDonationPopup && campaign && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm"
+              onClick={() => setShowDonationPopup(false)}
+            />
+
+            {/* Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 60, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 40, scale: 0.96 }}
+              transition={{ type: "spring", damping: 26, stiffness: 300 }}
+              className="fixed bottom-0 left-0 right-0 z-[101] mx-auto max-w-md"
+              style={{ borderRadius: "20px 20px 0 0", overflow: "hidden" }}
+            >
+              {/* Campaign image */}
+              <div className="relative h-44 overflow-hidden">
+                <img
+                  src={campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"}
+                  alt={campaign.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"; }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                {/* Close button */}
+                <button
+                  onClick={() => setShowDonationPopup(false)}
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center font-black text-sm transition-all active:scale-90"
+                  style={{ background: "rgba(0,0,0,0.6)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)" }}
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* White content area */}
+              <div className="bg-white px-6 pt-5 pb-8 space-y-4">
+                <p className="text-center text-lg font-black text-gray-900 leading-tight" style={{ fontStyle: "italic" }}>
+                  Your donations will make a world of difference
+                </p>
+
+                {!popupCustom ? (
+                  <>
+                    {/* Default amount donate button */}
+                    <button
+                      onClick={async () => {
+                        const defaultAmt = String(PRESET_AMOUNTS_MAP[id]?.[1] ?? amount ?? 1000);
+                        setAmount(defaultAmt);
+                        setShowDonationPopup(false);
+                        await new Promise(r => setTimeout(r, 100));
+                        handleDonate();
+                      }}
+                      disabled={donating}
+                      className="w-full py-4 font-black text-base uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50"
+                      style={{
+                        borderRadius: "50px",
+                        background: "linear-gradient(135deg, #dc2626, #991b1b)",
+                        color: "#fff",
+                        boxShadow: "0 4px 20px rgba(220,38,38,0.4)",
+                      }}
+                    >
+                      {donating ? (
+                        <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                      ) : (
+                        <>Donate ₹{Number(PRESET_AMOUNTS_MAP[id]?.[1] ?? amount ?? 1000).toLocaleString("en-IN")}</>
+                      )}
+                    </button>
+
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 h-px bg-gray-200" />
+                      <span className="text-xs font-bold text-gray-400 tracking-widest">OR</span>
+                      <div className="flex-1 h-px bg-gray-200" />
+                    </div>
+
+                    {/* Choose different amount */}
+                    <button
+                      onClick={() => setPopupCustom(true)}
+                      className="w-full py-3 font-bold text-sm uppercase tracking-widest border-2 border-gray-300 text-gray-600 transition-all active:scale-95 hover:border-red-400 hover:text-red-600"
+                      style={{ borderRadius: "50px", background: "transparent" }}
+                    >
+                      Choose a Different Amount
+                    </button>
+                  </>
+                ) : (
+                  /* Custom amount input */
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-gray-500 text-lg">₹</span>
+                      <input
+                        type="number"
+                        value={popupAmount}
+                        onChange={e => setPopupAmount(e.target.value)}
+                        placeholder="Enter amount"
+                        autoFocus
+                        min="1"
+                        className="w-full pl-9 pr-4 py-4 text-lg font-black border-2 border-gray-300 focus:border-red-500 outline-none transition-colors"
+                        style={{ borderRadius: "12px" }}
+                      />
+                    </div>
+                    <button
+                      onClick={async () => {
+                        if (!popupAmount || Number(popupAmount) < 1) return;
+                        setAmount(popupAmount);
+                        setShowDonationPopup(false);
+                        setPopupCustom(false);
+                        await new Promise(r => setTimeout(r, 100));
+                        handleDonate();
+                      }}
+                      disabled={!popupAmount || Number(popupAmount) < 1 || donating}
+                      className="w-full py-4 font-black text-base uppercase tracking-widest transition-all active:scale-95 disabled:opacity-40"
+                      style={{
+                        borderRadius: "50px",
+                        background: "linear-gradient(135deg, #dc2626, #991b1b)",
+                        color: "#fff",
+                        boxShadow: "0 4px 20px rgba(220,38,38,0.4)",
+                      }}
+                    >
+                      {donating ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : `Donate ₹${Number(popupAmount || 0).toLocaleString("en-IN")}`}
+                    </button>
+                    <button
+                      onClick={() => { setPopupCustom(false); setPopupAmount(""); }}
+                      className="w-full text-xs font-bold text-gray-400 py-1 tracking-widest uppercase"
+                    >
+                      ← Back
+                    </button>
+                  </div>
+                )}
+
+                {/* Trust line */}
+                <p className="text-center text-[10px] text-gray-400 font-medium">
+                  🔒 100% Secure · Powered by Razorpay
+                </p>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </div>
