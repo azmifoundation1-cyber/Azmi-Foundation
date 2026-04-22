@@ -1012,24 +1012,14 @@ export default function CampaignDetail() {
                   </button>
                 </div>
 
-                {/* Razorpay trust badge — dark panel */}
-                <div
-                  className="flex items-center justify-center gap-2 py-2 px-3"
-                  style={{
-                    borderRadius: "8px",
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                  }}
-                >
-                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z" fill="#2563eb" opacity="0.85"/>
-                    <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <span className="text-[10px] font-bold" style={{ color: "rgba(255,255,255,0.55)" }}>
-                    100% Secure · Powered by{" "}
-                    <span style={{ color: "#5b8dee", fontWeight: 900 }}>Razorpay</span>
-                    {" "}· SSL Encrypted
-                  </span>
+                {/* Razorpay Trusted Business badge — dark panel */}
+                <div className="flex justify-center py-1">
+                  <img
+                    src="/razorpay-trusted.png"
+                    alt="Razorpay Trusted Business"
+                    className="h-10 w-auto object-contain"
+                    style={{ filter: "brightness(0) invert(1) opacity(0.75)" }}
+                  />
                 </div>
 
                 {/* Payment fallback — shown if Razorpay fails (in-app browser / network) */}
@@ -1937,15 +1927,13 @@ export default function CampaignDetail() {
                     Donate via WhatsApp
                   </button>
 
-                  {/* Razorpay trust badge — sidebar */}
-                  <div className="flex items-center justify-center gap-2 py-2.5 px-3 border border-blue-100 bg-blue-50/60">
-                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z" fill="#2563eb" opacity="0.9"/>
-                      <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    <span className="text-[10px] font-bold text-gray-600">
-                      100% Secure · Powered by <span className="text-blue-600 font-black">Razorpay</span> · SSL Encrypted
-                    </span>
+                  {/* Razorpay Trusted Business badge — sidebar */}
+                  <div className="flex justify-center py-1 px-3">
+                    <img
+                      src="/razorpay-trusted.png"
+                      alt="Razorpay Trusted Business"
+                      className="h-12 w-auto object-contain"
+                    />
                   </div>
 
                   {/* Re-download Receipt button */}
