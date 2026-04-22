@@ -120,6 +120,7 @@ const CAMPAIGN_STORIES: Record<number, {
     localVideo: "/anwar-video.mp4",
   },
   5: {
+    youtubeId: "TCf1jndVZGA",
     story: [
       "Not everyone has the privilege of choosing what to wear. For many families in our city, clothing is not about fashion — it is about survival, dignity, and basic human respect.",
       "We meet children wearing the same torn clothes every day. We meet mothers who hesitate to step outside because they don't have proper clothes. We meet fathers working in extreme heat, wearing worn-out, damaged garments that barely protect them. This is not just poverty. This is a loss of dignity.",
@@ -960,11 +961,13 @@ export default function CampaignDetail() {
 
             {/* Hero — YouTube thumbnail (tap-to-open) or local video or image */}
             {(() => {
-              const hardcodedYoutubeId = id === 3 ? "Z_exh7zMqDs" : null;
+              const HARDCODED_YOUTUBE: Record<number, string> = { 3: "Z_exh7zMqDs", 5: "TCf1jndVZGA" };
+              const YOUTUBE_START: Record<number, number> = { 3: 17, 5: 17 };
+              const hardcodedYoutubeId = HARDCODED_YOUTUBE[id] ?? null;
               const dbYoutubeId = extractYoutubeId(campaign.videoUrl);
               const youtubeId = hardcodedYoutubeId || dbYoutubeId;
-              const heroLocalVideo = id === 3 ? null : story.localVideo;
-              const youtubeStartTime = id === 3 ? 17 : 0;
+              const heroLocalVideo = hardcodedYoutubeId ? null : story.localVideo;
+              const youtubeStartTime = YOUTUBE_START[id] ?? 0;
               const youtubeLink = youtubeId
                 ? `https://www.youtube.com/watch?v=${youtubeId}${youtubeStartTime ? `&t=${youtubeStartTime}` : ""}`
                 : null;

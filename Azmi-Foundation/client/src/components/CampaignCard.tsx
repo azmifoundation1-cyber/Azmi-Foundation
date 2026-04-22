@@ -8,11 +8,10 @@ import { motion } from "framer-motion";
 const CAMPAIGN_YOUTUBE_IDS: Record<number, string> = {
   3: "Z_exh7zMqDs",
   4: "NfYQeSsNQrg",
+  5: "TCf1jndVZGA",
 };
 
-const CAMPAIGN_HARDCODED_IMAGES: Record<number, string> = {
-  5: "/harsh-hospital.jpeg",
-};
+const CAMPAIGN_HARDCODED_IMAGES: Record<number, string> = {};
 
 const CATEGORY_CONFIG: Record<string, { label: string; Icon: React.ElementType; color: string }> = {
   health:      { label: "Medical Emergency",   Icon: HeartPulse,    color: "bg-red-600" },
