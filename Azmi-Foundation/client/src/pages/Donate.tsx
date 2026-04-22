@@ -48,6 +48,17 @@ export default function Donate() {
   const presetAmounts = [500, 1000, 2000, 5000];
 
   const onSubmit = async (data: z.infer<typeof donationFormSchema>) => {
+    // ── Meta Pixel InitiateCheckout ──
+    try {
+      (window as any).fbq?.("track", "InitiateCheckout", {
+        content_name: campaignId ? `Campaign ${campaignId} Donation` : "General Donation",
+        content_type: "donation_campaign",
+        value: data.amount,
+        currency: "INR",
+        num_items: 1,
+      });
+    } catch (e) {}
+
     setDonating(true);
     try {
       if (!window.Razorpay) {

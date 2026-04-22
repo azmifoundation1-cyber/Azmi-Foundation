@@ -194,6 +194,23 @@ export default function CampaignDetail() {
     enabled: !!id,
   });
 
+  // ── Meta Pixel ViewContent — fires once when campaign data is first loaded ──
+  useEffect(() => {
+    if (!campaign?.id) return;
+    try {
+      (window as any).fbq?.("track", "ViewContent", {
+        content_name: campaign.title,
+        content_ids: [String(campaign.id)],
+        content_type: "donation_campaign",
+        currency: "INR",
+        value: Number(campaign.targetAmount),
+      });
+      console.log("[MetaPixel] ViewContent fired for campaign", campaign.id);
+    } catch (e) {
+      console.error("[MetaPixel] ViewContent failed:", e);
+    }
+  }, [campaign?.id]);
+
   // Live countdown — ticks every second from campaign.endDate
   useEffect(() => {
     const tick = () => {
@@ -222,6 +239,21 @@ export default function CampaignDetail() {
   const handleDonate = async () => {
     const amt = Number(amount);
     if (!amt || amt < 1) return;
+
+    // ── Meta Pixel InitiateCheckout ──
+    try {
+      (window as any).fbq?.("track", "InitiateCheckout", {
+        content_name: campaign?.title,
+        content_ids: [String(id)],
+        content_type: "donation_campaign",
+        value: amt,
+        currency: "INR",
+        num_items: 1,
+      });
+      console.log("[MetaPixel] InitiateCheckout fired ₹" + amt);
+    } catch (e) {
+      console.error("[MetaPixel] InitiateCheckout failed:", e);
+    }
 
     // Validate 80G fields if requested
     if (want80G && !isAnon) {
