@@ -157,7 +157,7 @@ export default function CampaignDetail() {
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [paymentFailed, setPaymentFailed] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
-  const [videoPlaying, setVideoPlaying] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(true);
 
   // Donation popup — appears 2s after page open, once per campaign visit
   const [showDonationPopup, setShowDonationPopup] = useState(false);
@@ -705,7 +705,7 @@ export default function CampaignDetail() {
                     videoPlaying ? (
                       /* Inline autoplay iframe — shown after tap */
                       <iframe
-                        src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1${youtubeStartTime ? `&start=${youtubeStartTime}` : ""}`}
+                        src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1${youtubeStartTime ? `&start=${youtubeStartTime}` : ""}`}
                         title={campaign.title}
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
