@@ -158,6 +158,36 @@ export default function CampaignDetail() {
   const [paymentFailed, setPaymentFailed] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
 
+  // Social proof donation ticker
+  const FAKE_DONORS = [
+    { name: "Mohd Arshad", amount: 500 }, { name: "Priya Sharma", amount: 1000 },
+    { name: "Razia Begum", amount: 300 }, { name: "Suresh Kumar", amount: 2000 },
+    { name: "Fatima Khan", amount: 500 }, { name: "Ramesh Patel", amount: 750 },
+    { name: "Anjali Singh", amount: 1500 }, { name: "Ibrahim Shaikh", amount: 500 },
+    { name: "Sunita Devi", amount: 300 }, { name: "Vikram Mehta", amount: 1000 },
+    { name: "Noor Jahan", amount: 500 }, { name: "Deepak Verma", amount: 2500 },
+    { name: "Salma Bano", amount: 400 }, { name: "Harish Gupta", amount: 1000 },
+    { name: "Zainab Hussain", amount: 500 }, { name: "Kavita Yadav", amount: 600 },
+    { name: "Abdul Rehman", amount: 1000 }, { name: "Meera Nair", amount: 800 },
+    { name: "Irfan Ansari", amount: 300 }, { name: "Pooja Tiwari", amount: 500 },
+    { name: "Tariq Siddiqui", amount: 2000 }, { name: "Anita Rawat", amount: 500 },
+    { name: "Yusuf Patel", amount: 750 }, { name: "Rekha Pandey", amount: 1000 },
+    { name: "Shaheen Mirza", amount: 500 }, { name: "Mukesh Joshi", amount: 300 },
+  ];
+  const [tickerIdx, setTickerIdx] = useState(() => Math.floor(Math.random() * 26));
+  const [tickerVisible, setTickerVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTickerVisible(false);
+      setTimeout(() => {
+        setTickerIdx(i => (i + 1) % FAKE_DONORS.length);
+        setTickerVisible(true);
+      }, 400);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
   // Live countdown timer state
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, expired: false });
 
@@ -905,6 +935,36 @@ export default function CampaignDetail() {
                       backdropFilter: "blur(8px)",
                     }}
                   />
+                </div>
+
+                {/* ── Donation social proof ticker ── */}
+                <div
+                  className="flex items-center gap-3 px-3 py-2.5 overflow-hidden"
+                  style={{
+                    borderRadius: "10px",
+                    background: "linear-gradient(135deg, #2a4298, #1e3a8a)",
+                    boxShadow: "0 2px 12px rgba(30,58,138,0.5)",
+                    minHeight: "48px",
+                    transition: "opacity 0.35s ease, transform 0.35s ease",
+                    opacity: tickerVisible ? 1 : 0,
+                    transform: tickerVisible ? "translateY(0)" : "translateY(-6px)",
+                  }}
+                >
+                  {/* Hand-heart icon */}
+                  <svg className="w-8 h-8 shrink-0 opacity-90" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 28l4-4h8l6 4h8l6-8-4-4h-6l-2 2-4-2H16l-8 4v8z" fill="white" opacity="0.25"/>
+                    <path d="M10 36h6l16 4 12-6-2-4-10 4-8-2H10v4z" fill="white" opacity="0.3"/>
+                    <path d="M24 14c0-3.3 2.7-6 6-6s6 2.7 6 6c0 2-1 3.8-2.5 5L24 26l-9.5-7C13 17.8 12 16 12 14c0-3.3 2.7-6 6-6 2 0 3.8.9 5 2.4C24.2 9 24 10 24 11v3z" fill="white" opacity="0.85"/>
+                    <path d="M8 30h6l4 2 8 2 10-4 2 2-12 6-16-4-2-4z" fill="white" opacity="0.5"/>
+                    <rect x="6" y="28" width="6" height="12" rx="2" fill="white" opacity="0.7"/>
+                  </svg>
+                  <p className="text-[13px] font-black text-white leading-tight">
+                    <span className="uppercase tracking-wide">{FAKE_DONORS[tickerIdx].name}</span>
+                    {" "}
+                    <span className="font-semibold opacity-90">has donated</span>
+                    {" "}
+                    <span className="text-yellow-300">₹{FAKE_DONORS[tickerIdx].amount.toLocaleString("en-IN")}</span>
+                  </p>
                 </div>
 
                 {/* Razorpay trust badge — above donate button, matches reference style */}
@@ -1825,6 +1885,30 @@ export default function CampaignDetail() {
                       }
                     </p>
                   )}
+
+                  {/* Social proof ticker — sidebar */}
+                  <div
+                    className="flex items-center gap-3 px-3 py-2.5"
+                    style={{
+                      background: "linear-gradient(135deg, #2a4298, #1e3a8a)",
+                      boxShadow: "0 2px 12px rgba(30,58,138,0.3)",
+                      minHeight: "48px",
+                      transition: "opacity 0.35s ease, transform 0.35s ease",
+                      opacity: tickerVisible ? 1 : 0,
+                      transform: tickerVisible ? "translateY(0)" : "translateY(-6px)",
+                    }}
+                  >
+                    <svg className="w-8 h-8 shrink-0 opacity-90" viewBox="0 0 48 48" fill="none">
+                      <path d="M24 14c0-3.3 2.7-6 6-6s6 2.7 6 6c0 2-1 3.8-2.5 5L24 26l-9.5-7C13 17.8 12 16 12 14c0-3.3 2.7-6 6-6 2 0 3.8.9 5 2.4C24.2 9 24 10 24 11v3z" fill="white" opacity="0.85"/>
+                      <path d="M8 30h6l4 2 8 2 10-4 2 2-12 6-16-4-2-4z" fill="white" opacity="0.5"/>
+                      <rect x="6" y="28" width="6" height="12" rx="2" fill="white" opacity="0.7"/>
+                    </svg>
+                    <p className="text-[13px] font-black text-white leading-tight">
+                      <span className="uppercase tracking-wide">{FAKE_DONORS[tickerIdx].name}</span>
+                      {" "}<span className="font-semibold opacity-90">has donated</span>{" "}
+                      <span className="text-yellow-300">₹{FAKE_DONORS[tickerIdx].amount.toLocaleString("en-IN")}</span>
+                    </p>
+                  </div>
 
                   {/* Secured by Razorpay — sidebar, above donate button */}
                   <div className="flex items-center justify-center gap-1.5 py-1">
