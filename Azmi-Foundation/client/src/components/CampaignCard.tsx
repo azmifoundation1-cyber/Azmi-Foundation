@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 const CAMPAIGN_YOUTUBE_IDS: Record<number, string> = {
   3: "Z_exh7zMqDs",
   4: "NfYQeSsNQrg",
-  5: "TCf1jndVZGA",
+  6: "TCf1jndVZGA",
 };
 
 const CAMPAIGN_HARDCODED_IMAGES: Record<number, string> = {};

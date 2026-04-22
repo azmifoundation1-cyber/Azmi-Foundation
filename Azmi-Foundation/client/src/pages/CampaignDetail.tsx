@@ -31,15 +31,15 @@ function extractYoutubeId(url?: string | null): string | null {
 const PRESET_AMOUNTS_MAP: Record<number, number[]> = {
   3: [680, 1360, 3400, 6800],
   4: [500, 3500, 5000, 10000],
-  5: [100, 300, 1000, 2500],
-  6: [500, 1000, 2500, 5000],
+  5: [500, 1000, 2500, 5000],
+  6: [100, 300, 1000, 2500],
 };
 
 const PRESET_LABELS_MAP: Record<number, string[]> = {
   3: ["1 family's groceries", "2 families' groceries", "5 families' groceries", "10 families' groceries"],
   4: ["1 physio session", "Week of medicines", "Home nurse visit", "1 month physio"],
-  5: ["Basic clothing support", "Child's proper wear", "Family clothes kit", "Support 5 families"],
-  6: ["1 day's medicines", "Week of stoma bags", "Month of medicines", "Reversal surgery fund"],
+  5: ["1 day's medicines", "Week of stoma bags", "Month of medicines", "Reversal surgery fund"],
+  6: ["Basic clothing support", "Child's proper wear", "Family clothes kit", "Support 5 families"],
 };
 
 const DEFAULT_PRESET_LABELS = ["Small help", "Medium support", "Big impact", "Life changer"];
@@ -120,6 +120,19 @@ const CAMPAIGN_STORIES: Record<number, {
     localVideo: "/anwar-video.mp4",
   },
   5: {
+    story: [
+      "My name is Harsh Shrimali. For as long as I can remember, the sound of my childhood was the sound of my father, Nanak Shrimali, and my mother, Hansaben, preparing for their shifts. They weren't doctors, engineers, or wealthy businessmen. They were Security Guards.",
+      "It happened without warning. A few weeks ago, my father complained of a sharp, biting pain in his stomach. By midnight, he was screaming in agony. The doctors' words felt like a physical blow: his appendix had burst inside him — Appendicular Lump with Perforation, a life-threatening emergency. He was immediately taken into surgery for an Exploratory Laparotomy.",
+      "To save my father, the surgeons had to perform a Double Barrel Ileostomy — they brought a loop of his small intestine through an opening in his abdomen. My strong, proud father now lives with his intestines outside his body. He cannot walk without help. He cannot even sit up to eat without wincing in pain.",
+      "We are buried under a debt of ₹7,00,000 (7 Lakhs). My father was our primary provider. My mother had to quit her job because my father requires 24-hour nursing care. Overnight, our family's income went from two salaries to zero. I am 18 years old, and I am now the sole earner for a family of six, earning ₹12,000 a month — with ₹9,500 in rent alone.",
+      "My father spent his life protecting people he didn't even know. He stood guard at gates so that others could feel safe. Now, he is the one who is unprotected. Please be the guardian for the man who was a guardian for everyone else. Your donation, no matter how small, is a brick in the wall that protects my family from homelessness.",
+    ],
+    images: [
+      "/harsh-hospital.jpeg",
+      "/harsh-hospital.jpeg",
+    ],
+  },
+  6: {
     youtubeId: "TCf1jndVZGA",
     story: [
       "Not everyone has the privilege of choosing what to wear. For many families in our city, clothing is not about fashion — it is about survival, dignity, and basic human respect.",
@@ -132,19 +145,6 @@ const CAMPAIGN_STORIES: Record<number, {
       "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
       "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=800&q=80",
       "https://images.unsplash.com/photo-1471286174890-9c112ffca5b4?w=800&q=80",
-    ],
-  },
-  6: {
-    story: [
-      "My name is Harsh Shrimali. For as long as I can remember, the sound of my childhood was the sound of my father, Nanak Shrimali, and my mother, Hansaben, preparing for their shifts. They weren't doctors, engineers, or wealthy businessmen. They were Security Guards.",
-      "It happened without warning. A few weeks ago, my father complained of a sharp, biting pain in his stomach. By midnight, he was screaming in agony. The doctors' words felt like a physical blow: his appendix had burst inside him — Appendicular Lump with Perforation, a life-threatening emergency. He was immediately taken into surgery for an Exploratory Laparotomy.",
-      "To save my father, the surgeons had to perform a Double Barrel Ileostomy — they brought a loop of his small intestine through an opening in his abdomen. My strong, proud father now lives with his intestines outside his body. He cannot walk without help. He cannot even sit up to eat without wincing in pain.",
-      "We are buried under a debt of ₹7,00,000 (7 Lakhs). My father was our primary provider. My mother had to quit her job because my father requires 24-hour nursing care. Overnight, our family's income went from two salaries to zero. I am 18 years old, and I am now the sole earner for a family of six, earning ₹12,000 a month — with ₹9,500 in rent alone.",
-      "My father spent his life protecting people he didn't even know. He stood guard at gates so that others could feel safe. Now, he is the one who is unprotected. Please be the guardian for the man who was a guardian for everyone else. Your donation, no matter how small, is a brick in the wall that protects my family from homelessness.",
-    ],
-    images: [
-      "/harsh-hospital.jpeg",
-      "/harsh-hospital.jpeg",
     ],
   },
 };
@@ -961,8 +961,8 @@ export default function CampaignDetail() {
 
             {/* Hero — YouTube thumbnail (tap-to-open) or local video or image */}
             {(() => {
-              const HARDCODED_YOUTUBE: Record<number, string> = { 3: "Z_exh7zMqDs", 5: "TCf1jndVZGA" };
-              const YOUTUBE_START: Record<number, number> = { 3: 17, 5: 17 };
+              const HARDCODED_YOUTUBE: Record<number, string> = { 3: "Z_exh7zMqDs", 6: "TCf1jndVZGA" };
+              const YOUTUBE_START: Record<number, number> = { 3: 17, 6: 17 };
               const hardcodedYoutubeId = HARDCODED_YOUTUBE[id] ?? null;
               const dbYoutubeId = extractYoutubeId(campaign.videoUrl);
               const youtubeId = hardcodedYoutubeId || dbYoutubeId;
