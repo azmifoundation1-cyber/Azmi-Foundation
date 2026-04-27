@@ -1961,14 +1961,6 @@ export default function CampaignDetail() {
                     </p>
                   </div>
 
-                  {/* Secured by Razorpay — sidebar, above donate button */}
-                  <div className="flex items-center justify-center gap-1.5 py-1">
-                    <span className="text-[11px] font-semibold text-gray-400">Secured by</span>
-                    <svg width="14" height="14" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M18.667 2L6 18.667H16L13.333 30 26 13.333H16L18.667 2Z" fill="#3395FF"/>
-                    </svg>
-                    <span className="text-[13px] font-black tracking-tight" style={{ color: "#3395FF" }}>Razorpay</span>
-                  </div>
 
                   {/* Donate Button */}
                   <Button
