@@ -2240,15 +2240,14 @@ export default function CampaignDetail() {
               className="fixed bottom-0 left-0 right-0 z-[101] mx-auto max-w-md"
               style={{ borderRadius: "20px 20px 0 0", overflow: "hidden" }}
             >
-              {/* Campaign image */}
-              <div className="relative h-44 overflow-hidden">
+              {/* Campaign image — full, not cropped */}
+              <div className="relative">
                 <img
                   src={campaign.imageUrl || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"}
                   alt={campaign.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-contain"
                   onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"; }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 {/* Close button */}
                 <button
                   onClick={() => setShowDonationPopup(false)}
@@ -2289,7 +2288,13 @@ export default function CampaignDetail() {
                       {donating ? (
                         <Loader2 className="w-5 h-5 animate-spin mx-auto" />
                       ) : (
-                        <>Donate ₹{Number(PRESET_AMOUNTS_MAP[id]?.[1] ?? amount ?? 1000).toLocaleString("en-IN")}</>
+                        <span className="flex flex-col items-center gap-0.5">
+                          <span>Donate ₹{Number(PRESET_AMOUNTS_MAP[id]?.[1] ?? amount ?? 1000).toLocaleString("en-IN")}</span>
+                          <span className="flex items-center gap-1 opacity-75">
+                            <span className="text-[9px] font-semibold">via</span>
+                            <img src="/razorpay-logo.png" alt="Razorpay" className="h-3 w-auto" style={{ filter: "brightness(0) invert(1)" }} />
+                          </span>
+                        </span>
                       )}
                     </button>
 
