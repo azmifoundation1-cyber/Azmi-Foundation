@@ -348,10 +348,10 @@ export default function Home() {
               className="flex-shrink-0 w-full lg:w-auto"
             >
               <Link href="/apply">
-                <Button size="lg" className="group w-full lg:w-auto bg-accent hover:bg-white text-primary px-5 sm:px-14 py-7 sm:py-10 text-xs sm:text-xl rounded-none font-black uppercase tracking-widest transition-all duration-500 hover:scale-105 active:scale-95 shadow-[0_20px_60px_rgba(0,0,0,0.4)] border-0">
+                <Button size="lg" className="group w-full lg:w-auto bg-accent hover:bg-white text-primary px-6 sm:px-14 py-6 sm:py-10 text-sm sm:text-xl rounded-none font-black uppercase tracking-wide sm:tracking-widest transition-all duration-500 hover:scale-105 active:scale-95 shadow-[0_20px_60px_rgba(0,0,0,0.4)] border-0">
                   <span className="flex items-center justify-center gap-2 sm:gap-3 text-center leading-snug">
                     <HeartHandshake className="w-4 h-4 sm:w-6 sm:h-6 flex-shrink-0" />
-                    <span>Apply For Medical<br className="sm:hidden" /> Fundraising</span>
+                    <span>Apply For Medical Fundraising</span>
                     <motion.div animate={{ x: [0, 8, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
                       <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                     </motion.div>
