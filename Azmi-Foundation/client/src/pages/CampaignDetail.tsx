@@ -781,44 +781,6 @@ export default function CampaignDetail() {
                   transition={{ duration: 0.2, delay: 0.05 }}
                   className="space-y-3"
                 >
-                  {/* Stats card */}
-                  <div className="rounded-2xl overflow-hidden" style={{ background: "#fff", border: "1px solid #e5e7eb", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
-                    <div className="grid grid-cols-3 divide-x divide-gray-100">
-                      {[
-                        { emoji: "🍱", value: "846",                                                                       label: "Families Need Help", color: "#dc2626" },
-                        { emoji: "🤝", value: `₹${Number(campaign.currentAmount ?? 0).toLocaleString("en-IN")}`,           label: "Raised So Far",       color: "#16a34a" },
-                        { emoji: "🎯", value: `₹${Number(campaign.targetAmount   ?? 2400000).toLocaleString("en-IN")}`,    label: "Our Goal",            color: "#d97706" },
-                      ].map(({ emoji, value, label, color }) => (
-                        <div key={label} className="flex flex-col items-center py-4 px-1 min-w-0">
-                          <span className="text-[11px] mb-1">{emoji}</span>
-                          <span
-                            className="font-black leading-tight text-center w-full px-0.5 break-words"
-                            style={{
-                              color,
-                              fontSize: value.length > 9 ? "11px" : value.length > 6 ? "14px" : "20px",
-                              wordBreak: "break-all",
-                            }}
-                          >{value}</span>
-                          <span className="text-[8px] font-semibold text-gray-400 text-center mt-1 leading-tight">{label}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="px-4 pb-4">
-                      <div className="h-2 rounded-full overflow-hidden" style={{ background: "#f3f4f6" }}>
-                        <div className="h-full rounded-full" style={{ width: `${Math.max(2, percent)}%`, background: "linear-gradient(90deg, #dc2626, #f97316)" }} />
-                      </div>
-                      <div className="flex justify-between mt-1.5">
-                        <span className="text-[9px] font-bold text-gray-400">{percent}% Completed</span>
-                        <span className="text-[9px] font-bold text-gray-400">{countdown.days} Days Left</span>
-                      </div>
-                      <div className="flex items-center gap-2 mt-2.5 px-3 py-2 rounded-xl" style={{ background: "#fff8f0", border: "1px solid #fde68a" }}>
-                        <span>🔥</span>
-                        <span className="text-[11px] font-black" style={{ color: "#dc2626" }}>27 people</span>
-                        <span className="text-[11px] text-gray-500 font-medium">donated in the last few hours</span>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Emotional card */}
                   <div className="rounded-2xl px-5 py-6 text-center space-y-4" style={{ background: "linear-gradient(160deg, #0d0000 0%, #1a0505 100%)" }}>
                     <div className="space-y-1">
