@@ -1112,9 +1112,15 @@ export default function CampaignDetail() {
                     {donating ? (
                       <Loader2 className="w-5 h-5 animate-spin mx-auto" />
                     ) : (
-                      <span className="flex items-center justify-center gap-2">
-                        <Heart className="w-5 h-5" />
-                        Donate ₹{Number(amount || 0).toLocaleString("en-IN")} Now
+                      <span className="flex flex-col items-center justify-center gap-0.5">
+                        <span className="flex items-center gap-2">
+                          <Heart className="w-5 h-5" />
+                          Donate ₹{Number(amount || 0).toLocaleString("en-IN")} Now
+                        </span>
+                        <span className="flex items-center gap-1 opacity-75">
+                          <span className="text-[9px] font-semibold tracking-wider">via</span>
+                          <img src="/razorpay-logo.png" alt="Razorpay" className="h-3.5 w-auto" style={{ filter: "brightness(0) invert(1)" }} />
+                        </span>
                       </span>
                     )}
                   </button>
@@ -2207,10 +2213,14 @@ export default function CampaignDetail() {
           </button>
           <button
             onClick={() => { document.getElementById("mobile-donate")?.scrollIntoView({ behavior: "smooth", block: "center" }); }}
-            className="flex-1 flex items-center justify-center gap-2 font-bold text-sm py-3.5 rounded-full transition-all active:scale-95"
+            className="flex-1 flex flex-col items-center justify-center gap-0.5 font-bold text-sm py-2.5 rounded-full transition-all active:scale-95"
             style={{ background: "#cc1616", color: "#fff", border: "none", boxShadow: "0 2px 12px rgba(204,22,22,0.35)" }}
           >
-            Donate now
+            <span>Donate now</span>
+            <span className="flex items-center gap-1 opacity-75">
+              <span className="text-[9px] font-semibold">via</span>
+              <img src="/razorpay-logo.png" alt="Razorpay" className="h-3 w-auto" style={{ filter: "brightness(0) invert(1)" }} />
+            </span>
           </button>
         </div>
       </div>
