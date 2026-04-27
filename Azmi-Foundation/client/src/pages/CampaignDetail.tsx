@@ -773,33 +773,6 @@ export default function CampaignDetail() {
                 </motion.div>
 
                 {/* ════════════════════════════════════
-                    SECTION 2 — STATS + EMOTIONAL CTA
-                ════════════════════════════════════ */}
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, delay: 0.05 }}
-                  className="space-y-3"
-                >
-                  {/* Emotional card */}
-                  <div className="rounded-2xl px-5 py-6 text-center space-y-4" style={{ background: "linear-gradient(160deg, #0d0000 0%, #1a0505 100%)" }}>
-                    <div className="space-y-1">
-                      <p className="text-base font-black text-white leading-snug">❤️ This is not just a donation.</p>
-                      <p className="text-base font-black leading-snug" style={{ color: "#fcd34d" }}>This is someone's dinner tonight.</p>
-                      <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.45)" }}>If you skip this... someone sleeps hungry.</p>
-                    </div>
-                    <button
-                      onClick={() => { setAmount("1360"); setTimeout(() => handleDonate(), 80); }}
-                      disabled={donating}
-                      className="w-full py-4 rounded-xl font-black text-sm uppercase tracking-widest text-white transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
-                      style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)", boxShadow: "0 4px 20px rgba(220,38,38,0.5)" }}
-                    >
-                      {donating ? <Loader2 className="w-5 h-5 animate-spin" /> : <>♡ Donate Now – Save a Life</>}
-                    </button>
-                  </div>
-                </motion.div>
-
-                {/* ════════════════════════════════════
                     SECTION 3 — REAL IMPACT, REAL PEOPLE
                     Video + image thumbnails
                 ════════════════════════════════════ */}
