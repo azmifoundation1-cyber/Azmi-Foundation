@@ -175,6 +175,7 @@ export default function CampaignDetail() {
   const [paymentFailed, setPaymentFailed] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(true);
+  const [verifiedOpen, setVerifiedOpen] = useState(false);
 
   // Donation popup — appears 2s after page open, once per campaign visit
   const [showDonationPopup, setShowDonationPopup] = useState(false);
@@ -694,6 +695,70 @@ export default function CampaignDetail() {
           <div className="lg:col-span-3 space-y-4 lg:space-y-8">
 
 
+            {/* ── Milaap-style Verified NGO Banner ── */}
+            <div className="overflow-hidden" style={{ margin: "0 -1rem" }}>
+              <button
+                onClick={() => setVerifiedOpen(v => !v)}
+                className="w-full flex items-center gap-3 px-4 py-3 text-left"
+                style={{ background: "#1a3a6b", border: "none" }}
+              >
+                <div
+                  className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+                  style={{ background: "rgba(255,255,255,0.15)", border: "2px solid rgba(255,255,255,0.4)" }}
+                >
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <p className="text-white font-bold text-sm leading-tight">Verified by Azmi Foundation</p>
+                  <p className="text-white/60 text-[11px] mt-0.5">80G Approved · FCRA Registered NGO</p>
+                </div>
+                <svg
+                  className="w-5 h-5 text-white/70 shrink-0 transition-transform duration-300"
+                  style={{ transform: verifiedOpen ? "rotate(90deg)" : "rotate(0deg)" }}
+                  fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              {verifiedOpen && (
+                <div className="px-4 pt-3 pb-4" style={{ background: "#f0f4ff", borderBottom: "1px solid #d0d9f0" }}>
+                  <p className="text-xs text-gray-600 leading-relaxed mb-3">
+                    Azmi Foundation has undergone a rigorous verification process before publishing this campaign for donations.
+                  </p>
+                  <div className="space-y-3">
+                    {[
+                      { date: "30 Jan 2026", text: "Request for raising fund received from Azmi Foundation" },
+                      { date: "24 Feb 2026", text: "Our team spoke to Dr. Shahbaaz Azmi, founder, to understand the need" },
+                      { date: "24 Feb 2026", text: "Campaign published after verifying organisation details" },
+                    ].map((item, i) => (
+                      <div key={i} className="flex gap-3">
+                        <div className="flex flex-col items-center">
+                          <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shrink-0">
+                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          {i < 2 && <div className="w-px flex-1 bg-green-200 mt-1" />}
+                        </div>
+                        <div className="pb-3">
+                          <p className="text-[11px] font-bold text-gray-500">{item.date}</p>
+                          <p className="text-xs text-gray-700 mt-0.5">{item.text}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setVerifiedOpen(false)}
+                    className="mt-2 mx-auto block px-6 py-2 border border-gray-400 text-gray-600 text-xs font-bold rounded-full"
+                  >
+                    Close
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Campaign Title */}
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
               <Link href="/campaigns" className="inline-flex items-center gap-2 text-xs text-gray-400 font-bold uppercase tracking-widest mb-2 hover:text-primary transition-colors">
@@ -806,27 +871,41 @@ export default function CampaignDetail() {
               );
             })()}
 
-            {/* Trust strip — visible immediately below video, no scroll needed */}
-            <div className="flex items-center justify-center flex-wrap gap-x-3 gap-y-1 py-2 px-3 bg-green-50 border border-green-100 rounded-lg">
-              <span className="flex items-center gap-1 text-[10px] font-bold text-green-700 uppercase tracking-wide">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                Registered NGO
-              </span>
-              <span className="text-green-300 text-xs">|</span>
-              <span className="flex items-center gap-1 text-[10px] font-bold text-green-700 uppercase tracking-wide">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                80G Tax Benefit
-              </span>
-              <span className="text-green-300 text-xs">|</span>
-              <span className="flex items-center gap-1 text-[10px] font-bold text-green-700 uppercase tracking-wide">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
-                Razorpay Secured
-              </span>
-              <span className="text-green-300 text-xs">|</span>
-              <span className="flex items-center gap-1 text-[10px] font-bold text-green-700 uppercase tracking-wide">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-                1000+ Families Helped
-              </span>
+            {/* ── Milaap-style: Supporters count + Share buttons ── */}
+            <div className="space-y-3">
+              {/* Supporters count */}
+              <p className="text-sm font-bold text-center" style={{ color: "#cc1616" }}>
+                <button
+                  onClick={() => { setActiveTab("supporters"); document.querySelector("[data-tabs]")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}
+                  className="underline underline-offset-2"
+                >
+                  {supporters.length} Supporters
+                </button>
+              </p>
+
+              {/* WhatsApp Share + Share row */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={handleWhatsAppShare}
+                  className="flex items-center justify-center gap-2 py-3 font-bold text-sm rounded-full"
+                  style={{ background: "#25D366", color: "#fff", border: "none" }}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                  </svg>
+                  Share
+                </button>
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center justify-center gap-2 py-3 font-bold text-sm rounded-full"
+                  style={{ background: "transparent", color: "#374151", border: "2px solid #d1d5db" }}
+                >
+                  {copied
+                    ? <><Check className="w-4 h-4 text-green-500 shrink-0" /> Copied!</>
+                    : <><svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg> Share</>
+                  }
+                </button>
+              </div>
             </div>
 
             {/* Urgency text — shown for all campaigns */}
@@ -1401,7 +1480,7 @@ export default function CampaignDetail() {
             </div>
 
             {/* Tabs: Story / Updates / Supporters */}
-            <div className="bg-white shadow-sm">
+            <div data-tabs className="bg-white shadow-sm">
               {/* Tab Nav */}
               <div className="flex border-b border-gray-100">
                 {(["story", "updates", "supporters", "documents"] as const).map((tab) => (
@@ -2153,72 +2232,53 @@ export default function CampaignDetail() {
         </section>
       )}
 
-      {/* ── STICKY MOBILE BOTTOM DONATE BAR ── */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden" style={{ background: "rgba(4,0,15,0.97)", backdropFilter: "blur(16px)", borderTop: "1px solid rgba(200,200,220,0.25)", boxShadow: "0 -4px 24px rgba(0,0,0,0.5)" }}>
-        {/* Social proof ticker — above donate button */}
+      {/* ── STICKY MOBILE BOTTOM BAR — Milaap style ── */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden" style={{ background: "#fff", borderTop: "1px solid #e5e7eb", boxShadow: "0 -2px 12px rgba(0,0,0,0.08)" }}>
+        {/* Social proof ticker */}
         <AnimatePresence mode="wait">
           {tickerVisible && (
             <motion.div
               key={tickerIdx}
-              initial={{ opacity: 0, y: -8 }}
+              initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              transition={{ duration: 0.35 }}
-              className="flex items-center gap-2 px-4 py-2 mx-3 mt-2 rounded-lg"
-              style={{ background: "rgba(220,38,38,0.12)", border: "1px solid rgba(220,38,38,0.3)" }}
+              exit={{ opacity: 0, y: 6 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center gap-2 px-4 py-1.5 border-b border-gray-100"
             >
-              <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5">
+              <svg className="w-3.5 h-3.5 flex-shrink-0 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
               </svg>
-              <span className="text-xs font-black uppercase tracking-wider" style={{ color: "#fff" }}>
-                <span style={{ color: "#f87171" }}>{FAKE_DONORS[tickerIdx].name}</span>
-                {" "}has donated{" "}
-                <span style={{ color: "#fcd34d" }}>₹{FAKE_DONORS[tickerIdx].amount.toLocaleString("en-IN")}</span>
+              <span className="text-[11px] font-semibold text-gray-700">
+                <span className="font-bold text-gray-900">{FAKE_DONORS[tickerIdx].name}</span>
+                {" "}donated{" "}
+                <span className="font-bold text-red-600">₹{FAKE_DONORS[tickerIdx].amount.toLocaleString("en-IN")}</span>
               </span>
             </motion.div>
           )}
         </AnimatePresence>
         {/* Mini progress strip */}
-        <div className="h-1 w-full" style={{ background: "rgba(255,255,255,0.05)" }}>
-          <div className="h-full transition-all duration-700" style={{ width: `${percent}%`, background: "linear-gradient(90deg, #888899, #c0c0d0)" }} />
+        <div className="h-0.5 w-full bg-gray-100">
+          <div className="h-full transition-all duration-700 bg-red-500" style={{ width: `${percent}%` }} />
         </div>
-        <div className="flex items-center gap-2 px-3 pt-2 pb-1">
-          <span className="text-[10px] font-black text-white/60 uppercase tracking-widest tabular-nums">₹{Number(campaign?.currentAmount ?? 0).toLocaleString("en-IN")} raised · {percent}%</span>
-          <span className="ml-auto text-[10px] font-black text-red-400 tabular-nums">{!countdown.expired && `${String(countdown.days).padStart(2,"0")}d ${String(countdown.hours).padStart(2,"0")}h left`}</span>
-        </div>
-        <div className="flex gap-2 px-3 pb-2">
+        {/* Buttons row */}
+        <div className="flex gap-3 px-4 py-3">
+          <button
+            onClick={handleWhatsAppShare}
+            className="flex-1 flex items-center justify-center gap-2 font-bold text-sm py-3.5 rounded-full transition-all active:scale-95"
+            style={{ border: "2px solid #d1d5db", background: "transparent", color: "#374151" }}
+          >
+            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            Share
+          </button>
           <button
             onClick={() => { document.getElementById("mobile-donate")?.scrollIntoView({ behavior: "smooth", block: "center" }); }}
-            className="flex-1 font-black uppercase tracking-widest text-sm py-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
-            style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)", color: "#fff", boxShadow: "0 0 20px rgba(220,38,38,0.5), inset 0 1px 0 rgba(255,255,255,0.15)" }}
+            className="flex-1 flex items-center justify-center gap-2 font-bold text-sm py-3.5 rounded-full transition-all active:scale-95"
+            style={{ background: "#cc1616", color: "#fff", border: "none", boxShadow: "0 2px 12px rgba(204,22,22,0.35)" }}
           >
-            <Heart className="w-4 h-4" />
-            Donate ₹{Number(amount || PRESET_AMOUNTS[1]).toLocaleString("en-IN")} Now
+            Donate now
           </button>
-          <button
-            onClick={handleWhatsAppDonate}
-            className="px-4 py-4 rounded-xl flex flex-col items-center justify-center gap-0.5 font-black text-[9px] uppercase tracking-wider transition-all active:scale-95"
-            style={{ background: "#25D366", color: "#fff", boxShadow: "0 0 12px rgba(37,211,102,0.4)" }}
-          >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            <span>WA</span>
-          </button>
-        </div>
-        {/* Razorpay trust strip */}
-        <div className="flex items-center justify-center gap-1.5 pb-3 px-3">
-          <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ color: "#4ade80" }}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-          </svg>
-          <span className="text-[9px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.45)" }}>100% Secured by</span>
-          <svg viewBox="0 0 120 28" className="h-3.5 flex-shrink-0" style={{ filter: "brightness(0) invert(1) opacity(0.55)" }}>
-            <text x="0" y="21" fontFamily="Arial,sans-serif" fontWeight="900" fontSize="22" fill="white">Razorpay</text>
-          </svg>
-          <span className="text-[9px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.45)"}}>·</span>
-          <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ color: "rgba(255,255,255,0.4)" }}>
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path strokeLinecap="round" d="M7 11V7a5 5 0 0110 0v4"/>
-          </svg>
-          <span className="text-[9px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.45)" }}>256-bit SSL</span>
         </div>
       </div>
 
