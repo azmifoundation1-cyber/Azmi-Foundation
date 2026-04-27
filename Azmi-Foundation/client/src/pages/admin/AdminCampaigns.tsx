@@ -480,15 +480,34 @@ export default function AdminCampaigns() {
                       </Select>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Target Amount (₹) *</Label>
-                      <Input type="number" value={form.targetAmount} onChange={e => setForm(f => ({ ...f, targetAmount: e.target.value }))} placeholder="500000" />
+                  <div>
+                    <Label>Target Amount (₹) *</Label>
+                    <Input type="number" value={form.targetAmount} onChange={e => setForm(f => ({ ...f, targetAmount: e.target.value }))} placeholder="500000" />
+                  </div>
+
+                  {/* ── Campaign Countdown Timer ── */}
+                  <div className="rounded-lg border-2 border-amber-300 bg-amber-50 p-4 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <CalendarIcon className="w-4 h-4 text-amber-600" />
+                      <span className="font-black text-sm text-amber-800 uppercase tracking-wide">Campaign End Date (Countdown Timer)</span>
                     </div>
-                    <div>
-                      <Label className="flex items-center gap-1"><CalendarIcon className="w-3.5 h-3.5" /> End Date & Time</Label>
-                      <Input type="datetime-local" value={form.endDate} onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))} />
-                    </div>
+                    <p className="text-xs text-amber-700">
+                      This date controls the live countdown timer shown on the campaign page. Set a future date to start/reset the timer.
+                    </p>
+                    <Input
+                      type="datetime-local"
+                      value={form.endDate}
+                      onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))}
+                      className="bg-white border-amber-300 font-bold"
+                    />
+                    {form.endDate && (() => {
+                      const d = new Date(form.endDate);
+                      const now = new Date();
+                      const diffMs = d.getTime() - now.getTime();
+                      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                      if (diffMs < 0) return <p className="text-xs font-bold text-red-600">⚠️ This date is in the past — timer will show "Ended"</p>;
+                      return <p className="text-xs font-bold text-green-700">✓ Timer will count down: {diffDays} days remaining</p>;
+                    })()}
                   </div>
                   <div>
                     <Label>Short Description * <span className="text-xs text-gray-400">(shown on campaign cards)</span></Label>
