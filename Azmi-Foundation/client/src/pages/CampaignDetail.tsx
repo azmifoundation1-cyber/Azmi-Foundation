@@ -1135,15 +1135,6 @@ export default function CampaignDetail() {
                   </button>
                 </div>
 
-                {/* Razorpay Trusted Business badge — dark panel */}
-                <div className="flex justify-center py-1">
-                  <img
-                    src="/razorpay-trusted.png"
-                    alt="Razorpay Trusted Business"
-                    className="h-10 w-auto object-contain"
-                    style={{ filter: "brightness(0) invert(1) opacity(0.75)" }}
-                  />
-                </div>
 
                 {/* Payment fallback — shown if Razorpay fails (in-app browser / network) */}
                 <AnimatePresence>
@@ -2000,14 +1991,6 @@ export default function CampaignDetail() {
                     Donate via WhatsApp
                   </button>
 
-                  {/* Razorpay Trusted Business badge — sidebar */}
-                  <div className="flex justify-center py-1 px-3">
-                    <img
-                      src="/razorpay-trusted.png"
-                      alt="Razorpay Trusted Business"
-                      className="h-12 w-auto object-contain"
-                    />
-                  </div>
 
                   {/* Re-download Receipt button */}
                   <AnimatePresence>
