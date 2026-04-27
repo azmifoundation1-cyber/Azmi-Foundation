@@ -235,7 +235,9 @@ export type FundraisingApplication = typeof fundraisingApplications.$inferSelect
 export type InsertFundraisingApplication = typeof fundraisingApplications.$inferInsert;
 
 // Schemas
-export const insertCampaignSchema = createInsertSchema(campaigns).omit({ id: true, createdAt: true, updatedAt: true, currentAmount: true });
+export const insertCampaignSchema = createInsertSchema(campaigns, {
+  endDate: z.coerce.date().nullable().optional(),
+}).omit({ id: true, createdAt: true, updatedAt: true, currentAmount: true });
 export const insertCampaignUpdateSchema = createInsertSchema(campaignUpdates).omit({ id: true, createdAt: true });
 export const insertDonationSchema = createInsertSchema(donations).omit({ id: true, createdAt: true, status: true });
 export const insertProgramSchema = createInsertSchema(programs).omit({ id: true, createdAt: true, updatedAt: true });
