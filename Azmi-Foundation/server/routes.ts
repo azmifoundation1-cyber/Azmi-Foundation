@@ -75,6 +75,45 @@ export async function registerRoutes(
   await setupAuth(app);
   registerAuthRoutes(app);
 
+  // ── Sitemap ──
+  app.get("/sitemap.xml", async (_req, res) => {
+    try {
+      const campaigns = await storage.getCampaigns();
+      const BASE = "https://www.azmifoundation.com";
+      const staticPages = [
+        { url: "/", priority: "1.0", changefreq: "daily" },
+        { url: "/campaigns", priority: "0.9", changefreq: "daily" },
+        { url: "/about", priority: "0.7", changefreq: "monthly" },
+        { url: "/contact", priority: "0.6", changefreq: "monthly" },
+        { url: "/get-involved", priority: "0.7", changefreq: "monthly" },
+        { url: "/apply", priority: "0.8", changefreq: "weekly" },
+      ];
+      const campaignUrls = campaigns
+        .filter(c => c.status === "active")
+        .map(c => ({
+          url: `/campaigns/${c.id}`,
+          priority: "0.9",
+          changefreq: "daily",
+          lastmod: c.updatedAt ? new Date(c.updatedAt).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
+        }));
+      const allUrls = [...staticPages, ...campaignUrls];
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${allUrls.map(p => `  <url>
+    <loc>${BASE}${p.url}</loc>
+    ${p.lastmod ? `<lastmod>${p.lastmod}</lastmod>` : ""}
+    <changefreq>${p.changefreq}</changefreq>
+    <priority>${p.priority}</priority>
+  </url>`).join("\n")}
+</urlset>`;
+      res.setHeader("Content-Type", "application/xml");
+      res.setHeader("Cache-Control", "public, max-age=3600");
+      res.send(xml);
+    } catch {
+      res.status(500).send("Error generating sitemap");
+    }
+  });
+
   // ==============================
   // PUBLIC ROUTES
   // ==============================

@@ -8,8 +8,14 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Heart, Globe, Users, Award, Shield, Zap, Target, Search, CreditCard, TrendingUp, CheckCircle, Star, Quote, HeartHandshake } from "lucide-react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
+import { useSEO } from "@/hooks/use-seo";
 
 export default function Home() {
+  useSEO({
+    title: "Azmi Foundation — Donate to Change Lives",
+    description: "Azmi Foundation is an 80G & FCRA registered NGO in Ahmedabad. Support life-changing campaigns in healthcare, education, food relief and more. Every rupee makes a difference.",
+    url: "/",
+  });
   const { data: campaigns, isLoading } = useCampaigns();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({

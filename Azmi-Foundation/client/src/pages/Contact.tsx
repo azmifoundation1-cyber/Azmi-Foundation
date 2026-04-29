@@ -8,10 +8,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
+import { useSEO } from "@/hooks/use-seo";
 
 const emptyForm = { name: "", email: "", phone: "", subject: "", message: "" };
 
 export default function Contact() {
+  useSEO({
+    title: "Contact Us",
+    description: "Get in touch with Azmi Foundation. Reach us at support@azmifoundation.com or visit our office in Ahmedabad, Gujarat. We respond to all queries within 24 hours.",
+    url: "/contact",
+  });
   const { toast } = useToast();
   const [form, setForm] = useState(emptyForm);
 

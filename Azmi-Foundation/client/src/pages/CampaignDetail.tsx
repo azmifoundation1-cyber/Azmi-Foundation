@@ -12,7 +12,7 @@ import {
   AlertTriangle, Lock, Shield
 } from "lucide-react";
 import type { Campaign, Donation, CampaignUpdate } from "@shared/schema";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { generate80GReceipt, type ReceiptData } from "@/lib/generate-80g-receipt";
 
@@ -253,6 +253,70 @@ export default function CampaignDetail() {
     queryFn: () => fetch(`/api/campaigns/${id}/documents`).then(r => r.json()),
     enabled: !!id,
   });
+
+  // ── Dynamic SEO: title, description, OG tags, JSON-LD per campaign ──
+  const jsonLdRef = useRef<HTMLScriptElement | null>(null);
+  useEffect(() => {
+    if (!campaign) return;
+    const title = `${campaign.title} | Azmi Foundation`;
+    const description = campaign.description
+      ? campaign.description.slice(0, 155)
+      : "Support this campaign by Azmi Foundation — 80G & FCRA registered NGO in Ahmedabad.";
+    const image = campaign.imageUrl || "https://www.azmifoundation.com/azmi-logo.png";
+    const url = `https://www.azmifoundation.com/campaigns/${campaign.id}`;
+
+    document.title = title;
+
+    const setMeta = (attr: string, val: string, attrType: "name" | "property" = "name") => {
+      let el = document.querySelector(`meta[${attrType}="${attr}"]`) as HTMLMetaElement | null;
+      if (!el) { el = document.createElement("meta"); el.setAttribute(attrType, attr); document.head.appendChild(el); }
+      el.setAttribute("content", val);
+    };
+    const setLink = (rel: string, href: string) => {
+      let el = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement | null;
+      if (!el) { el = document.createElement("link"); el.setAttribute("rel", rel); document.head.appendChild(el); }
+      el.setAttribute("href", href);
+    };
+
+    setMeta("description", description);
+    setMeta("og:title", title, "property");
+    setMeta("og:description", description, "property");
+    setMeta("og:image", image, "property");
+    setMeta("og:url", url, "property");
+    setMeta("og:type", "website", "property");
+    setMeta("twitter:title", title);
+    setMeta("twitter:description", description);
+    setMeta("twitter:image", image);
+    setLink("canonical", url);
+
+    if (jsonLdRef.current) jsonLdRef.current.remove();
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "DonateAction",
+      "name": campaign.title,
+      "description": description,
+      "image": image,
+      "url": url,
+      "recipient": {
+        "@type": "NGO",
+        "name": "Azmi Foundation",
+        "url": "https://www.azmifoundation.com",
+      },
+      "potentialAction": {
+        "@type": "DonateAction",
+        "target": url,
+      },
+    });
+    document.head.appendChild(script);
+    jsonLdRef.current = script;
+
+    return () => {
+      script.remove();
+      document.title = "Azmi Foundation — Donate to Change Lives";
+    };
+  }, [campaign]);
 
   // ── Meta Pixel ViewContent — fires once when campaign data is first loaded ──
   useEffect(() => {

@@ -2,8 +2,14 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Users, Target, Heart, Shield, Award, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
+import { useSEO } from "@/hooks/use-seo";
 
 export default function About() {
+  useSEO({
+    title: "About Us",
+    description: "Learn about Azmi Foundation — an 80G & FCRA registered NGO based in Ahmedabad, Gujarat. Our mission is to uplift underprivileged communities through healthcare, education, and food relief.",
+    url: "/about",
+  });
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background perspective-1000">
       <Navbar />

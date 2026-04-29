@@ -13,6 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HandHeart, GraduationCap, Users } from "lucide-react";
+import { useSEO } from "@/hooks/use-seo";
 
 // Schema for registration form details
 const detailsSchema = z.object({
@@ -23,6 +24,11 @@ const detailsSchema = z.object({
 });
 
 export default function GetInvolved() {
+  useSEO({
+    title: "Get Involved — Volunteer, Member, Intern",
+    description: "Join Azmi Foundation as a volunteer, member, or intern. Be part of the movement changing lives across Ahmedabad and beyond.",
+    url: "/get-involved",
+  });
   const { user } = useAuth();
   const mutation = useCreateRegistration();
 

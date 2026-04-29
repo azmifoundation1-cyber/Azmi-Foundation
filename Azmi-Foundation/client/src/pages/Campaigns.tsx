@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Search, SlidersHorizontal, X, Filter, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
+import { useSEO } from "@/hooks/use-seo";
 
 const CATEGORIES = [
   { value: "all",         label: "All Causes" },
@@ -27,6 +28,11 @@ const SORT_OPTIONS = [
 ];
 
 export default function Campaigns() {
+  useSEO({
+    title: "All Campaigns",
+    description: "Browse all active fundraising campaigns by Azmi Foundation. Help with medical emergencies, education, food drives, and community relief efforts across India.",
+    url: "/campaigns",
+  });
   const { data: campaigns = [], isLoading } = useCampaigns();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useSEO } from "@/hooks/use-seo";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -432,6 +433,11 @@ function FileUploadField({ label, id, icon: Icon, file, onChange, hint, isRTL }:
 }
 
 export default function Apply() {
+  useSEO({
+    title: "Apply for Fundraising Support",
+    description: "Apply to Azmi Foundation for fundraising support. We help individuals in need raise funds for medical emergencies, education, and community hardships across India.",
+    url: "/apply",
+  });
   const [lang, setLang] = useState<Lang>("hinglish");
   const t = T[lang];
   const isRTL = lang === "ur";
