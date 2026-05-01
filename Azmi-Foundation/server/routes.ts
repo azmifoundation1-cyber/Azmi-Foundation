@@ -87,6 +87,7 @@ export async function registerRoutes(
         { url: "/contact", priority: "0.6", changefreq: "monthly" },
         { url: "/get-involved", priority: "0.7", changefreq: "monthly" },
         { url: "/apply", priority: "0.8", changefreq: "weekly" },
+        { url: "/privacy-policy", priority: "0.4", changefreq: "yearly" },
       ];
       const campaignUrls = campaigns
         .filter(c => c.status === "active")

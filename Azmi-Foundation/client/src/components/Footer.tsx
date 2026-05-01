@@ -95,6 +95,9 @@ export function Footer() {
 
         <div className="border-t border-white/5 pt-8 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-white/20">
           <p>&copy; {new Date().getFullYear()} Azmi Foundation. All rights reserved. | Estd. 23-07-2018</p>
+          <p className="mt-2">
+            <a href="/privacy-policy" className="hover:text-white/50 transition-colors">Privacy Policy</a>
+          </p>
         </div>
       </div>
     </footer>

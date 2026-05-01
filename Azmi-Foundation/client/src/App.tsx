@@ -31,6 +31,7 @@ import Apply from "@/pages/Apply";
 import SignCAF from "@/pages/SignCAF";
 import AdminCAF from "@/pages/admin/AdminCAF";
 import AdminApplications from "@/pages/admin/AdminApplications";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
 
 function Router() {
   return (
@@ -48,6 +49,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/contact" component={Contact} />
       <Route path="/apply" component={Apply} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
 
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/campaigns" component={AdminCampaigns} />
