@@ -114,6 +114,21 @@ fbq('track', 'PageView');
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'AW-18132185816');
+
+      // Called after a successful donation — pass real amount + transaction ID
+      function gtag_report_conversion(value, transaction_id, url) {
+        var callback = function () {
+          if (typeof(url) !== 'undefined') { window.location = url; }
+        };
+        gtag('event', 'conversion', {
+          'send_to': 'AW-18132185816/W5rZCN-p1qUcENjljMZD',
+          'value': value || 1.0,
+          'currency': 'INR',
+          'transaction_id': transaction_id || '',
+          'event_callback': callback,
+        });
+        return false;
+      }
     </script>
 
     <!-- Google AdSense -->

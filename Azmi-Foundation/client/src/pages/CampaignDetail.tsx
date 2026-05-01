@@ -518,6 +518,12 @@ export default function CampaignDetail() {
                 ? "Your 80G receipt has been downloaded automatically."
                 : "Thank you for your generous support.",
             });
+
+            // Google Ads Purchase conversion
+            try {
+              (window as any).gtag_report_conversion?.(Number(amt), response.razorpay_payment_id);
+            } catch {}
+
             queryClient.invalidateQueries({ queryKey: ["/api/donations/campaign", id] });
             queryClient.invalidateQueries({ queryKey: ["/api/campaigns", id] });
             queryClient.invalidateQueries({ queryKey: ["/api/campaigns/featured"] });
