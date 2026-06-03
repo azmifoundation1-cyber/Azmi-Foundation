@@ -3,23 +3,11 @@ import fs from "fs";
 import path from "path";
 
 export function serveStatic(app: Express) {
-  let distPath = path.resolve(__dirname, "public");
-  
+  const distPath = path.resolve(__dirname, "public");
   if (!fs.existsSync(distPath)) {
-    // Try one level up (if running from server/ directory)
-    distPath = path.resolve(__dirname, "..", "dist", "public");
-  }
-
-  if (!fs.existsSync(distPath)) {
-    // Try root dist (if running from server/ on Vercel)
-    distPath = path.resolve(process.cwd(), "dist", "public");
-  }
-
-  if (!fs.existsSync(distPath)) {
-    console.warn(
-      `Could not find the build directory. Tried ${distPath}. Static serving will be disabled.`,
+    throw new Error(
+      `Could not find the build directory: ${distPath}, make sure to build the client first`,
     );
-    return;
   }
 
   app.use((_, res, next) => {

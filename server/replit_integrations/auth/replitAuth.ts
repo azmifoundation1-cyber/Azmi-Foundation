@@ -10,19 +10,10 @@ import { authStorage } from "./storage.js";
 
 const getOidcConfig = memoize(
   async () => {
-    if (!process.env.REPL_ID) {
-      console.warn("REPL_ID not found, skipping Replit OIDC discovery");
-      return null;
-    }
-    try {
-      return await client.discovery(
-        new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
-        process.env.REPL_ID
-      );
-    } catch (err) {
-      console.error("Failed to discover Replit OIDC config:", err);
-      return null;
-    }
+    return await client.discovery(
+      new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
+      process.env.REPL_ID!
+    );
   },
   { maxAge: 3600 * 1000 }
 );
@@ -77,52 +68,44 @@ export async function setupAuth(app: Express) {
 
   const config = await getOidcConfig();
 
-  // Helper function to ensure strategy exists for a domain
-  let ensureStrategy = (domain: string) => {
-    // If OIDC is not configured, this is a no-op
+  const verify: VerifyFunction = async (
+    tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
+    verified: passport.AuthenticateCallback
+  ) => {
+    const user = {};
+    updateUserSession(user, tokens);
+    await upsertUser(tokens.claims());
+    verified(null, user);
   };
 
-  if (config) {
-    const verify: VerifyFunction = async (
-      tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
-      verified: passport.AuthenticateCallback
-    ) => {
-      const user = {};
-      updateUserSession(user, tokens);
-      await upsertUser(tokens.claims());
-      verified(null, user);
-    };
+  // Keep track of registered strategies
+  const registeredStrategies = new Set<string>();
 
-    // Keep track of registered strategies
-    const registeredStrategies = new Set<string>();
+  // Helper function to ensure strategy exists for a domain
+  const ensureStrategy = (domain: string) => {
+    const strategyName = `replitauth:${domain}`;
+    if (!registeredStrategies.has(strategyName)) {
+      const strategy = new Strategy(
+        {
+          name: strategyName,
+          config,
+          scope: "openid email profile offline_access",
+          callbackURL: `https://${domain}/api/callback`,
+        },
+        verify
+      );
+      passport.use(strategy);
+      registeredStrategies.add(strategyName);
+    }
+  };
 
-    ensureStrategy = (domain: string) => {
-      const strategyName = `replitauth:${domain}`;
-      if (!registeredStrategies.has(strategyName)) {
-        const strategy = new Strategy(
-          {
-            name: strategyName,
-            config,
-            scope: "openid email profile offline_access",
-            callbackURL: `https://${domain}/api/callback`,
-          },
-          verify
-        );
-        passport.use(strategy);
-        registeredStrategies.add(strategyName);
-      }
-    };
-
-    app.use((req, res, next) => {
-      const host = req.get("host");
-      if (host) {
-        ensureStrategy(host);
-      }
-      next();
-    });
-  } else {
-    console.log("Skipping Replit OIDC strategy setup (no config available)");
-  }
+  app.use((req, res, next) => {
+    const host = req.get("host");
+    if (host) {
+      ensureStrategy(host);
+    }
+    next();
+  });
 
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
@@ -145,16 +128,12 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/logout", (req, res) => {
     req.logout(() => {
-      if (config) {
-        res.redirect(
-          client.buildEndSessionUrl(config, {
-            client_id: process.env.REPL_ID!,
-            post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
-          }).href
-        );
-      } else {
-        res.redirect("/");
-      }
+      res.redirect(
+        client.buildEndSessionUrl(config, {
+          client_id: process.env.REPL_ID!,
+          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
+        }).href
+      );
     });
   });
 }
@@ -189,10 +168,6 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
 
   try {
     const config = await getOidcConfig();
-    if (!config) {
-      res.status(401).json({ message: "Unauthorized: OIDC not configured" });
-      return;
-    }
     const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
     updateUserSession(user, tokenResponse);
     return next();
