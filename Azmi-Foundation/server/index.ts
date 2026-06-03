@@ -86,7 +86,7 @@ app.use((req, res, next) => {
         const endDate = c.endDate ? new Date(c.endDate) : null;
         const now = new Date();
         if (!endDate || endDate < now) {
-          await storage.updateCampaign(c.id, { endDate: new Date(fixDate) as any });
+          await storage.updateCampaign(c.id, { endDate: fixDate as unknown as Date });
           console.log(`[startup] Fixed end date for campaign ${c.id}`);
         }
       }
