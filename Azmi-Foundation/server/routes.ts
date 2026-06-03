@@ -1,7 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import type { Server } from "http";
 import { storage } from "./storage.js";
-import { api } from "@shared/routes";
+import { api } from "../shared/routes.js";
 import { z } from "zod";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth/index.js";
 import Razorpay from "razorpay";
@@ -166,7 +166,7 @@ ${allUrls.map(p => `  <url>
   // --- Contact Form ---
   app.post("/api/contact", async (req: Request, res: Response) => {
     try {
-      const { insertContactMessageSchema } = await import("@shared/schema");
+      const { insertContactMessageSchema } = await import("../shared/schema.js");
       const input = insertContactMessageSchema.parse(req.body);
       const msg = await storage.createContactMessage(input);
       res.status(201).json(msg);
@@ -182,7 +182,7 @@ ${allUrls.map(p => `  <url>
     { name: "idProof", maxCount: 1 },
   ]), async (req: Request, res: Response) => {
     try {
-      const { fundraisingApplications } = await import("@shared/schema");
+      const { fundraisingApplications } = await import("../shared/schema.js");
       const { db: dbInst } = await import("./db.js");
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
       const medicalFileUrl = files?.medicalFile?.[0] ? `/uploads/${files.medicalFile[0].filename}` : null;
@@ -227,7 +227,7 @@ ${allUrls.map(p => `  <url>
   // Public status check by phone number
   app.get("/api/apply/status", async (req: Request, res: Response) => {
     try {
-      const { fundraisingApplications } = await import("@shared/schema");
+      const { fundraisingApplications } = await import("../shared/schema.js");
       const { db: dbInst } = await import("./db.js");
       const { eq: eqFn, desc: descFn } = await import("drizzle-orm");
       const phone = (req.query.phone as string || "").replace(/\D/g, "").slice(-10);
@@ -506,7 +506,7 @@ ${allUrls.map(p => `  <url>
   // --- Campaign Documents (public read) ---
   app.get("/api/campaigns/:id/documents", async (req: Request, res: Response) => {
     try {
-      const { campaignDocuments } = await import("@shared/schema");
+      const { campaignDocuments } = await import("../shared/schema.js");
       const { eq } = await import("drizzle-orm");
       const { db } = await import("./db.js");
       const docs = await db.select().from(campaignDocuments).where(eq(campaignDocuments.campaignId, Number(req.params.id)));
@@ -517,7 +517,7 @@ ${allUrls.map(p => `  <url>
   // --- Admin: Add campaign document ---
   app.post("/api/admin/campaigns/:id/documents", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { campaignDocuments } = await import("@shared/schema");
+      const { campaignDocuments } = await import("../shared/schema.js");
       const { db } = await import("./db.js");
       const { name, fileUrl, fileType } = req.body;
       if (!name || !fileUrl || !fileType) return res.status(400).json({ message: "name, fileUrl, fileType required" });
@@ -531,7 +531,7 @@ ${allUrls.map(p => `  <url>
   // --- Admin: Delete campaign document ---
   app.delete("/api/admin/campaigns/:id/documents/:docId", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { campaignDocuments } = await import("@shared/schema");
+      const { campaignDocuments } = await import("../shared/schema.js");
       const { db } = await import("./db.js");
       const { eq } = await import("drizzle-orm");
       await db.delete(campaignDocuments).where(eq(campaignDocuments.id, Number(req.params.docId)));
@@ -578,7 +578,7 @@ ${allUrls.map(p => `  <url>
   // --- Admin: Fundraising Applications ---
   app.get("/api/admin/applications", isAdmin, async (_req: Request, res: Response) => {
     try {
-      const { fundraisingApplications } = await import("@shared/schema");
+      const { fundraisingApplications } = await import("../shared/schema.js");
       const { db: dbInst } = await import("./db.js");
       const { desc: descFn } = await import("drizzle-orm");
       const rows = await dbInst.select().from(fundraisingApplications).orderBy(descFn(fundraisingApplications.createdAt));
@@ -591,7 +591,7 @@ ${allUrls.map(p => `  <url>
 
   app.patch("/api/admin/applications/:id/status", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { fundraisingApplications } = await import("@shared/schema");
+      const { fundraisingApplications } = await import("../shared/schema.js");
       const { db: dbInst } = await import("./db.js");
       const { eq: eqFn } = await import("drizzle-orm");
       const id = parseInt(req.params.id, 10);
@@ -618,7 +618,7 @@ ${allUrls.map(p => `  <url>
 
   app.delete("/api/admin/applications/:id", isSuperAdmin, async (req: Request, res: Response) => {
     try {
-      const { fundraisingApplications } = await import("@shared/schema");
+      const { fundraisingApplications } = await import("../shared/schema.js");
       const { db: dbInst } = await import("./db.js");
       const { eq: eqFn } = await import("drizzle-orm");
       const id = parseInt(req.params.id, 10);
@@ -632,7 +632,7 @@ ${allUrls.map(p => `  <url>
   // --- Admin Analytics: Donation trend (last 30 days) ---
   app.get("/api/admin/analytics/donations", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { donations: allDonations } = await import("@shared/schema");
+      const { donations: allDonations } = await import("../shared/schema.js");
       const { gte, sql: sqlFn, and, eq: eqFn } = await import("drizzle-orm");
       const { db } = await import("./db.js");
       const cutoff = new Date();
@@ -665,7 +665,7 @@ ${allUrls.map(p => `  <url>
   // --- Admin Analytics: Per-campaign stats ---
   app.get("/api/admin/analytics/campaigns", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { campaigns: campaignsTable, donations: donationsTable } = await import("@shared/schema");
+      const { campaigns: campaignsTable, donations: donationsTable } = await import("../shared/schema.js");
       const { sql: sqlFn, eq: eqFn } = await import("drizzle-orm");
       const { db } = await import("./db.js");
       const rows = await db
@@ -701,7 +701,7 @@ ${allUrls.map(p => `  <url>
   app.patch("/api/admin/change-password", isAdmin, async (req: any, res) => {
     try {
       const { currentPassword, newPassword } = z.object({ currentPassword: z.string().min(1), newPassword: z.string().min(8) }).parse(req.body);
-      const { users } = await import("@shared/models/auth");
+      const { users } = await import("../shared/models/auth.js");
       const { db } = await import("./db");
       const { eq } = await import("drizzle-orm");
       const bcrypt = await import("bcrypt");
@@ -758,7 +758,7 @@ ${allUrls.map(p => `  <url>
 
   app.put("/api/admin/campaigns/:id", isAdmin, async (req, res) => {
     try {
-      const { insertCampaignSchema } = await import("@shared/schema");
+      const { insertCampaignSchema } = await import("../shared/schema.js");
       const input = insertCampaignSchema.partial().parse(req.body);
       const campaign = await storage.updateCampaign(Number(req.params.id), input);
       res.json(campaign);
@@ -786,7 +786,7 @@ ${allUrls.map(p => `  <url>
 
   app.post("/api/admin/campaigns/:id/updates", isAdmin, async (req, res) => {
     try {
-      const { insertCampaignUpdateSchema } = await import("@shared/schema");
+      const { insertCampaignUpdateSchema } = await import("../shared/schema.js");
       const input = insertCampaignUpdateSchema.parse({ ...req.body, campaignId: Number(req.params.id) });
       const update = await storage.createCampaignUpdate(input);
       res.status(201).json(update);
@@ -937,7 +937,7 @@ ${allUrls.map(p => `  <url>
 
   app.put("/api/admin/programs/:id", isAdmin, async (req, res) => {
     try {
-      const { insertProgramSchema } = await import("@shared/schema");
+      const { insertProgramSchema } = await import("../shared/schema.js");
       const input = insertProgramSchema.partial().parse(req.body);
       const program = await storage.updateProgram(Number(req.params.id), input);
       res.json(program);
@@ -1036,7 +1036,7 @@ ${allUrls.map(p => `  <url>
 
   app.post("/api/caf/save", async (req, res) => {
     try {
-      const { cafSignatures: cafTable, cafRequests: reqTable } = await import("@shared/schema");
+      const { cafSignatures: cafTable, cafRequests: reqTable } = await import("../shared/schema.js");
       const { db } = await import("./db");
       const { eq } = await import("drizzle-orm");
       const body = z.object({
@@ -1104,7 +1104,7 @@ ${allUrls.map(p => `  <url>
   // Admin creates a signing link for a user
   app.post("/api/admin/caf/create-request", isAdmin, async (req: any, res) => {
     try {
-      const { cafRequests: reqTable } = await import("@shared/schema");
+      const { cafRequests: reqTable } = await import("../shared/schema.js");
       const { db } = await import("./db");
       const body = z.object({
         campaignerName: z.string().min(1),
@@ -1144,7 +1144,7 @@ ${allUrls.map(p => `  <url>
   // Public: get pre-filled data from token
   app.get("/api/caf/request/:token", async (req, res) => {
     try {
-      const { cafRequests: reqTable } = await import("@shared/schema");
+      const { cafRequests: reqTable } = await import("../shared/schema.js");
       const { db } = await import("./db");
       const { eq } = await import("drizzle-orm");
       const [row] = await db.select().from(reqTable).where(eq(reqTable.token, req.params.token));
@@ -1161,7 +1161,7 @@ ${allUrls.map(p => `  <url>
   // Admin: get all signing requests
   app.get("/api/admin/caf/requests", isAdmin, async (_req, res) => {
     try {
-      const { cafRequests: reqTable } = await import("@shared/schema");
+      const { cafRequests: reqTable } = await import("../shared/schema.js");
       const { db } = await import("./db");
       const { desc } = await import("drizzle-orm");
       const rows = await db.select().from(reqTable).orderBy(desc(reqTable.createdAt));
@@ -1173,7 +1173,7 @@ ${allUrls.map(p => `  <url>
 
   app.get("/api/admin/caf", isAdmin, async (req: any, res) => {
     try {
-      const { cafSignatures: cafTable } = await import("@shared/schema");
+      const { cafSignatures: cafTable } = await import("../shared/schema.js");
       const { db } = await import("./db");
       const { desc } = await import("drizzle-orm");
       const rows = await db.select().from(cafTable).orderBy(desc(cafTable.createdAt));
@@ -1186,7 +1186,7 @@ ${allUrls.map(p => `  <url>
   // Super Admin: delete a CAF record permanently
   app.delete("/api/admin/caf/:id", isSuperAdmin, async (req, res) => {
     try {
-      const { cafSignatures: cafTable } = await import("@shared/schema");
+      const { cafSignatures: cafTable } = await import("../shared/schema.js");
       const { db } = await import("./db");
       const { eq } = await import("drizzle-orm");
       const id = parseInt(req.params.id, 10);
@@ -1256,7 +1256,7 @@ async function seedDatabase() {
   // Auto-promote designated main admins to super_admin (runs on every startup — safe & idempotent)
   try {
     const { db } = await import("./db");
-    const { users } = await import("@shared/models/auth");
+    const { users } = await import("../shared/models/auth.js");
     const { inArray } = await import("drizzle-orm");
     const SUPER_ADMIN_EMAILS = ["support@azmifoundation.com", "azmifoundation1@gmail.com"];
     await db.update(users).set({ role: "super_admin" as any }).where(inArray(users.email, SUPER_ADMIN_EMAILS));
