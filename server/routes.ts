@@ -166,7 +166,7 @@ ${allUrls.map(p => `  <url>
   // --- Contact Form ---
   app.post("/api/contact", async (req: Request, res: Response) => {
     try {
-      const { insertContactMessageSchema } = await import("../shared/schema");
+      const { insertContactMessageSchema } = await import("../shared/schema.js");
       const input = insertContactMessageSchema.parse(req.body);
       const msg = await storage.createContactMessage(input);
       res.status(201).json(msg);
@@ -182,8 +182,8 @@ ${allUrls.map(p => `  <url>
     { name: "idProof", maxCount: 1 },
   ]), async (req: Request, res: Response) => {
     try {
-      const { fundraisingApplications } = await import("../shared/schema");
-      const { db: dbInst } = await import("./db");
+      const { fundraisingApplications } = await import("../shared/schema.js");
+      const { db: dbInst } = await import("./db.js");
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
       const medicalFileUrl = files?.medicalFile?.[0] ? `/uploads/${files.medicalFile[0].filename}` : null;
       const idProofUrl = files?.idProof?.[0] ? `/uploads/${files.idProof[0].filename}` : null;
@@ -227,8 +227,8 @@ ${allUrls.map(p => `  <url>
   // Public status check by phone number
   app.get("/api/apply/status", async (req: Request, res: Response) => {
     try {
-      const { fundraisingApplications } = await import("../shared/schema");
-      const { db: dbInst } = await import("./db");
+      const { fundraisingApplications } = await import("../shared/schema.js");
+      const { db: dbInst } = await import("./db.js");
       const { eq: eqFn, desc: descFn } = await import("drizzle-orm");
       const phone = (req.query.phone as string || "").replace(/\D/g, "").slice(-10);
       if (!phone || phone.length !== 10) {
@@ -506,9 +506,9 @@ ${allUrls.map(p => `  <url>
   // --- Campaign Documents (public read) ---
   app.get("/api/campaigns/:id/documents", async (req: Request, res: Response) => {
     try {
-      const { campaignDocuments } = await import("../shared/schema");
+      const { campaignDocuments } = await import("../shared/schema.js");
       const { eq } = await import("drizzle-orm");
-      const { db } = await import("./db");
+      const { db } = await import("./db.js");
       const docs = await db.select().from(campaignDocuments).where(eq(campaignDocuments.campaignId, Number(req.params.id)));
       res.json(docs);
     } catch { res.status(500).json({ message: "Internal server error" }); }
@@ -517,8 +517,8 @@ ${allUrls.map(p => `  <url>
   // --- Admin: Add campaign document ---
   app.post("/api/admin/campaigns/:id/documents", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { campaignDocuments } = await import("../shared/schema");
-      const { db } = await import("./db");
+      const { campaignDocuments } = await import("../shared/schema.js");
+      const { db } = await import("./db.js");
       const { name, fileUrl, fileType } = req.body;
       if (!name || !fileUrl || !fileType) return res.status(400).json({ message: "name, fileUrl, fileType required" });
       const [doc] = await db.insert(campaignDocuments).values({
@@ -531,8 +531,8 @@ ${allUrls.map(p => `  <url>
   // --- Admin: Delete campaign document ---
   app.delete("/api/admin/campaigns/:id/documents/:docId", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { campaignDocuments } = await import("../shared/schema");
-      const { db } = await import("./db");
+      const { campaignDocuments } = await import("../shared/schema.js");
+      const { db } = await import("./db.js");
       const { eq } = await import("drizzle-orm");
       await db.delete(campaignDocuments).where(eq(campaignDocuments.id, Number(req.params.docId)));
       res.json({ success: true });
@@ -578,8 +578,8 @@ ${allUrls.map(p => `  <url>
   // --- Admin: Fundraising Applications ---
   app.get("/api/admin/applications", isAdmin, async (_req: Request, res: Response) => {
     try {
-      const { fundraisingApplications } = await import("../shared/schema");
-      const { db: dbInst } = await import("./db");
+      const { fundraisingApplications } = await import("../shared/schema.js");
+      const { db: dbInst } = await import("./db.js");
       const { desc: descFn } = await import("drizzle-orm");
       const rows = await dbInst.select().from(fundraisingApplications).orderBy(descFn(fundraisingApplications.createdAt));
       res.json(rows);
@@ -591,8 +591,8 @@ ${allUrls.map(p => `  <url>
 
   app.patch("/api/admin/applications/:id/status", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { fundraisingApplications } = await import("../shared/schema");
-      const { db: dbInst } = await import("./db");
+      const { fundraisingApplications } = await import("../shared/schema.js");
+      const { db: dbInst } = await import("./db.js");
       const { eq: eqFn } = await import("drizzle-orm");
       const id = parseInt(req.params.id, 10);
       const { status, adminNote, userMessage } = req.body;
@@ -618,8 +618,8 @@ ${allUrls.map(p => `  <url>
 
   app.delete("/api/admin/applications/:id", isSuperAdmin, async (req: Request, res: Response) => {
     try {
-      const { fundraisingApplications } = await import("../shared/schema");
-      const { db: dbInst } = await import("./db");
+      const { fundraisingApplications } = await import("../shared/schema.js");
+      const { db: dbInst } = await import("./db.js");
       const { eq: eqFn } = await import("drizzle-orm");
       const id = parseInt(req.params.id, 10);
       await dbInst.delete(fundraisingApplications).where(eqFn(fundraisingApplications.id, id));
@@ -632,9 +632,9 @@ ${allUrls.map(p => `  <url>
   // --- Admin Analytics: Donation trend (last 30 days) ---
   app.get("/api/admin/analytics/donations", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { donations: allDonations } = await import("../shared/schema");
+      const { donations: allDonations } = await import("../shared/schema.js");
       const { gte, sql: sqlFn, and, eq: eqFn } = await import("drizzle-orm");
-      const { db } = await import("./db");
+      const { db } = await import("./db.js");
       const cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - 29);
       const rows = await db
@@ -665,9 +665,9 @@ ${allUrls.map(p => `  <url>
   // --- Admin Analytics: Per-campaign stats ---
   app.get("/api/admin/analytics/campaigns", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { campaigns: campaignsTable, donations: donationsTable } = await import("../shared/schema");
+      const { campaigns: campaignsTable, donations: donationsTable } = await import("../shared/schema.js");
       const { sql: sqlFn, eq: eqFn } = await import("drizzle-orm");
-      const { db } = await import("./db");
+      const { db } = await import("./db.js");
       const rows = await db
         .select({
           campaignId: donationsTable.campaignId,
@@ -756,13 +756,13 @@ ${allUrls.map(p => `  <url>
     }
   });
 
-  app.put("/api/admin/campaigns/:id", isAdmin, async (req, res) => {
+  app.put("/api/admin/campaigns/:id", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { insertCampaignSchema } = await import("../shared/schema");
+      const { insertCampaignSchema } = await import("../shared/schema.js");
       const input = insertCampaignSchema.partial().parse(req.body);
       const campaign = await storage.updateCampaign(Number(req.params.id), input);
       res.json(campaign);
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
       res.status(500).json({ message: "Internal server error" });
     }
@@ -784,13 +784,13 @@ ${allUrls.map(p => `  <url>
     res.json({ success: true });
   });
 
-  app.post("/api/admin/campaigns/:id/updates", isAdmin, async (req, res) => {
+  app.post("/api/admin/campaigns/:id/updates", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { insertCampaignUpdateSchema } = await import("../shared/schema");
+      const { insertCampaignUpdateSchema } = await import("../shared/schema.js");
       const input = insertCampaignUpdateSchema.parse({ ...req.body, campaignId: Number(req.params.id) });
       const update = await storage.createCampaignUpdate(input);
       res.status(201).json(update);
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
       res.status(500).json({ message: "Internal server error" });
     }
@@ -935,13 +935,13 @@ ${allUrls.map(p => `  <url>
     }
   });
 
-  app.put("/api/admin/programs/:id", isAdmin, async (req, res) => {
+  app.put("/api/admin/programs/:id", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { insertProgramSchema } = await import("../shared/schema");
+      const { insertProgramSchema } = await import("../shared/schema.js");
       const input = insertProgramSchema.partial().parse(req.body);
       const program = await storage.updateProgram(Number(req.params.id), input);
       res.json(program);
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
       res.status(500).json({ message: "Internal server error" });
     }

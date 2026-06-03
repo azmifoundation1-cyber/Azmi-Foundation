@@ -71,28 +71,31 @@ app.use((req, res, next) => {
 
 (async () => {
   // ── Startup: fix campaign end dates that are in the past ──
-  try {
-    const { storage } = await import("./storage");
-    const campaigns = await storage.getCampaigns();
-    const fixes: Record<number, string> = {
-      3: "2026-06-30T23:59:59.000Z",
-      4: "2026-07-31T23:59:59.000Z",
-      5: "2026-06-15T23:59:59.000Z",
-      6: "2026-05-22T23:59:59.000Z",
-    };
-    for (const c of campaigns) {
-      const fixDate = fixes[c.id];
-      if (fixDate) {
-        const endDate = c.endDate ? new Date(c.endDate) : null;
-        const now = new Date();
-        if (!endDate || endDate < now) {
-          await storage.updateCampaign(c.id, { endDate: fixDate as unknown as Date });
-          console.log(`[startup] Fixed end date for campaign ${c.id}`);
+  // Skip this during serverless startup to avoid cold-start delays and DB errors
+  if (!process.env.VERCEL) {
+    try {
+      const { storage } = await import("./storage");
+      const campaigns = await storage.getCampaigns();
+      const fixes: Record<number, string> = {
+        3: "2026-06-30T23:59:59.000Z",
+        4: "2026-07-31T23:59:59.000Z",
+        5: "2026-06-15T23:59:59.000Z",
+        6: "2026-05-22T23:59:59.000Z",
+      };
+      for (const c of campaigns) {
+        const fixDate = fixes[c.id];
+        if (fixDate) {
+          const endDate = c.endDate ? new Date(c.endDate) : null;
+          const now = new Date();
+          if (!endDate || endDate < now) {
+            await storage.updateCampaign(c.id, { endDate: fixDate as unknown as Date });
+            console.log(`[startup] Fixed end date for campaign ${c.id}`);
+          }
         }
       }
+    } catch (e) {
+      console.error("[startup] Could not fix campaign end dates:", e);
     }
-  } catch (e) {
-    console.error("[startup] Could not fix campaign end dates:", e);
   }
 
   await registerRoutes(httpServer, app);
