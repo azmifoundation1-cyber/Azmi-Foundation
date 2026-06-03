@@ -7,7 +7,7 @@ import {
   registrations, type Registration, type InsertRegistration,
   contactMessages, type ContactMessage, type InsertContactMessage,
 } from "@shared/schema";
-import { db } from "./db";
+import { db } from "./db.js";
 import { eq, and, desc, sum, count, sql } from "drizzle-orm";
 
 export interface IStorage {

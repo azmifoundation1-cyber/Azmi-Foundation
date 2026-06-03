@@ -1,6 +1,6 @@
 import type { Express } from "express";
-import { authStorage } from "./storage";
-import { isAuthenticated } from "./replitAuth";
+import { authStorage } from "./storage.js";
+import { isAuthenticated } from "./replitAuth.js";
 import { users } from "@shared/models/auth";
 import { db } from "../../db";
 import { eq } from "drizzle-orm";
