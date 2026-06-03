@@ -14,7 +14,7 @@ export interface IStorage {
   // Users
   getUser(id: string): Promise<User | undefined>;
   getAllUsers(): Promise<User[]>;
-  updateUserRole(id: string, role: "user" | "admin"): Promise<User>;
+  updateUserRole(id: string, role: "user" | "admin" | "super_admin"): Promise<User>;
 
   // Campaigns
   getCampaigns(): Promise<Campaign[]>;
@@ -81,8 +81,8 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(users).orderBy(desc(users.createdAt));
   }
 
-  async updateUserRole(id: string, role: "user" | "admin"): Promise<User> {
-    const [user] = await db.update(users).set({ role, updatedAt: new Date() }).where(eq(users.id, id)).returning();
+  async updateUserRole(id: string, role: "user" | "admin" | "super_admin"): Promise<User> {
+    const [user] = await db.update(users).set({ role: role as any, updatedAt: new Date() }).where(eq(users.id, id)).returning();
     return user;
   }
 
@@ -101,12 +101,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createCampaign(insertCampaign: InsertCampaign): Promise<Campaign> {
-    const [campaign] = await db.insert(campaigns).values(insertCampaign).returning();
+    const [campaign] = await db.insert(campaigns).values(insertCampaign as any).returning();
     return campaign;
   }
 
   async updateCampaign(id: number, data: Partial<InsertCampaign>): Promise<Campaign> {
-    const [campaign] = await db.update(campaigns).set({ ...data, updatedAt: new Date() }).where(eq(campaigns.id, id)).returning();
+    const [campaign] = await db.update(campaigns).set({ ...data, updatedAt: new Date() } as any).where(eq(campaigns.id, id)).returning();
     return campaign;
   }
 
@@ -196,7 +196,7 @@ export class DatabaseStorage implements IStorage {
 
   // Registrations
   async createRegistration(insertRegistration: InsertRegistration): Promise<Registration> {
-    const [registration] = await db.insert(registrations).values(insertRegistration).returning();
+    const [registration] = await db.insert(registrations).values(insertRegistration as any).returning();
     return registration;
   }
 

@@ -83,10 +83,10 @@ app.use((req, res, next) => {
     for (const c of campaigns) {
       const fixDate = fixes[c.id];
       if (fixDate) {
-        const endDate = c.endDate ? new Date(c.endDate as string) : null;
+        const endDate = c.endDate ? new Date(c.endDate) : null;
         const now = new Date();
         if (!endDate || endDate < now) {
-          await storage.updateCampaign(c.id, { endDate: fixDate as any });
+          await storage.updateCampaign(c.id, { endDate: new Date(fixDate) as any });
           console.log(`[startup] Fixed end date for campaign ${c.id}`);
         }
       }

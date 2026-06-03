@@ -81,13 +81,13 @@ export async function registerRoutes(
       const campaigns = await storage.getCampaigns();
       const BASE = "https://www.azmifoundation.com";
       const staticPages = [
-        { url: "/", priority: "1.0", changefreq: "daily" },
-        { url: "/campaigns", priority: "0.9", changefreq: "daily" },
-        { url: "/about", priority: "0.7", changefreq: "monthly" },
-        { url: "/contact", priority: "0.6", changefreq: "monthly" },
-        { url: "/get-involved", priority: "0.7", changefreq: "monthly" },
-        { url: "/apply", priority: "0.8", changefreq: "weekly" },
-        { url: "/privacy-policy", priority: "0.4", changefreq: "yearly" },
+        { url: "/", priority: "1.0", changefreq: "daily", lastmod: undefined },
+        { url: "/campaigns", priority: "0.9", changefreq: "daily", lastmod: undefined },
+        { url: "/about", priority: "0.7", changefreq: "monthly", lastmod: undefined },
+        { url: "/contact", priority: "0.6", changefreq: "monthly", lastmod: undefined },
+        { url: "/get-involved", priority: "0.7", changefreq: "monthly", lastmod: undefined },
+        { url: "/apply", priority: "0.8", changefreq: "weekly", lastmod: undefined },
+        { url: "/privacy-policy", priority: "0.4", changefreq: "yearly", lastmod: undefined },
       ];
       const campaignUrls = campaigns
         .filter(c => c.status === "active")
@@ -356,7 +356,7 @@ ${allUrls.map(p => `  <url>
         paymentMethod: paymentMethod as any,
         status: "completed",
         userId,
-      });
+      } as any);
 
       res.status(201).json(donation);
     } catch (err) {
@@ -414,7 +414,7 @@ ${allUrls.map(p => `  <url>
         paymentMethod: method as any,
         status: "completed",
         userId: null,
-      });
+      } as any);
 
       console.log(`[Webhook] Recorded payment ${payment.id} ₹${amountInRupees}`);
       res.json({ status: "recorded" });
@@ -689,7 +689,7 @@ ${allUrls.map(p => `  <url>
   app.patch("/api/admin/campaigns/:id/amount", isAdmin, async (req, res) => {
     try {
       const { amount } = z.object({ amount: z.number().min(0) }).parse(req.body);
-      const campaign = await storage.updateCampaign(Number(req.params.id), { currentAmount: String(amount) });
+      const campaign = await storage.updateCampaign(Number(req.params.id), { currentAmount: String(amount) } as any);
       res.json(campaign);
     } catch (err) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
@@ -850,7 +850,7 @@ ${allUrls.map(p => `  <url>
             paymentMethod: method as any,
             status: "completed",
             userId: null,
-          });
+          } as any);
           imported++;
         }
 
@@ -895,7 +895,7 @@ ${allUrls.map(p => `  <url>
         userId: null,
         status: "completed",
         paymentId: data.paymentId || `MANUAL-${Date.now()}`,
-        paymentMethod: data.paymentMethod,
+        paymentMethod: data.paymentMethod as any,
         message: data.message || null,
         isAnonymous: data.isAnonymous,
         taxReceiptRequested: data.taxReceiptRequested,
@@ -904,7 +904,7 @@ ${allUrls.map(p => `  <url>
         donorCity: data.donorCity || null,
         donorState: data.donorState || null,
         donorPincode: data.donorPincode || null,
-      });
+      } as any);
       res.status(201).json(donation);
     } catch (err) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
