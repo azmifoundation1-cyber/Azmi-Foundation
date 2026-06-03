@@ -6,8 +6,8 @@ import {
   programs, type Program, type InsertProgram,
   registrations, type Registration, type InsertRegistration,
   contactMessages, type ContactMessage, type InsertContactMessage,
-} from "../shared/schema.js";
-import { db } from "./db.js";
+} from "../shared/schema";
+import { db } from "./db";
 import { eq, and, desc, sum, count, sql } from "drizzle-orm";
 
 export interface IStorage {

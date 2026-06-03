@@ -8,11 +8,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index"
+      "destination": "api/index"
     },
     {
       "source": "/(.*)",
-      "destination": "/api/index"
+      "destination": "api/index"
     }
   ]
 }
