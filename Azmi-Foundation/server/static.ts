@@ -16,9 +16,10 @@ export function serveStatic(app: Express) {
   }
 
   if (!fs.existsSync(distPath)) {
-    throw new Error(
-      `Could not find the build directory. Tried ${distPath}, make sure to build the client first`,
+    console.warn(
+      `Could not find the build directory. Tried ${distPath}. Static serving will be disabled.`,
     );
+    return;
   }
 
   app.use((_, res, next) => {
