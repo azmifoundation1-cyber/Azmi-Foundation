@@ -8,6 +8,3 @@ build/
 .agents/
 .canvas/
 attached_assets/
-Azmi-Foundation/.local/
-Azmi-Foundation/node_modules/
-Azmi-Foundation/dist/
