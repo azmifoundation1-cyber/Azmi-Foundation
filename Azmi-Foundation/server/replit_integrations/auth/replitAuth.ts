@@ -10,10 +10,19 @@ import { authStorage } from "./storage";
 
 const getOidcConfig = memoize(
   async () => {
-    return await client.discovery(
-      new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
-      process.env.REPL_ID!
-    );
+    if (!process.env.REPL_ID) {
+      console.warn("REPL_ID not found, skipping Replit OIDC discovery");
+      return null;
+    }
+    try {
+      return await client.discovery(
+        new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
+        process.env.REPL_ID
+      );
+    } catch (err) {
+      console.error("Failed to discover Replit OIDC config:", err);
+      return null;
+    }
   },
   { maxAge: 3600 * 1000 }
 );
@@ -68,36 +77,52 @@ export async function setupAuth(app: Express) {
 
   const config = await getOidcConfig();
 
-  const verify: VerifyFunction = async (
-    tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
-    verified: passport.AuthenticateCallback
-  ) => {
-    const user = {};
-    updateUserSession(user, tokens);
-    await upsertUser(tokens.claims());
-    verified(null, user);
-  };
-
-  // Keep track of registered strategies
-  const registeredStrategies = new Set<string>();
-
   // Helper function to ensure strategy exists for a domain
-  const ensureStrategy = (domain: string) => {
-    const strategyName = `replitauth:${domain}`;
-    if (!registeredStrategies.has(strategyName)) {
-      const strategy = new Strategy(
-        {
-          name: strategyName,
-          config,
-          scope: "openid email profile offline_access",
-          callbackURL: `https://${domain}/api/callback`,
-        },
-        verify
-      );
-      passport.use(strategy);
-      registeredStrategies.add(strategyName);
-    }
+  let ensureStrategy = (domain: string) => {
+    // If OIDC is not configured, this is a no-op
   };
+
+  if (config) {
+    const verify: VerifyFunction = async (
+      tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
+      verified: passport.AuthenticateCallback
+    ) => {
+      const user = {};
+      updateUserSession(user, tokens);
+      await upsertUser(tokens.claims());
+      verified(null, user);
+    };
+
+    // Keep track of registered strategies
+    const registeredStrategies = new Set<string>();
+
+    ensureStrategy = (domain: string) => {
+      const strategyName = `replitauth:${domain}`;
+      if (!registeredStrategies.has(strategyName)) {
+        const strategy = new Strategy(
+          {
+            name: strategyName,
+            config,
+            scope: "openid email profile offline_access",
+            callbackURL: `https://${domain}/api/callback`,
+          },
+          verify
+        );
+        passport.use(strategy);
+        registeredStrategies.add(strategyName);
+      }
+    };
+
+    app.use((req, res, next) => {
+      const host = req.get("host");
+      if (host) {
+        ensureStrategy(host);
+      }
+      next();
+    });
+  } else {
+    console.log("Skipping Replit OIDC strategy setup (no config available)");
+  }
 
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
