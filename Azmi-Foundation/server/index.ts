@@ -8,7 +8,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const app = express();
+export const app = express();
 const httpServer = createServer(app);
 
 app.use(compression());
