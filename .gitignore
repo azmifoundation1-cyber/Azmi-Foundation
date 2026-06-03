@@ -1,0 +1,13 @@
+.DS_Store
+.local/
+*.zip
+*.tar.gz
+node_modules/
+dist/
+build/
+.agents/
+.canvas/
+attached_assets/
+Azmi-Foundation/.local/
+Azmi-Foundation/node_modules/
+Azmi-Foundation/dist/
