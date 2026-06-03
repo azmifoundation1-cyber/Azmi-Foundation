@@ -3,10 +3,21 @@ import fs from "fs";
 import path from "path";
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(__dirname, "public");
+  let distPath = path.resolve(__dirname, "public");
+  
+  if (!fs.existsSync(distPath)) {
+    // Try one level up (if running from server/ directory)
+    distPath = path.resolve(__dirname, "..", "dist", "public");
+  }
+
+  if (!fs.existsSync(distPath)) {
+    // Try root dist (if running from server/ on Vercel)
+    distPath = path.resolve(process.cwd(), "dist", "public");
+  }
+
   if (!fs.existsSync(distPath)) {
     throw new Error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`,
+      `Could not find the build directory. Tried ${distPath}, make sure to build the client first`,
     );
   }
 
