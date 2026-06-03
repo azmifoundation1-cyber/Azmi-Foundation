@@ -1,5 +1,5 @@
 import { 
-  users, type User, type UpsertUser,
+  users, type User,
   campaigns, type Campaign, type InsertCampaign,
   campaignUpdates, type CampaignUpdate, type InsertCampaignUpdate,
   donations, type Donation, type InsertDonation,

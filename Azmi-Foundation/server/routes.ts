@@ -17,14 +17,14 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 const upload = multer({
   storage: multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, uploadsDir),
-    filename: (_req, file, cb) => {
+    destination: (_req: Request, _file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => cb(null, uploadsDir),
+    filename: (_req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
       const ext = path.extname(file.originalname);
       cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`);
     },
   }),
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
-  fileFilter: (_req, file, cb) => {
+  fileFilter: (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     const allowed = [
       "image/", "video/", "application/pdf",
       "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -75,8 +75,8 @@ export async function registerRoutes(
   await setupAuth(app);
   registerAuthRoutes(app);
 
-  // ── Sitemap ──
-  app.get("/sitemap.xml", async (_req, res) => {
+  // --- Sitemap ---
+  app.get("/sitemap.xml", async (_req: Request, res: Response) => {
     try {
       const campaigns = await storage.getCampaigns();
       const BASE = "https://www.azmifoundation.com";
@@ -120,57 +120,57 @@ ${allUrls.map(p => `  <url>
   // ==============================
 
   // --- Public Stats ---
-  app.get("/api/public/stats", async (_req, res) => {
+  app.get("/api/public/stats", async (_req: Request, res: Response) => {
     try {
       const stats = await storage.getPublicStats();
       res.json(stats);
-    } catch {
+    } catch (err) {
       res.status(500).json({ message: "Internal server error" });
     }
   });
 
   // --- Campaigns ---
-  app.get(api.campaigns.list.path, async (req, res) => {
+  app.get(api.campaigns.list.path, async (req: Request, res: Response) => {
     const campaigns = await storage.getCampaigns();
     res.json(campaigns);
   });
 
-  app.get("/api/campaigns/featured", async (req, res) => {
+  app.get("/api/campaigns/featured", async (req: Request, res: Response) => {
     const campaigns = await storage.getFeaturedCampaigns();
     res.json(campaigns);
   });
 
-  app.get(api.campaigns.get.path, async (req, res) => {
+  app.get(api.campaigns.get.path, async (req: Request, res: Response) => {
     const campaign = await storage.getCampaign(Number(req.params.id));
     if (!campaign) return res.status(404).json({ message: "Campaign not found" });
     res.json(campaign);
   });
 
-  app.get("/api/campaigns/:id/updates", async (req, res) => {
+  app.get("/api/campaigns/:id/updates", async (req: Request, res: Response) => {
     const updates = await storage.getCampaignUpdates(Number(req.params.id));
     res.json(updates);
   });
 
   // --- Programs ---
-  app.get(api.programs.list.path, async (req, res) => {
+  app.get(api.programs.list.path, async (req: Request, res: Response) => {
     const programs = await storage.getPrograms();
     res.json(programs);
   });
 
   // --- Donations (public read per campaign) ---
-  app.get("/api/donations/campaign/:campaignId", async (req, res) => {
+  app.get("/api/donations/campaign/:campaignId", async (req: Request, res: Response) => {
     const donations = await storage.getDonationsByCampaign(Number(req.params.campaignId));
     res.json(donations);
   });
 
   // --- Contact Form ---
-  app.post("/api/contact", async (req, res) => {
+  app.post("/api/contact", async (req: Request, res: Response) => {
     try {
       const { insertContactMessageSchema } = await import("@shared/schema");
       const input = insertContactMessageSchema.parse(req.body);
       const msg = await storage.createContactMessage(input);
       res.status(201).json(msg);
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
       res.status(500).json({ message: "Internal server error" });
     }
@@ -180,10 +180,10 @@ ${allUrls.map(p => `  <url>
   app.post("/api/apply", upload.fields([
     { name: "medicalFile", maxCount: 1 },
     { name: "idProof", maxCount: 1 },
-  ]), async (req: any, res) => {
+  ]), async (req: Request, res: Response) => {
     try {
       const { fundraisingApplications } = await import("@shared/schema");
-      const { db: dbInst } = await import("./db");
+      const { db: dbInst } = await import("./db.js");
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
       const medicalFileUrl = files?.medicalFile?.[0] ? `/uploads/${files.medicalFile[0].filename}` : null;
       const idProofUrl = files?.idProof?.[0] ? `/uploads/${files.idProof[0].filename}` : null;
@@ -218,17 +218,17 @@ ${allUrls.map(p => `  <url>
       }).returning();
 
       res.status(201).json({ success: true, id: row.id });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Apply form error:", err);
       res.status(500).json({ message: "Submission failed. Please try again." });
     }
   });
 
   // Public status check by phone number
-  app.get("/api/apply/status", async (req, res) => {
+  app.get("/api/apply/status", async (req: Request, res: Response) => {
     try {
       const { fundraisingApplications } = await import("@shared/schema");
-      const { db: dbInst } = await import("./db");
+      const { db: dbInst } = await import("./db.js");
       const { eq: eqFn, desc: descFn } = await import("drizzle-orm");
       const phone = (req.query.phone as string || "").replace(/\D/g, "").slice(-10);
       if (!phone || phone.length !== 10) {
@@ -250,7 +250,7 @@ ${allUrls.map(p => `  <url>
         .orderBy(descFn(fundraisingApplications.createdAt));
       if (!rows.length) return res.status(404).json({ message: "No application found for this phone number." });
       res.json(rows);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Status check error:", err);
       res.status(500).json({ message: "Failed to check status." });
     }
@@ -261,7 +261,7 @@ ${allUrls.map(p => `  <url>
   // ==============================
 
   // --- Razorpay: Create Order ---
-  app.post("/api/razorpay/order", async (req, res) => {
+  app.post("/api/razorpay/order", async (req: Request, res: Response) => {
     try {
       const { amount, campaignId, donorName } = z.object({
         amount: z.number().min(1),
@@ -279,14 +279,14 @@ ${allUrls.map(p => `  <url>
         } as any,
       });
       res.json({ orderId: order.id, amount: order.amount, currency: order.currency });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Razorpay order error:", err);
       res.status(500).json({ message: "Could not create payment order" });
     }
   });
 
   // --- Razorpay: Verify Payment & Record Donation ---
-  app.post("/api/razorpay/verify", async (req, res) => {
+  app.post("/api/razorpay/verify", async (req: Request, res: Response) => {
     try {
       const {
         razorpay_order_id, razorpay_payment_id, razorpay_signature,
@@ -359,7 +359,7 @@ ${allUrls.map(p => `  <url>
       } as any);
 
       res.status(201).json(donation);
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
       console.error("Razorpay verify error:", err);
       res.status(500).json({ message: "Internal server error" });
@@ -367,7 +367,7 @@ ${allUrls.map(p => `  <url>
   });
 
   // --- Razorpay: Webhook (server-to-server real-time) ---
-  app.post("/api/razorpay/webhook", async (req, res) => {
+  app.post("/api/razorpay/webhook", async (req: Request, res: Response) => {
     try {
       const webhookSecret = (process.env.RAZORPAY_WEBHOOK_SECRET || "").trim();
       if (webhookSecret) {
@@ -425,19 +425,19 @@ ${allUrls.map(p => `  <url>
   });
 
   // --- Razorpay: Key (public) ---
-  app.get("/api/razorpay/key", (_req, res) => {
+  app.get("/api/razorpay/key", (_req: Request, res: Response) => {
     res.json({ key: RAZORPAY_KEY_ID });
   });
 
   // --- Donation creation (legacy fallback) ---
-  app.post(api.donations.create.path, async (req, res) => {
+  app.post(api.donations.create.path, async (req: Request, res: Response) => {
     try {
       const input = api.donations.create.input.parse(req.body);
       const user = req.user as any;
       const userId = user?.claims?.sub || user?.id || null;
       const donation = await storage.createDonation({ ...input, userId });
       res.status(201).json(donation);
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
       res.status(500).json({ message: "Internal server error" });
     }
@@ -452,7 +452,7 @@ ${allUrls.map(p => `  <url>
   });
 
   // --- My registrations ---
-  app.get("/api/my/registrations", isAuthenticated, async (req, res) => {
+  app.get("/api/my/registrations", isAuthenticated, async (req: Request, res: Response) => {
     const user = req.user as any;
     const userId = user?.claims?.sub || user?.id;
     const registrations = await storage.getRegistrationsByUser(userId);
@@ -460,7 +460,7 @@ ${allUrls.map(p => `  <url>
   });
 
   // --- My campaigns (submitted by user) ---
-  app.get("/api/my/campaigns", isAuthenticated, async (req, res) => {
+  app.get("/api/my/campaigns", isAuthenticated, async (req: Request, res: Response) => {
     const user = req.user as any;
     const userId = user?.claims?.sub || user?.id;
     const allCampaigns = await storage.getCampaigns();
@@ -468,7 +468,7 @@ ${allUrls.map(p => `  <url>
   });
 
   // --- User: Submit campaign proposal ---
-  app.post("/api/user/campaigns", isAuthenticated, async (req, res) => {
+  app.post("/api/user/campaigns", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const user = req.user as any;
       const userId = user?.claims?.sub || user?.id;
@@ -488,14 +488,14 @@ ${allUrls.map(p => `  <url>
         createdBy: userId,
       });
       res.status(201).json(campaign);
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
       res.status(500).json({ message: "Internal server error" });
     }
   });
 
   // --- File Upload (images, videos, PDFs, docs) ---
-  app.post("/api/upload", upload.single("file"), (req, res) => {
+  app.post("/api/upload", upload.single("file"), (req: Request, res: Response) => {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
     const url = `/uploads/${req.file.filename}`;
     const mime = req.file.mimetype;
@@ -504,21 +504,21 @@ ${allUrls.map(p => `  <url>
   });
 
   // --- Campaign Documents (public read) ---
-  app.get("/api/campaigns/:id/documents", async (req, res) => {
+  app.get("/api/campaigns/:id/documents", async (req: Request, res: Response) => {
     try {
       const { campaignDocuments } = await import("@shared/schema");
       const { eq } = await import("drizzle-orm");
-      const { db } = await import("./db");
+      const { db } = await import("./db.js");
       const docs = await db.select().from(campaignDocuments).where(eq(campaignDocuments.campaignId, Number(req.params.id)));
       res.json(docs);
     } catch { res.status(500).json({ message: "Internal server error" }); }
   });
 
   // --- Admin: Add campaign document ---
-  app.post("/api/admin/campaigns/:id/documents", isAdmin, async (req, res) => {
+  app.post("/api/admin/campaigns/:id/documents", isAdmin, async (req: Request, res: Response) => {
     try {
       const { campaignDocuments } = await import("@shared/schema");
-      const { db } = await import("./db");
+      const { db } = await import("./db.js");
       const { name, fileUrl, fileType } = req.body;
       if (!name || !fileUrl || !fileType) return res.status(400).json({ message: "name, fileUrl, fileType required" });
       const [doc] = await db.insert(campaignDocuments).values({
@@ -529,10 +529,10 @@ ${allUrls.map(p => `  <url>
   });
 
   // --- Admin: Delete campaign document ---
-  app.delete("/api/admin/campaigns/:id/documents/:docId", isAdmin, async (req, res) => {
+  app.delete("/api/admin/campaigns/:id/documents/:docId", isAdmin, async (req: Request, res: Response) => {
     try {
       const { campaignDocuments } = await import("@shared/schema");
-      const { db } = await import("./db");
+      const { db } = await import("./db.js");
       const { eq } = await import("drizzle-orm");
       await db.delete(campaignDocuments).where(eq(campaignDocuments.id, Number(req.params.docId)));
       res.json({ success: true });
@@ -540,12 +540,12 @@ ${allUrls.map(p => `  <url>
   });
 
   // --- Submit Registration ---
-  app.post(api.registrations.create.path, isAuthenticated, async (req, res) => {
+  app.post(api.registrations.create.path, isAuthenticated, async (req: Request, res: Response) => {
     try {
       const input = api.registrations.create.input.parse(req.body);
       const registration = await storage.createRegistration(input);
       res.status(201).json(registration);
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
       res.status(500).json({ message: "Internal server error" });
     }
@@ -556,7 +556,7 @@ ${allUrls.map(p => `  <url>
   // ==============================
 
   // --- Bootstrap Admin (only works if no admins exist yet) ---
-  app.post("/api/admin/bootstrap", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/bootstrap", isAuthenticated, async (req: Request, res: Response) => {
     const allUsers = await storage.getAllUsers();
     const hasAdmin = allUsers.some(u => u.role === "admin");
     if (hasAdmin) {
@@ -570,29 +570,29 @@ ${allUrls.map(p => `  <url>
   });
 
   // --- Admin Stats ---
-  app.get("/api/admin/stats", isAdmin, async (req, res) => {
+  app.get("/api/admin/stats", isAdmin, async (req: Request, res: Response) => {
     const stats = await storage.getAdminStats();
     res.json(stats);
   });
 
   // --- Admin: Fundraising Applications ---
-  app.get("/api/admin/applications", isAdmin, async (_req, res) => {
+  app.get("/api/admin/applications", isAdmin, async (_req: Request, res: Response) => {
     try {
       const { fundraisingApplications } = await import("@shared/schema");
-      const { db: dbInst } = await import("./db");
+      const { db: dbInst } = await import("./db.js");
       const { desc: descFn } = await import("drizzle-orm");
       const rows = await dbInst.select().from(fundraisingApplications).orderBy(descFn(fundraisingApplications.createdAt));
       res.json(rows);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Fetch applications error:", err);
       res.status(500).json({ message: "Failed to fetch applications" });
     }
   });
 
-  app.patch("/api/admin/applications/:id/status", isAdmin, async (req: any, res) => {
+  app.patch("/api/admin/applications/:id/status", isAdmin, async (req: Request, res: Response) => {
     try {
       const { fundraisingApplications } = await import("@shared/schema");
-      const { db: dbInst } = await import("./db");
+      const { db: dbInst } = await import("./db.js");
       const { eq: eqFn } = await import("drizzle-orm");
       const id = parseInt(req.params.id, 10);
       const { status, adminNote, userMessage } = req.body;
@@ -610,31 +610,31 @@ ${allUrls.map(p => `  <url>
         .where(eqFn(fundraisingApplications.id, id))
         .returning();
       res.json(updated);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Update application error:", err);
       res.status(500).json({ message: "Failed to update application" });
     }
   });
 
-  app.delete("/api/admin/applications/:id", isSuperAdmin, async (req, res) => {
+  app.delete("/api/admin/applications/:id", isSuperAdmin, async (req: Request, res: Response) => {
     try {
       const { fundraisingApplications } = await import("@shared/schema");
-      const { db: dbInst } = await import("./db");
+      const { db: dbInst } = await import("./db.js");
       const { eq: eqFn } = await import("drizzle-orm");
       const id = parseInt(req.params.id, 10);
       await dbInst.delete(fundraisingApplications).where(eqFn(fundraisingApplications.id, id));
       res.json({ ok: true });
-    } catch (err) {
+    } catch (err: any) {
       res.status(500).json({ message: "Failed to delete application" });
     }
   });
 
   // --- Admin Analytics: Donation trend (last 30 days) ---
-  app.get("/api/admin/analytics/donations", isAdmin, async (req, res) => {
+  app.get("/api/admin/analytics/donations", isAdmin, async (req: Request, res: Response) => {
     try {
       const { donations: allDonations } = await import("@shared/schema");
       const { gte, sql: sqlFn, and, eq: eqFn } = await import("drizzle-orm");
-      const { db } = await import("./db");
+      const { db } = await import("./db.js");
       const cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - 29);
       const rows = await db
@@ -657,17 +657,17 @@ ${allUrls.map(p => `  <url>
         result.push({ date: key, label: d.toLocaleDateString("en-IN", { day: "2-digit", month: "short" }), total: map[key]?.total ?? 0, count: map[key]?.count ?? 0 });
       }
       res.json(result);
-    } catch (err) {
+    } catch (err: any) {
       res.status(500).json({ message: "Analytics error" });
     }
   });
 
   // --- Admin Analytics: Per-campaign stats ---
-  app.get("/api/admin/analytics/campaigns", isAdmin, async (req, res) => {
+  app.get("/api/admin/analytics/campaigns", isAdmin, async (req: Request, res: Response) => {
     try {
       const { campaigns: campaignsTable, donations: donationsTable } = await import("@shared/schema");
       const { sql: sqlFn, eq: eqFn } = await import("drizzle-orm");
-      const { db } = await import("./db");
+      const { db } = await import("./db.js");
       const rows = await db
         .select({
           campaignId: donationsTable.campaignId,
@@ -680,18 +680,18 @@ ${allUrls.map(p => `  <url>
       const stats: Record<number, { total: number; count: number }> = {};
       rows.forEach(r => { if (r.campaignId) stats[r.campaignId] = { total: Number(r.total), count: Number(r.count) }; });
       res.json(stats);
-    } catch (err) {
+    } catch (err: any) {
       res.status(500).json({ message: "Analytics error" });
     }
   });
 
   // --- Admin: Update campaign current amount manually ---
-  app.patch("/api/admin/campaigns/:id/amount", isAdmin, async (req, res) => {
+  app.patch("/api/admin/campaigns/:id/amount", isAdmin, async (req: Request, res: Response) => {
     try {
       const { amount } = z.object({ amount: z.number().min(0) }).parse(req.body);
       const campaign = await storage.updateCampaign(Number(req.params.id), { currentAmount: String(amount) } as any);
       res.json(campaign);
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
       res.status(500).json({ message: "Internal server error" });
     }
